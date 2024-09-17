@@ -4,6 +4,8 @@ import GuestIndex from "./views/Guest/guest_index";
 import ClientDefault from "./views/Client/client_default";
 import GuestAbout from "./views/Guest/guest_about";
 import ClientIndex from "./views/Client/client_index";
+import AdminIndex from "./views/Admin";
+import AdminDefault from "./views/Admin/default";
 
 const router = createBrowserRouter([
     /*
@@ -42,6 +44,26 @@ const router = createBrowserRouter([
             {
                 index: true,
                 element: <ClientIndex/>
+            }
+        ]
+    },
+
+
+
+
+
+    /*
+    |----------------------------------------
+    | Admin 
+    |----------------------------------------
+    */
+    {
+        path: '/OrtegaAdmin',
+        element: <AdminDefault/>,
+        children: [
+            {
+                index: true,
+                element: <AdminIndex/>
             }
         ]
     }

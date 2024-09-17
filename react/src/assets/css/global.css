@@ -1,3 +1,113 @@
-body {
-    background: red;
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+:root {
+    --dark-blue1: rgb(29, 36, 46);
+    --dark-blue2: rgb(40, 51, 66);
+    --blue1: rgb(0, 144, 153);
+    
+    --white1: rgb(209, 209, 209);
+
+    --text-xl1: 60px;
+    --text-xl2: 50px;
+    --text-xl3: 40px;
+    --text-l1: 30px;
+    --text-l2: 24px;
+    --text-l3: 20px;
+    --text-m1: 18px;
+    --text-m2: 16px;
+    --text-m3: 14px;
+    --text-m4: 12px;
+}
+
+* {
+    padding: 0;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+
+
+
+/*
+|----------------------------------------
+| width and height
+|----------------------------------------
+*/
+.h-100vh {
+    height: 100vh;
+}
+.w-10 {
+    width: 10%;
+}
+.w-20 {
+    width: 20%;
+}
+.w-30 {
+    width: 30%;
+}
+.w-40 {
+    width: 40%;
+}
+.w-60 {
+    width: 60%;
+}
+.w-70 {
+    width: 70%;
+}
+.w-80 {
+    width: 80%;
+}
+.w-90 {
+    width: 90%;
+}
+
+
+
+
+
+/*
+|----------------------------------------
+| Text 
+|----------------------------------------
+*/
+.text-xl1 {
+    font-size: var(--text-xl1);
+}
+.text-xl2 {
+    font-size: var(--text-xl2);
+}
+.text-xl2 {
+    font-size: var(--text-xl3);
+}
+.text-l1 {
+    font-size: var(--text-l1);
+}
+.text-l2 {
+    font-size: var(--text-l2);
+}
+.text-l3 {
+    font-size: var(--text-l3);
+}
+.text-m1 {
+    font-size: var(--text-m1);
+}
+.text-m2 {
+    font-size: var(--text-m2);
+}
+.text-m3 {
+    font-size: var(--text-m3);
+}
+
+.text-center {
+    text-align:center;
+}
+.text-right {
+    text-align: right;
+}
+
+.bold {
+    font-weight: bold;
 }
