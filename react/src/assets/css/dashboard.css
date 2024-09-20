@@ -1,0 +1,62 @@
+.dashboard-content-1 {
+    width: 100%;
+    display: flex;
+    gap: 60px;
+    margin: 30px 0;
+}
+.dashboard-content-1-box {
+    width: calc(100% / 4);
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.dashboard-content-1-box-upper {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    padding: 30px;
+}
+
+.dashboard-content-1-box-lower {
+    width: 100%;
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dashboard-content-1-box.green {
+    border: 2px solid var(--green1);
+}
+.dashboard-content-1-box.green .dashboard-content-1-box-lower {
+    border-top: 2px solid var(--green1);
+    background: var(--green1-03);
+}
+
+.dashboard-content-1-box.yellow {
+    border: 2px solid var(--yellow1);
+}
+.dashboard-content-1-box.yellow .dashboard-content-1-box-lower {
+    border-top: 2px solid var(--yellow1);
+    background: var(--yellow1-03);
+}
+
+.dashboard-content-1-box.blue {
+    border: 2px solid var(--blue2);
+}
+.dashboard-content-1-box.blue .dashboard-content-1-box-lower {
+    border-top: 2px solid var(--blue2);
+    background: var(--blue2-03);
+}
+
+.dashboard-content-1-box.red {
+    border: 2px solid var(--red1);
+}
+.dashboard-content-1-box.red .dashboard-content-1-box-lower {
+    border-top: 2px solid var(--red1);
+    background: var(--red1-03);
+}

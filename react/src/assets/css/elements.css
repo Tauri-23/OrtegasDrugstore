@@ -1,0 +1,48 @@
+/*
+|----------------------------------------
+| Contents
+|----------------------------------------
+*/
+.content1 {
+    width: calc(100% - var(--admin-sidenav-w));
+    padding: 50px;
+    margin-left: var(--admin-sidenav-w);
+    min-height: 100vh;
+}
+
+
+
+
+
+/*
+|----------------------------------------
+| Btns 
+|----------------------------------------
+*/
+.secondary-btn-black1 {
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: var(--radius3);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+.secondary-btn-black1 {
+    border: 1px solid var(--black1);
+}
+
+
+
+
+
+/*
+|----------------------------------------
+| Lines 
+|----------------------------------------
+*/
+.hr-line1-white1 {
+    width: 100%;
+    height: 1px;
+    background: var(--white1);
+    opacity: .3;
+}

@@ -15,15 +15,51 @@
     display: flex;
     align-items: center;
 }
+
+
+
+.admin-sidenav1-user {
+    display: flex;
+    gap: 15px;
+    padding: 15px 20px;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+.admin-sidenav1-pfp {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--dark-blue1);
+    font-size: var(--text-m1);
+    color: var(--white1);
+    font-weight: 900;
+}
+.admin-sidenav1-pfp img {
+    height: 100%;
+}
+
+
+
 .admin-sidenav1-links {
     display: flex;
     flex-direction: column;
 }
 .admin-sidenav1-link {
+    width: 100%;
     padding: 15px 20px;
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
     color: var(--white1);
+    align-items: center;
+}
+.admin-sidenav1-link img {
+    width: 20px;
+    aspect-ratio: 1/1;
 }
 .admin-sidenav1-link.active {
     background: var(--blue1);
