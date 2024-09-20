@@ -1,9 +1,7 @@
 import {createBrowserRouter} from "react-router-dom";
-import GuestDefault from "./views/Guest/guest_default";
-import GuestIndex from "./views/Guest/guest_index";
-import GuestAbout from "./views/Guest/guest_about";
 import AdminIndex from "./views/Admin";
 import AdminDefault from "./views/Admin/default";
+import Login from "./views/Guest/login";
 
 const router = createBrowserRouter([
     /*
@@ -13,17 +11,7 @@ const router = createBrowserRouter([
     */
     {
         path: '/',
-        element: <GuestDefault/>,
-        children: [
-            {
-                index: true,
-                element: <GuestIndex/>
-            },
-            {
-                path: 'About',
-                element: <GuestAbout/>
-            }
-        ]
+        element: <Login/>
     },
 
 
