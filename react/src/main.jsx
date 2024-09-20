@@ -10,9 +10,12 @@ import "././assets/css/elements.css";
 // BOOTSTRAP
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
+import { ContextProvider } from './Context/ContextProvider';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router}/>
+    <ContextProvider>
+      <RouterProvider router={router}/>
+    </ContextProvider>
   </StrictMode>,
 )
