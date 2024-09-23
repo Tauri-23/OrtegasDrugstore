@@ -1,8 +1,11 @@
 import { Navigate, Outlet } from "react-router-dom";
-import AdminSidenav from "../../components/admin_sidenav";
+import AdminSidenav from "../../components/admin/admin_sidenav";
 import { useStateContext } from "../../Context/ContextProvider";
 import { useEffect } from "react";
 import axiosClient from "../../axios-client";
+import { ModalProvider } from "../../Context/ModalContext";
+import ModalManager from "../../Managers/ModalManagers";
+import { ToastContainer } from "react-toastify";
 
 export default function AdminDefault() {
     const {user, userType, token, setUser, setUserType, setToken} = useStateContext();
@@ -36,9 +39,18 @@ export default function AdminDefault() {
     }
 
     return(
-        <div>
-            <AdminSidenav/>
-            <Outlet/>
-        </div>
+        <ModalProvider>
+            <div className="position-relative">
+                <ModalManager/>
+
+                {/* Sidenav */}
+                <AdminSidenav/>
+
+                {/* Children */}
+                <Outlet/>
+
+                <ToastContainer/>
+            </div>
+        </ModalProvider>
     );
 }

@@ -20,7 +20,7 @@ export default function AdminMedicines() {
             group: "Diabetes ",
             stock: 85
         }
-    ]
+    ];
 
     return(
         <div className="content1">

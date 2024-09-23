@@ -1,7 +1,7 @@
 import { useState } from "react";
 import * as Icon from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router-dom";
-import { useStateContext } from "../Context/ContextProvider";
+import { useStateContext } from "../../Context/ContextProvider";
 
 const AdminSidenav = () => {
     const location = useLocation();
@@ -12,7 +12,7 @@ const AdminSidenav = () => {
     return (
         <div className="admin-sidenav1">
             <div className="admin-sidenav1-head text-l3 fw-bold">
-                Ortega's Drug store
+                Ortega's Drugstore
             </div>
 
             <div className="admin-sidenav1-user">

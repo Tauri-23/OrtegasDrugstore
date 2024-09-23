@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\MedicineGroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,14 @@ Route::middleware('auth:sanctum')
 */
 Route::post('/signup', [AuthController::class, 'SignupPost']);
 Route::post('/login', [AuthController::class, 'login']);
+
+
+
+
+
+/*
+|----------------------------------------
+| Medicine Groups 
+|----------------------------------------
+*/
+Route::post('/add-medicine-group-post', [MedicineGroupController::class, 'AddMedGroup']);

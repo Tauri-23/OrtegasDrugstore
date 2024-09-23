@@ -343,3 +343,19 @@ body {background: var(--white2);}
 .gap4 {
     gap: 5px;
 }
+
+
+
+
+
+/*
+|----------------------------------------
+| Flex 
+|----------------------------------------
+*/
+.flex-direction-y {
+    flex-direction: column;
+}
+.flex-direction-y-reverse {
+    flex-direction: column-reverse;
+}

@@ -7,6 +7,9 @@ import "././assets/css/global.css";
 import "././assets/css/navbar.css";
 import "././assets/css/elements.css";
 import "././assets/css/tables.css";
+import "././assets/css/modals.css";
+
+import 'react-toastify/dist/ReactToastify.css';
 
 // BOOTSTRAP
 import "bootstrap/dist/css/bootstrap.min.css";
