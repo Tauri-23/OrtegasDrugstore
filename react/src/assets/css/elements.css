@@ -19,6 +19,19 @@
 | Btns 
 |----------------------------------------
 */
+.primary-btn-dark-blue1 {
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: var(--radius3);
+    cursor: pointer;
+    border: none;
+    background: var(--dark-blue1);
+}
+.primary-btn-dark-blue1 {
+    color: var(--white1);
+}
+
+
 .secondary-btn-black1 {
     padding: 10px 15px;
     text-decoration: none;
@@ -45,4 +58,41 @@
     height: 1px;
     background: var(--white1);
     opacity: .3;
+}
+
+
+
+
+
+/*
+|----------------------------------------
+| Search 
+|----------------------------------------
+*/
+.search-box1 {
+    background: var(--light-blue1);
+    padding: 10px;
+    border: 1px solid var(--grey1);
+    border-radius: 5px;
+    width: 400px;
+}
+.search-box1-icon {
+    position: absolute;
+    right: 10px;
+}
+
+
+
+
+
+/*
+|----------------------------------------
+| Forms 
+|----------------------------------------
+*/
+.input1 {
+    border: 1px solid var(--black1);
+    background: var(--white1);
+    padding: 10px 20px;
+    border-radius: 5px;
 }

@@ -6,6 +6,7 @@ import router from './router';
 import "././assets/css/global.css";
 import "././assets/css/navbar.css";
 import "././assets/css/elements.css";
+import "././assets/css/tables.css";
 
 // BOOTSTRAP
 import "bootstrap/dist/css/bootstrap.min.css";

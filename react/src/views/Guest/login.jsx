@@ -1,14 +1,15 @@
 import { useState } from "react";
 import axiosClient from "../../axios-client";
+import { useStateContext } from "../../Context/ContextProvider";
 
 export default function Login() {
+    const {setUser, setToken, setUserType} = useStateContext();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log("asdasd");
 
         const formData = new FormData();
         formData.append("uname", username);
@@ -18,10 +19,12 @@ export default function Login() {
         .then(({data}) => {
             console.log(data);
             if(data.status === 200) {
-                alert("login successfully");
+                setUser(data.user);
+                setToken(data.token);
+                setUserType(data.user_type);
             }
             else {
-                alert("Credentials doesn't match.")
+                alert("Credentials doesn't match.");
             }
         }).catch((error) => console.error(error));
 
@@ -36,7 +39,7 @@ export default function Login() {
                 <input type="text" id="uname" onInput={(e) => setUsername(e.target.value)}/> <br/>
 
                 <label htmlFor="pword">Password</label>
-                <input type="password" id="pword" onInput={(e) => setPassword(e.target.value)}/> <br/>
+                <input type="text" id="pword" onInput={(e) => setPassword(e.target.value)}/> <br/>
                 <button>Login</button>
             </form>
         </div>

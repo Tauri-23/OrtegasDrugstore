@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    // protected $generateId;
+    protected $generateId;
 
-    // public function __construct(IGenerateIdService $generateId)
-    // {
-    //     $this->generateId = $generateId;
-    // }
+    public function __construct(IGenerateIdService $generateId)
+    {
+        $this->generateId = $generateId;
+    }
 
     /*
     |----------------------------------------
@@ -34,7 +34,7 @@ class AuthController extends Controller
                 'message' => 'Success',
                 'user' => $admin,
                 'token' => $token,
-                'user_type' => "client"
+                'user_type' => "admin"
             ]);
         }
         else

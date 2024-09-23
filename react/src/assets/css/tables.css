@@ -1,0 +1,21 @@
+.table1 {
+    width: 100%;
+    background: var(--white);
+    filter: drop-shadow(0 0 1px var(--grey1));
+}
+.table1-thead {
+    background-color: var(--dark-blue2);
+    color: var(--white1);
+}
+.table1-thead th {
+    padding: 20px;
+}
+.table1-tbody tr {
+    cursor: pointer;
+}
+.table1-tbody tr:nth-child(even) {
+    background: var(--grey1);
+}
+.table1-tbody td {
+    padding: 10px 20px;
+}

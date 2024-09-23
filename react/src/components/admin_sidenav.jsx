@@ -1,6 +1,14 @@
+import { useState } from "react";
 import * as Icon from "react-bootstrap-icons";
+import { Link, useLocation } from "react-router-dom";
+import { useStateContext } from "../Context/ContextProvider";
 
 const AdminSidenav = () => {
+    const location = useLocation();
+    const {user} = useStateContext();
+    const [inventoryOpen, setInventoryOpen] = useState(false);
+    const [reportsOpen, setReportsOpen] = useState(false);
+
     return (
         <div className="admin-sidenav1">
             <div className="admin-sidenav1-head text-l3 fw-bold">
@@ -14,7 +22,7 @@ const AdminSidenav = () => {
                     </div>
                     <div className="h-100">
                         <div className="text-m3 color-white1">
-                            Yuma Wakayama
+                            {user.firstname} {user.lastname}
                         </div>
                         <div className="text-m3 color-white1">
                             Admin
@@ -25,29 +33,73 @@ const AdminSidenav = () => {
                 <Icon.ThreeDotsVertical className="text-l2 color-white1"/>
             </div>
 
+
+            {/* Links */}
             <div className="admin-sidenav1-links">
-                <div className="admin-sidenav1-link active">
+                {/* Dashboard */}
+                <Link 
+                to={'/OrtegaAdmin'} 
+                className={`admin-sidenav1-link ${location.pathname === '/OrtegaAdmin' || location.pathname === '/OrtegaAdmin/' ? 'active' : ''}`}>
                     <div className="d-flex align-items-center" style={{gap: 15}}>
                         <img src="/src/assets/media/icons/dashboard.svg" alt="" />
                         <div>Dashboard</div>
                     </div>
-                </div>
+                </Link>
 
-                <div className="admin-sidenav1-link">
+                {/* Inventory */}
+                <div 
+                className={`admin-sidenav1-link ${inventoryOpen ? "opened" : ""}`} 
+                onClick={() => setInventoryOpen(!inventoryOpen)}
+                >
                     <div className="d-flex align-items-center" style={{gap: 15}}>
                         <img src="/src/assets/media/icons/medicine.svg" alt="" />
                         <div>Inventory</div>
                     </div>
-                    <Icon.CaretDownFill className="text-m3"/>
+                    {inventoryOpen
+                    ? (<Icon.CaretUpFill className="text-m3"/>)
+                    : (<Icon.CaretDownFill className="text-m3"/>)}
+                    
                 </div>
+                <Link 
+                to={'Medicines'} 
+                className={`admin-sidenav1-link2 ${inventoryOpen ? "" : "disabled"} ${location.pathname === '/OrtegaAdmin/Medicines'? 'active' : ''}`}
+                >
+                    List of Medicines
+                </Link>
+                <Link 
+                to={'MedicineGroups'} 
+                className={`admin-sidenav1-link2 ${inventoryOpen ? "" : "disabled"} ${location.pathname === '/OrtegaAdmin/MedicineGroups'? 'active' : ''}`}
+                >
+                    Medicine Groups
+                </Link>
 
-                <div className="admin-sidenav1-link">
+
+                {/* Reports */}
+                <div 
+                className={`admin-sidenav1-link ${reportsOpen ? 'opened' : ''}`} 
+                onClick={() => setReportsOpen(!reportsOpen)}
+                >
                     <div className="d-flex align-items-center" style={{gap: 15}}>
                         <img src="/src/assets/media/icons/trend.svg" alt="" />
                         <div>Reports</div>
                     </div>
-                    <Icon.CaretDownFill className="text-m3"/>
+                    {reportsOpen
+                    ? (<Icon.CaretUpFill className="text-m3"/>)
+                    : (<Icon.CaretDownFill className="text-m3"/>)}
+                    
                 </div>
+                <Link 
+                to={"SalesReports"} 
+                className={`admin-sidenav1-link2 ${reportsOpen ? "" : "disabled"} ${location.pathname === '/OrtegaAdmin/SalesReports'? 'active' : ''}`}
+                >
+                    Sales Report
+                </Link>
+                <Link 
+                to={"PaymentReports"} 
+                className={`admin-sidenav1-link2 ${reportsOpen ? "" : "disabled"} ${location.pathname === '/OrtegaAdmin/PaymentReports'? 'active' : ''}`}
+                >
+                    Payments Report
+                </Link>
 
                 <div className="admin-sidenav1-link">
                     <div className="d-flex align-items-center" style={{gap: 15}}>
