@@ -25,8 +25,8 @@ export default function AdminMedicineGroups() {
     | Debugging
     */
     useEffect(() => {
-        notify("success", "data.message", "top-center", 3000);
-    }, [])
+        console.log(medicineGroups);
+    }, [medicineGroups])
 
     const handeAddPost = (medGroupName) => {
 
