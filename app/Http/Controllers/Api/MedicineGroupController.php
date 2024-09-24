@@ -16,6 +16,10 @@ class MedicineGroupController extends Controller
         $this->generateId = $generateId;
     }
 
+
+
+
+    
     // GET
     public function GetAllMedGroups()
     {

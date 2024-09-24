@@ -7,6 +7,7 @@ import AdminMedicines from "./views/Admin/Inventory/medicines";
 import AdminMedicineGroups from "./views/Admin/Inventory/medicineGroups";
 import AdminSalesReports from "./views/Admin/Reports/salesReport";
 import AdminPaymentReports from "./views/Admin/Reports/paymentReports";
+import AdminAddMedicines from "./views/Admin/Inventory/addMedicines";
 
 const router = createBrowserRouter([
     /*
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
             {
                 path: 'Medicines',
                 element: <AdminMedicines/>
+            },
+            {
+                path: 'AddMedicine',
+                element: <AdminAddMedicines/>
             },
             {
                 path: 'MedicineGroups',

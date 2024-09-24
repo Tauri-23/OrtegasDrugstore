@@ -4,21 +4,22 @@ import { useEffect, useState } from "react";
 import axiosClient from "../../../axios-client";
 import { notify } from "../../../assets/js/utils";
 import { toast } from "react-toastify";
+import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService";
 
 export default function AdminMedicineGroups() {
     const {showModal} = useModal();
-    const [medicineGroups, setMedicineGroups] = useState([
-        {
-            id: "231542",
-            group_name: "Generic Medicine",
-            number_of_meds: 350
-        },
-        {
-            id: "123123",
-            group_name: "Diabetes",
-            number_of_meds: 20
+    const [medicineGroups, setMedicineGroups] = useState(null);
+
+    useEffect(() => {
+        const GetAllMedGroups = async() => {
+            try {
+                const data = await fetchAllMedGroups();
+                setMedicineGroups(data);
+            } catch (error) {console.error(error)}
         }
-    ]);
+
+        GetAllMedGroups();
+    }, []);
 
 
     /*
@@ -84,7 +85,7 @@ export default function AdminMedicineGroups() {
                     </tr>
                 </thead>
                 <tbody className="table1-tbody">
-                    {medicineGroups.map((meds, index) => (
+                    {medicineGroups?.length > 0 && medicineGroups.map((meds, index) => (
                         <tr key={index}>
                             <td>{meds.group_name}</td>
                             <td>{meds.number_of_meds}</td>
@@ -98,6 +99,20 @@ export default function AdminMedicineGroups() {
                             </td>
                         </tr>
                     ))}
+
+                    {!medicineGroups && (
+                        <tr>
+                            <td>
+                                <div className="text-l3">Loading</div>
+                            </td>
+                        </tr>
+                    )}
+
+                    {medicineGroups?.length < 1 && (
+                        <tr>
+                            <td><div className="text-l3">No Data</div></td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
         </div>

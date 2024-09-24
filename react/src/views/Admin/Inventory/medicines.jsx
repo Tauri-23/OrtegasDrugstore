@@ -1,26 +1,49 @@
+import { useEffect, useState } from "react";
 import * as Icon from "react-bootstrap-icons";
+import { fetchAllMedicinesFull } from "../../../Services/GeneralMedicineService";
+import { Link } from "react-router-dom";
 
 export default function AdminMedicines() {
-    const medicines = [
-        {
-            id: "D06ID232435454",
-            name: "Augmentin 625 Duo Tablet",
-            group: "Generic Medicine",
-            stock: 350
-        },
-        {
-            id: "D06ID232435451",
-            name: "Azithral 500 Tablet",
-            group: "Generic Medicine",
-            stock: 20
-        },
-        {
-            id: "D06ID232435452",
-            name: "Ascoril LS Syrup",
-            group: "Diabetes ",
-            stock: 85
-        }
-    ];
+    // const medicines = [
+    //     {
+    //         id: "D06ID232435454",
+    //         name: "Augmentin 625 Duo Tablet",
+    //         group: "Generic Medicine",
+    //         stock: 350
+    //     },
+    //     {
+    //         id: "D06ID232435451",
+    //         name: "Azithral 500 Tablet",
+    //         group: "Generic Medicine",
+    //         stock: 20
+    //     },
+    //     {
+    //         id: "D06ID232435452",
+    //         name: "Ascoril LS Syrup",
+    //         group: "Diabetes ",
+    //         stock: 85
+    //     }
+    // ];
+
+    const [medicines, setMedicines] = useState(null);
+
+    useEffect(() => {
+        const getAllMedicines = async() => {
+            try {
+                const data = await fetchAllMedicinesFull();
+                setMedicines(data);
+            } catch(error) {console.error(error)}
+        };
+
+        getAllMedicines();
+    });
+
+    /*
+    | Debugging
+    */
+    useEffect(() => {
+        console.log(medicines);
+    }, [medicines])
 
     return(
         <div className="content1">
@@ -30,7 +53,7 @@ export default function AdminMedicines() {
                     <div className="text-m1">List of medicines available for sales.</div>
                 </div>
                 
-                <div className="primary-btn-dark-blue1 d-flex gap3 align-items-center"><Icon.PlusLg className="text-l3"/> Add Medicine</div>
+                <Link to={'/OrtegaAdmin/AddMedicine'} className="primary-btn-dark-blue1 d-flex gap3 align-items-center"><Icon.PlusLg className="text-l3"/> Add Medicine</Link>
             </div>
 
             <div className="d-flex justify-content-between mar-bottom-1">
@@ -56,7 +79,7 @@ export default function AdminMedicines() {
                     </tr>
                 </thead>
                 <tbody className="table1-tbody">
-                    {medicines.map((meds, index) => (
+                    {medicines?.length > 0 && medicines.map((meds, index) => (
                         <tr key={index}>
                             <td>{meds.name}</td>
                             <td>{meds.id}</td>
@@ -72,6 +95,20 @@ export default function AdminMedicines() {
                             </td>
                         </tr>
                     ))}
+
+                    {!medicines && (
+                        <tr>
+                            <td>
+                                <div className="text-l3">Loading</div>
+                            </td>
+                        </tr>
+                    )}
+
+                    {medicines?.length < 1 && (
+                        <tr>
+                            <td><div className="text-l3">No Data</div></td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
         </div>
