@@ -4,27 +4,6 @@ import { fetchAllMedicinesFull } from "../../../Services/GeneralMedicineService"
 import { Link } from "react-router-dom";
 
 export default function AdminMedicines() {
-    // const medicines = [
-    //     {
-    //         id: "D06ID232435454",
-    //         name: "Augmentin 625 Duo Tablet",
-    //         group: "Generic Medicine",
-    //         stock: 350
-    //     },
-    //     {
-    //         id: "D06ID232435451",
-    //         name: "Azithral 500 Tablet",
-    //         group: "Generic Medicine",
-    //         stock: 20
-    //     },
-    //     {
-    //         id: "D06ID232435452",
-    //         name: "Ascoril LS Syrup",
-    //         group: "Diabetes ",
-    //         stock: 85
-    //     }
-    // ];
-
     const [medicines, setMedicines] = useState(null);
 
     useEffect(() => {
@@ -36,14 +15,14 @@ export default function AdminMedicines() {
         };
 
         getAllMedicines();
-    });
+    }, []);
 
     /*
     | Debugging
     */
-    useEffect(() => {
-        console.log(medicines);
-    }, [medicines])
+    // useEffect(() => {
+    //     console.log(medicines);
+    // }, [medicines])
 
     return(
         <div className="content1">
@@ -83,8 +62,8 @@ export default function AdminMedicines() {
                         <tr key={index}>
                             <td>{meds.name}</td>
                             <td>{meds.id}</td>
-                            <td>{meds.group}</td>
-                            <td>{meds.stock}</td>
+                            <td>{meds.group.group_name}</td>
+                            <td>{meds.qty}</td>
                             <td>
                                 <div className="d-flex gap1 align-items-center">
                                     <div className="text-m2">

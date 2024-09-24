@@ -42,16 +42,16 @@ class MedicineController extends Controller
         if($medicine->save())
         {
             return response()->json([
-                'status' => 0,
-                'message' => '',
+                'status' => 200,
+                'message' => 'Medicine successfully added.',
                 'id' => $medicineId
             ]);
         }
         else
         {
             return response()->json([
-                'status' => 0,
-                'message' => ''
+                'status' => 401,
+                'message' => 'Something went wrong please try again.'
             ]);
         }
     }

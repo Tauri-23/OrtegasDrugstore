@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService";
-import { isEmptyOrSpaces } from "../../../assets/js/utils";
+import { isEmptyOrSpaces, notify } from "../../../assets/js/utils";
+import axiosClient from "../../../axios-client";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminAddMedicines() {
+    const navigate = useNavigate();
+
     const [medicineGroups, setMedicineGroups] = useState(null);
 
     const [medName, setMedName] = useState("");
@@ -44,6 +48,8 @@ export default function AdminAddMedicines() {
 
 
     const handleAddMedicinePost = () => {
+        console.log("Adding");
+        
         const formData = new FormData();
         formData.append("medName", medName);
         formData.append("medId", medId);
@@ -52,7 +58,15 @@ export default function AdminAddMedicines() {
         formData.append("medDirection", medDirection);
         formData.append("medSideFx", medSideFx);
 
-        
+        axiosClient.post('/create-medicine', formData)
+        .then(({data}) => {
+            if(data.status === 200) {
+                notify("success", data.message, "top-center", 3000);
+                navigate('/OrtegaAdmin/Medicines');
+            } else {
+                notify("error", data.message, "top-center", 3000);
+            }
+        }).catch(error => console.error(error));
     }
 
 
@@ -115,7 +129,7 @@ export default function AdminAddMedicines() {
 
                         
                         <div className="d-flex">
-                            <button disabled={addBtnActive} className={`primary-btn-dark-blue1 ${addBtnActive ? '' : 'disabled'}`}>Add Medicine</button>
+                            <button disabled={!addBtnActive} className={`primary-btn-dark-blue1 ${addBtnActive ? '' : 'disabled'}`} onClick={handleAddMedicinePost}>Add Medicine</button>
                         </div>
                     </div>
                 )
