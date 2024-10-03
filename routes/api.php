@@ -46,5 +46,6 @@ Route::post('/add-medicine-group-post', [MedicineGroupController::class, 'AddMed
 |----------------------------------------
 */
 Route::get('/get-all-medicines-full', [MedicineController::class,'GetAllMedicineFull']);
+Route::get('/get-medicine-info-full-by-id/{medId}', [MedicineController::class,'GetFullMedicineInfoById']);
 
 Route::post('/create-medicine', [MedicineController::class,'CreateMedicine']);

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import * as Icon from "react-bootstrap-icons";
-import { fetchAllMedicinesFull } from "../../../Services/GeneralMedicineService";
-import { Link } from "react-router-dom";
+import { fetchAllMedicinesFull } from "../../../../Services/GeneralMedicineService";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function AdminMedicines() {
     const [medicines, setMedicines] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getAllMedicines = async() => {
@@ -59,7 +60,7 @@ export default function AdminMedicines() {
                 </thead>
                 <tbody className="table1-tbody">
                     {medicines?.length > 0 && medicines.map((meds, index) => (
-                        <tr key={index}>
+                        <tr key={index} onClick={() => navigate(`/OrtegaAdmin/ViewMedicines/${meds.id}`)}>
                             <td>{meds.name}</td>
                             <td>{meds.id}</td>
                             <td>{meds.group.group_name}</td>

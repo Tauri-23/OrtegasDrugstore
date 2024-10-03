@@ -19,7 +19,7 @@
 | Btns 
 |----------------------------------------
 */
-.primary-btn-dark-blue1 {
+.primary-btn-dark-blue1, .primary-btn-red1 {
     padding: 10px 15px;
     text-decoration: none;
     border-radius: var(--radius3);
@@ -29,6 +29,10 @@
 }
 .primary-btn-dark-blue1 {
     color: var(--white1);
+}
+.primary-btn-red1 {
+    color: var(--white1);
+    background: var(--red1);
 }
 
 .primary-btn-dark-blue1.disabled {
@@ -58,11 +62,17 @@
 | Lines 
 |----------------------------------------
 */
-.hr-line1-white1 {
+.hr-line1-white1, .hr-line1-grey1, .hr-line1-black3 {
     width: 100%;
     height: 1px;
     background: var(--white1);
     opacity: .3;
+}
+.hr-line1-grey1 {
+    background: var(--grey1);
+}
+.hr-line1-black3 {
+    background: var(--black3);
 }
 
 

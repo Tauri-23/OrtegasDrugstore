@@ -23,6 +23,11 @@ class MedicineController extends Controller
         return response()->json(medicines::with("group")->get());
     }
 
+    public function GetFullMedicineInfoById($medId)
+    {
+        return response()->json(medicines::with("group")->where('id', $medId)->first());
+    }
+
 
 
 

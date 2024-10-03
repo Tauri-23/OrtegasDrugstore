@@ -158,6 +158,12 @@ body {background: var(--white2);}
 .color-white1 {
     color: var(--white1);
 }
+.color-black1 {
+    color: var(--black1);
+}
+.color-black2 {
+    color: var(--black2);
+}
 
 
 
