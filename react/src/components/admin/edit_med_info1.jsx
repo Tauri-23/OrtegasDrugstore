@@ -8,6 +8,7 @@ export const EditMedInfo1 = ({
     saveBtnEnabledAt,
     isEditInfo,
     setEditInfo,
+    handleEditPost
 }) => {
     return (
         <div className="view-medicine-box1 w-100">
@@ -32,7 +33,13 @@ export const EditMedInfo1 = ({
             <div className={`hr-line1-black3 ${isEditInfo ? '' : 'd-none'}`}></div>
             <div className={`d-flex gap3 ${isEditInfo ? '' : 'd-none'}`} style={{padding: '20px'}}>
                 <div className={`colorless-btn1`} onClick={() => setEditInfo(false)}>Cancel</div>
-                <button className={`primary-btn-dark-blue1 ${saveBtnEnabledAt ? '' : 'disabled'} `}>Save</button>
+                <button 
+                disabled={!saveBtnEnabledAt} 
+                className={`primary-btn-dark-blue1 ${saveBtnEnabledAt ? '' : 'disabled'} `}
+                onClick={handleEditPost}
+                >
+                    Save
+                </button>
             </div>
         </div>
     )

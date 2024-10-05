@@ -19,9 +19,11 @@ export default function AdminViewMedicine() {
     const [newDirectionsForCheck, setNewDirectionsForCheck] = useState('');
     const [newSideFx, setNewSideFx] = useState('');
     const [newSideFxForCheck, setNewSideFxForCheck] = useState('');
+    const [newQty, setNewQty] = useState(0);
 
     const [isEditDirection, setEditDirection] = useState(false);
     const [isEditSideFx, setEditSideFx] = useState(false);
+    const [isEditQty, setEditQty] = useState(false);
 
 
 
@@ -30,6 +32,7 @@ export default function AdminViewMedicine() {
             try {
                 const data = await fetchMedicineFullInfoById(medId);
                 setMedicine(data);
+                setNewQty(data.qty);
             } catch(error) {console.error(error)}
         }
 
@@ -40,9 +43,9 @@ export default function AdminViewMedicine() {
     /*
     | Debugging
     */
-    // useEffect(() => {
-    //     console.log(isEditDirection)
-    // }, [isEditDirection]);
+    useEffect(() => {
+        console.log(medicine)
+    }, [medicine]);
 
 
     const handleDelPost = (id) => {
@@ -64,10 +67,40 @@ export default function AdminViewMedicine() {
         showModal('AdminDelMedConfirmationModal1', {medicine,handleDelPost})
     }
 
-    const handleSaveDirection = () => {
+    const handleEditPost = (editType) => {
         const formData = new FormData();
         formData.append('medId', medicine.id);
-        formData.append('direction', medicine.id);
+        formData.append('editType', editType);
+
+        switch(editType) {
+            case 'directions':
+                formData.append('directions', newDirections);
+                break;
+            case 'sidefx':
+                formData.append('sideFx', newSideFx);
+                break;
+            case 'qty':
+                formData.append('qty', newQty);
+                break;
+            default:
+                notify('error', 'Invalid Edit Type', 'top-center', 3000);
+                return;
+        }
+
+        axiosClient.post('/update-medicine', formData)
+        .then(({data}) => {
+            if(data.status === 200) {
+                notify('success', data.message, 'top-center', 3000);
+                setMedicine(data.medicine);
+
+                setEditDirection(false);
+                setEditSideFx(false);
+                setEditQty(false);
+            } else {
+                notify('error', data.message, 'top-center', 3000);
+            }
+        }).catch(error => console.error(error));
+        
     }
     
     if(medicine) {
@@ -101,14 +134,39 @@ export default function AdminViewMedicine() {
                     </div>
 
                     <div className="view-medicine-box1 w-50">
-                        <div className="view-medicine-box1-head">
+                        <div className="view-medicine-box1-head d-flex align-items-center justify-content-between">
                             <div className="text-l3">Inventory</div>
+                            <div 
+                            className={`primary-btn-dark-blue1 d-flex gap3 align-items-center text-m2 ${isEditQty ? 'd-none' : ''}`}
+                            onClick={() => setEditQty(true)}
+                            >
+                                <Icon.Pen/> Edit
+                            </div>
                         </div>
                         <div className="hr-line1-black3"></div>
                         <div className="view-medicine-box1-body d-flex gapl1">
                             <div className="d-flex flex-direction-y w-50">
-                                <div className="text-m1 fw-bold">{medicine.qty}</div>
-                                <div className="text-m3">Stocks</div>
+                                <div className={`text-m1 fw-bold ${isEditQty ? 'd-none' : ''}`}>{medicine.qty}</div>
+                                <div className={`text-m3 ${isEditQty ? 'd-none' : ''}`}>Stocks</div>
+                                <div className={`d-flex flex-direction-y gap3  ${isEditQty ? '' : 'd-none'}`}>
+                                    <input 
+                                    type="number" 
+                                    className={`input1`} 
+                                    min={0} 
+                                    onChange={(e) => setNewQty(e.target.value)} 
+                                    value={newQty}/>
+
+                                    <div className={`d-flex gap3`}>
+                                        <div className={`colorless-btn1`} onClick={() => setEditQty(false)}>Cancel</div>
+                                        <button 
+                                        disabled={newQty === '' && newQty === medicine.qty} 
+                                        className={`primary-btn-dark-blue1 ${newQty !== '' && newQty !== medicine.qty ? '' : 'disabled'} `}
+                                        onClick={() => handleEditPost('qty')}
+                                        >
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>                                
                             </div>
                         </div>
                     </div>
@@ -116,7 +174,6 @@ export default function AdminViewMedicine() {
                 </div>
 
                 {/* Directions */}
-
                 <div className="d-flex mar-bottom-1">
                     <EditMedInfo1
                     title={"How to use"}
@@ -126,6 +183,7 @@ export default function AdminViewMedicine() {
                     saveBtnEnabledAt={!isEmptyOrSpaces(newDirectionsForCheck) && newDirections !== medicine.directions}
                     isEditInfo={isEditDirection}
                     setEditInfo={setEditDirection}
+                    handleEditPost={() => handleEditPost('directions')}
                     />
                 </div>
 
@@ -139,6 +197,7 @@ export default function AdminViewMedicine() {
                     saveBtnEnabledAt={!isEmptyOrSpaces(newSideFxForCheck) && newSideFx !== medicine.side_effects}
                     isEditInfo={isEditSideFx}
                     setEditInfo={setEditSideFx}
+                    handleEditPost={() => handleEditPost('sidefx')}
                     />
                 </div>
 

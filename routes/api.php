@@ -50,3 +50,4 @@ Route::get('/get-medicine-info-full-by-id/{medId}', [MedicineController::class,'
 
 Route::post('/create-medicine', [MedicineController::class,'CreateMedicine']);
 Route::post('/del-medicine', [MedicineController::class, 'DelMedicine']);
+Route::post('/update-medicine', [MedicineController::class, 'UpdateMedicine']);

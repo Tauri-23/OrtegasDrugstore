@@ -87,4 +87,51 @@ class MedicineController extends Controller
             ]);
         }
     }
+
+    public function UpdateMedicine(Request $request)
+    {
+        $medicine = medicines::where('id', $request->medId)->with('group')->first();
+
+        if(!$medicine)
+        {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Medicine does not exist.'
+            ]);
+        }
+
+        switch($request->editType)
+        {
+            case "directions":
+                $medicine->directions = $request->directions;
+                break;
+            case "sidefx":
+                $medicine->side_effects = $request->sideFx;
+                break;
+            case "qty":
+                $medicine->qty = $request->qty;
+                break;
+            default:
+                return response()->json([
+                    'status' => 401,
+                    'message' => 'Invalid edit type.'
+                ]);
+        }
+
+        if($medicine->save())
+        {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Medicine updated.',
+                'medicine' => $medicine
+            ]);
+        }
+        else 
+        {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Something went wrong please try again later.'
+            ]);
+        }
+    }
 }
