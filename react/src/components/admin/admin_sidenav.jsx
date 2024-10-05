@@ -3,11 +3,12 @@ import * as Icon from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../Context/ContextProvider";
 
-const AdminSidenav = () => {
+const AdminSidenav = ({onLogout}) => {
     const location = useLocation();
     const {user} = useStateContext();
     const [inventoryOpen, setInventoryOpen] = useState(false);
     const [reportsOpen, setReportsOpen] = useState(false);
+    const [isOptionBoxOpen, setOptionBoxOpen] = useState(false);
 
     return (
         <div className="admin-sidenav1">
@@ -30,7 +31,19 @@ const AdminSidenav = () => {
                     </div>
                 </div>
 
-                <Icon.ThreeDotsVertical className="text-l2 color-white1"/>
+                <Icon.ThreeDotsVertical className="text-l2 color-white1 cursor-pointer" onClick={() => setOptionBoxOpen(!isOptionBoxOpen)}/>
+
+                <div className={`admin-sidenav1-action-box ${isOptionBoxOpen ? '' : 'd-none'}`}>
+                    <div className="admin-sidenav1-action-box-btn">
+                        <Icon.PersonCircle/>
+                        Profile
+                    </div>
+                    <div className="hr-line1-black3"></div>
+                    <div className="admin-sidenav1-action-box-btn" onClick={onLogout}>
+                        <Icon.BoxArrowLeft/>
+                        Logout
+                    </div>
+                </div>
             </div>
 
 

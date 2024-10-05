@@ -365,3 +365,16 @@ body {background: var(--white2);}
 .flex-direction-y-reverse {
     flex-direction: column-reverse;
 }
+
+
+
+
+
+/*
+|----------------------------------------
+| Cursor 
+|----------------------------------------
+*/
+.cursor-pointer {
+    cursor: pointer;
+}

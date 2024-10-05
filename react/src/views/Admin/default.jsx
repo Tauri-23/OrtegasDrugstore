@@ -44,7 +44,8 @@ export default function AdminDefault() {
                 <ModalManager/>
 
                 {/* Sidenav */}
-                <AdminSidenav/>
+                <AdminSidenav
+                onLogout={onLogout}/>
 
                 {/* Children */}
                 <Outlet/>
