@@ -1,4 +1,5 @@
 import AdminAddMedGroupModal1 from "../components/modals/admin_add_med_group_modal1";
+import AdminDelMedConfirmationModal1 from "../components/modals/admin_del_med_confirmation_modal1";
 import { useModal } from "../Context/ModalContext"
 
 const ModalManager = () => {
@@ -12,6 +13,8 @@ const ModalManager = () => {
             // Inventory
             case 'AdminAddMedGroupModal1':
                 return <AdminAddMedGroupModal1 {...modalState.props} onClose={hideModal}/>;
+            case 'AdminDelMedConfirmationModal1':
+                    return <AdminDelMedConfirmationModal1 {...modalState.props} onClose={hideModal}/>;
             
 
             /*

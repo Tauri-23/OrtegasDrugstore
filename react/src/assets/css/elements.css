@@ -53,6 +53,14 @@
     border: 1px solid var(--black1);
 }
 
+.colorless-btn1 {
+    padding: 10px 15px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+}
+
 
 
 
@@ -110,4 +118,22 @@
     background: var(--white1);
     padding: 10px 10px;
     border-radius: 5px;
+}
+
+
+
+
+
+/*
+|----------------------------------------
+| Containers / Boxes
+|----------------------------------------
+*/
+.cont-box1 {
+    background: var(--white1);
+    border-radius: 5px;
+    filter: drop-shadow(0 0 1px var(--black1));
+}
+.cont-box1-head, .cont-box1-body {
+    padding: 20px;
 }

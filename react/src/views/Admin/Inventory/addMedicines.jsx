@@ -13,6 +13,10 @@ export default function AdminAddMedicines() {
     const [medId, setMedId] = useState("");
     const [medGp, setMedGp] = useState("");
     const [medQty, setMedQty] = useState(0);
+    const [medDirectionForCheck, setMedDirectionForCheck] = useState("");
+    const [medSideFxForCheck, setMedSideFxForCheck] = useState("");
+
+
     const [medDirection, setMedDirection] = useState("");
     const [medSideFx, setMedSideFx] = useState("");
 
@@ -32,7 +36,7 @@ export default function AdminAddMedicines() {
     // Enable or disable the add Btn
     useEffect(() => {
         if(!isEmptyOrSpaces(medName) && !isEmptyOrSpaces(medId) && medGp !== ""
-            && !isEmptyOrSpaces(medDirection) && !isEmptyOrSpaces(medSideFx)) {
+            && !isEmptyOrSpaces(medDirectionForCheck) && !isEmptyOrSpaces(medSideFxForCheck)) {
             setAddBtnActive(true);
         } else {
             setAddBtnActive(false);
@@ -48,8 +52,8 @@ export default function AdminAddMedicines() {
 
 
     const handleAddMedicinePost = () => {
-        console.log("Adding");
-        
+        console.log(medDirection);
+        console.log(medSideFx);
         const formData = new FormData();
         formData.append("medName", medName);
         formData.append("medId", medId);
@@ -114,7 +118,10 @@ export default function AdminAddMedicines() {
 
                         <div className="d-flex flex-direction-y w-100 gap4 mar-bottom-2">
                             <label htmlFor="medGroup" className="text-m1">How to use</label>
-                            <div className="input1 overflow-auto" style={{height: "150px"}} contentEditable suppressContentEditableWarning onInput={(e) => setMedDirection(e.target.innerText)}>
+                            <div 
+                            className="input1 overflow-auto" 
+                            style={{height: "150px"}} contentEditable suppressContentEditableWarning 
+                            onInput={(e) => {setMedDirection(e.target.innerHTML); setMedDirectionForCheck(e.target.innerText)}}>
                                 
                             </div>
                         </div>
@@ -122,7 +129,10 @@ export default function AdminAddMedicines() {
 
                         <div className="d-flex flex-direction-y w-100 gap4 mar-bottom-2">
                             <label htmlFor="medGroup" className="text-m1">Side Effects</label>
-                            <div className="input1 overflow-auto" style={{height: "150px"}} contentEditable suppressContentEditableWarning onInput={(e) => setMedSideFx(e.target.innerText)}>
+                            <div 
+                            className="input1 overflow-auto" 
+                            style={{height: "150px"}} contentEditable suppressContentEditableWarning 
+                            onInput={(e) => {setMedSideFx(e.target.innerHTML); setMedSideFxForCheck(e.target.innerText)}}>
                                 
                             </div>
                         </div>

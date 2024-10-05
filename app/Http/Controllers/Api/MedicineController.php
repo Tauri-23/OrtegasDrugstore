@@ -60,4 +60,31 @@ class MedicineController extends Controller
             ]);
         }
     }
+
+    public function DelMedicine(Request $request)
+    {
+        $medicine = medicines::find($request->medId);
+
+        if(!$medicine) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Medicine not found.'
+            ]);
+        }
+
+        if($medicine->delete())
+        {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Medicine deleted.'
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status' => 401,
+                'message' => 'Something went wrong please try again later.'
+            ]);
+        }
+    }
 }
