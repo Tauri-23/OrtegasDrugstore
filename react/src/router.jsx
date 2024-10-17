@@ -3,12 +3,13 @@ import AdminIndex from "./views/Admin";
 import AdminDefault from "./views/Admin/default";
 import Login from "./views/Guest/login";
 import GuestDefault from "./views/Guest/default";
-import AdminMedicineGroups from "./views/Admin/Inventory/medicineGroups";
 import AdminSalesReports from "./views/Admin/Reports/salesReport";
 import AdminPaymentReports from "./views/Admin/Reports/paymentReports";
 import AdminAddMedicines from "./views/Admin/Inventory/addMedicines";
 import AdminMedicines from "./views/Admin/Inventory/medicines/medicines";
 import AdminViewMedicine from "./views/Admin/Inventory/medicines/viewMedicine";
+import AdminMedicineGroups from "./views/Admin/Inventory/medicine_groups/medicineGroups";
+import AdminViewMedicineGroup from "./views/Admin/Inventory/medicine_groups/viewMedicineGroup";
 
 const router = createBrowserRouter([
     /*
@@ -45,7 +46,10 @@ const router = createBrowserRouter([
                 element: <AdminIndex/>
             },
 
-            // Inventory
+            /**
+             * Inventory
+             */
+
             // Medicines
             {
                 path: 'Medicines',
@@ -55,6 +59,8 @@ const router = createBrowserRouter([
                 path: 'ViewMedicines/:medId',
                 element: <AdminViewMedicine/>
             },
+
+            // Medicine Group
             {
                 path: 'AddMedicine',
                 element: <AdminAddMedicines/>
@@ -62,6 +68,10 @@ const router = createBrowserRouter([
             {
                 path: 'MedicineGroups',
                 element: <AdminMedicineGroups/>
+            },
+            {
+                path: 'ViewMedicineGroup/:medGpId',
+                element: <AdminViewMedicineGroup/>
             },
 
             // Reports

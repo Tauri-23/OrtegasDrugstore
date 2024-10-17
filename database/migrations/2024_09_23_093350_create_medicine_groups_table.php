@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('medicine_groups', function (Blueprint $table) {
             $table->string("id", 6)->primary();
+            $table->integer("number_meds")->default(0);
             $table->string("group_name");
             $table->timestamps();
         });

@@ -19,3 +19,13 @@ export const fetchMedicineFullInfoById = async(medId) => {
         throw error;
     }
 }
+
+export const fetchMedicinesWhereGroup = async(groupId) => {
+    try {
+        const response = await axiosClient.get(`/get-medicines-where-group/${groupId}`);
+        return response.data;
+    } catch(error) {
+        console.error('Failed fetching all medicines : ', error);
+        throw error;
+    }
+}

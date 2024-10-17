@@ -62,7 +62,7 @@ export default function AdminMedicines() {
                     {medicines?.length > 0 && medicines.map((meds, index) => (
                         <tr key={index} onClick={() => navigate(`/OrtegaAdmin/ViewMedicines/${meds.id}`)}>
                             <td>{meds.name}</td>
-                            <td>{meds.id}</td>
+                            <td>{meds.medicine_id}</td>
                             <td>{meds.group.group_name}</td>
                             <td>{meds.qty}</td>
                             <td>

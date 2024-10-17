@@ -1,13 +1,15 @@
 import * as Icon from "react-bootstrap-icons";
-import { useModal } from "../../../Context/ModalContext";
+import { useModal } from "../../../../Context/ModalContext";
 import { useEffect, useState } from "react";
-import axiosClient from "../../../axios-client";
-import { notify } from "../../../assets/js/utils";
+import axiosClient from "../../../../axios-client";
+import { notify } from "../../../../assets/js/utils";
 import { toast } from "react-toastify";
-import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService";
+import { fetchAllMedGroups } from "../../../../Services/GeneralMedicineGroupService";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminMedicineGroups() {
     const {showModal} = useModal();
+    const navigate = useNavigate();
     const [medicineGroups, setMedicineGroups] = useState(null);
 
     useEffect(() => {
@@ -86,9 +88,9 @@ export default function AdminMedicineGroups() {
                 </thead>
                 <tbody className="table1-tbody">
                     {medicineGroups?.length > 0 && medicineGroups.map((meds, index) => (
-                        <tr key={index}>
+                        <tr key={index} onClick={() => navigate(`/OrtegaAdmin/ViewMedicineGroup/${meds.id}`)}>
                             <td>{meds.group_name}</td>
-                            <td>{meds.number_of_meds}</td>
+                            <td>{meds.number_meds}</td>
                             <td>
                                 <div className="d-flex gap1 align-items-center">
                                     <div className="text-m2">

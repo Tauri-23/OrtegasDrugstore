@@ -39,14 +39,7 @@ export default function AdminViewMedicine() {
         getMedicineInfo();
     }, []);
 
-
-    /*
-    | Debugging
-    */
-    useEffect(() => {
-        console.log(medicine)
-    }, [medicine]);
-
+    
 
     const handleDelPost = (id) => {
         const formData = new FormData();
@@ -106,7 +99,7 @@ export default function AdminViewMedicine() {
     if(medicine) {
         return(
             <div className="content1">
-                <div className="d-flex justify-content-start">
+                <div className="d-flex justify-content-start mar-bottom-3">
                     <Link to={'/OrtegaAdmin/Medicines'} className="d-flex gap4 align-items-center color-black1"><Icon.ArrowLeft className="text-m1"/> Back</Link>
                 </div>
 

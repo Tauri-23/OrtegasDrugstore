@@ -34,7 +34,10 @@ Route::post('/login', [AuthController::class, 'login']);
 |----------------------------------------
 */
 Route::get('/get-all-medicine', [MedicineGroupController::class,'GetAllMedGroups']);
+Route::get('/get-all-med-group-where-id/{medGpId}', [MedicineGroupController::class, 'GetMedGroupWhereId']);
+
 Route::post('/add-medicine-group-post', [MedicineGroupController::class, 'AddMedGroup']);
+Route::post('/delete-medicine-group', [MedicineGroupController::class, 'DelMedGroup']);
 
 
 
@@ -47,6 +50,7 @@ Route::post('/add-medicine-group-post', [MedicineGroupController::class, 'AddMed
 */
 Route::get('/get-all-medicines-full', [MedicineController::class,'GetAllMedicineFull']);
 Route::get('/get-medicine-info-full-by-id/{medId}', [MedicineController::class,'GetFullMedicineInfoById']);
+Route::get('/get-medicines-where-group/{groupId}', [MedicineController::class,'GetFullMedicines']);
 
 Route::post('/create-medicine', [MedicineController::class,'CreateMedicine']);
 Route::post('/del-medicine', [MedicineController::class, 'DelMedicine']);

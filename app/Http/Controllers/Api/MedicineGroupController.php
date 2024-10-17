@@ -26,6 +26,11 @@ class MedicineGroupController extends Controller
         return response()->json(medicine_groups::all());
     }
 
+    public function GetMedGroupWhereId($medGpId)
+    {
+        return response()->json(medicine_groups::find($medGpId));
+    }
+
 
 
 
@@ -53,5 +58,24 @@ class MedicineGroupController extends Controller
                 'message' => 'Something went wrong please try again later.'
             ]);
         }
+    }
+
+    public function DelMedGroup(Request $request)
+    {
+        $medGroup = medicine_groups::find($request->groupId);
+
+        if(!$medGroup)
+        {
+            return response()->json([
+                'status' => 401,
+                'message' => "Medicine group doesn't exist."
+            ]);
+        }
+
+        $medGroup->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => "Medicine group deleted."
+        ]);
     }
 }
