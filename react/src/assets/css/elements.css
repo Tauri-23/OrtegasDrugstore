@@ -82,6 +82,9 @@
 .hr-line1-black3 {
     background: var(--black3);
 }
+.hr-line1-dashed-black3 {
+    border: 1px dashed var(--black3);
+}
 
 
 

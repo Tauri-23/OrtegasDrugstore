@@ -1,0 +1,66 @@
+:root {
+    --pos-right-cont-width: 400px;
+}
+
+.pos-cat-cont {
+    width: 100%;
+    display: flex;
+    overflow-x: hidden;
+    padding: 5px;
+    gap: 15px;
+}
+
+.pos-cat-box {
+    border-radius: 5px;
+    min-width: 80px;
+    text-align: center;
+    padding: 20px 10px;
+    background: var(--white1);
+    filter: drop-shadow(0 0 2px var(--grey1));
+    flex-shrink: 1;
+}
+
+.pos-medicines-cont {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.pos-medicine {
+    width: calc(100% / 4 - 40px);
+    padding: 10px;
+    background: var(--white1);
+    border-radius: 5px;
+    filter: drop-shadow(0 0 2px var(--grey1));
+}
+.pos-medicine-pic {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: var(--grey1);
+    border-radius: 5px;
+}
+
+
+.pos-left-cont {
+    width: calc(100% - var(--pos-right-cont-width));
+}
+
+.pos-rigth-cont {
+    width: var(--pos-right-cont-width);
+    padding: 20px;
+    background: var(--white1);
+    filter: drop-shadow(0 0 2px var(--grey1));
+    height: calc(100% - 70px);
+    position: fixed;
+    right: 50px;
+    bottom: 20px;
+    top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.pos-orders-cont {
+    width: 100%;
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px dashed var(--grey1);
+}

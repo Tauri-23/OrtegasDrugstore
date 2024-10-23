@@ -10,6 +10,8 @@ import AdminMedicines from "./views/Admin/Inventory/medicines/medicines";
 import AdminViewMedicine from "./views/Admin/Inventory/medicines/viewMedicine";
 import AdminMedicineGroups from "./views/Admin/Inventory/medicine_groups/medicineGroups";
 import AdminViewMedicineGroup from "./views/Admin/Inventory/medicine_groups/viewMedicineGroup";
+import AdminPOSDefault from "./views/Admin/POS/admin_pos_default";
+import AdminPOSIndex from "./views/Admin/POS/admin_post_index";
 
 const router = createBrowserRouter([
     /*
@@ -83,6 +85,18 @@ const router = createBrowserRouter([
                 path: 'PaymentReports',
                 element: <AdminPaymentReports/>
             },
+
+            // POS
+            {
+                path: 'POS',
+                element: <AdminPOSDefault/>,
+                children: [
+                    {
+                        index: true,
+                        element: <AdminPOSIndex/>
+                    }
+                ]
+            }
         ]
     }
 ]);

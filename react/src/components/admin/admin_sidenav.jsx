@@ -114,6 +114,15 @@ const AdminSidenav = ({onLogout}) => {
                     Payments Report
                 </Link>
 
+                <Link 
+                to={"POS"}  
+                className="admin-sidenav1-link">
+                    <div className="d-flex align-items-center" style={{gap: 15}}>
+                        <img src="/src/assets/media/icons/options1.svg" alt="" />
+                        <div>POS</div>
+                    </div>
+                </Link>
+
                 <div className="admin-sidenav1-link">
                     <div className="d-flex align-items-center" style={{gap: 15}}>
                         <img src="/src/assets/media/icons/options1.svg" alt="" />

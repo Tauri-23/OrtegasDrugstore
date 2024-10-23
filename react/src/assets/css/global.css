@@ -164,7 +164,12 @@ body {background: var(--white2);}
 .color-black2 {
     color: var(--black2);
 }
-
+.color-blue1 {
+    color: var(--blue1);
+}
+.color-blue2 {
+    color: var(--blue2);
+}
 
 
 
