@@ -38,23 +38,24 @@ export default function AdminPOSIndex() {
      * Handle select med
      */
     const handleSelectMed = (medicine) => {
-        setSelectedMeds(prev =>
-            prev.find(selmed => selmed.id === medicine.id)
-                ? prev.map(selmed => 
-                    selmed.id === medicine.id 
-                        ? { ...selmed, qty: selmed.qty + 1 }  // Increment QTY
-                        : selmed
+        if(medicine.qty > 0) {
+            setSelectedMeds(prev =>
+                prev.find(selmed => selmed.id === medicine.id)
+                    ? prev.map(selmed => 
+                        selmed.id === medicine.id 
+                            ? { ...selmed, qty: selmed.qty + 1 }  // Increment QTY
+                            : selmed
+                      )
+                    : [...prev, { id: medicine.id, name: medicine.name, qty: 1, price: medicine.price }] // Add new medicine with qty 1
+            );
+            setMedicines(prev => 
+                prev.map(med => 
+                    med.id === medicine.id 
+                        ? { ...med, qty: med.qty - 1 }  // Increment QTY
+                        : med
                   )
-                : [...prev, { id: medicine.id, name: medicine.name, qty: 1, price: medicine.price }] // Add new medicine with qty 1
-        );
-
-        setMedicines(prev => 
-            prev.map(med => 
-                med.id === medicine.id 
-                    ? { ...med, qty: med.qty - 1 }  // Increment QTY
-                    : med
-              )
-        )
+            )
+        }
     };
     const removeFromSelectedMed = (medId, medQty) => {
         setSelectedMeds(prev => prev.filter(selmed => selmed.id !== medId));
@@ -89,6 +90,28 @@ export default function AdminPOSIndex() {
                         : med
                 )
             );
+        }
+    };
+    const incrementMed = (selectedMedicine) => {
+        const medQty = medicines.find(med => med.id === selectedMedicine.id).qty
+        console.log(medQty);
+        if(selectedMedicine.qty > medQty) {
+            setSelectedMeds(prev =>
+                prev.find(selmed => selmed.id === selectedMedicine.id)
+                    ? prev.map(selmed => 
+                        selmed.id === selectedMedicine.id 
+                            ? { ...selmed, qty: selmed.qty + 1 }  // Increment QTY
+                            : selmed
+                      )
+                    : [...prev, { id: selectedMedicine.id, name: selectedMedicine.name, qty: 1, price: selectedMedicine.price }] // Add new medicine with qty 1
+            );
+            setMedicines(prev => 
+                prev.map(med => 
+                    med.id === selectedMedicine.id 
+                        ? { ...med, qty: med.qty - 1 }  // Increment QTY
+                        : med
+                  )
+            )
         }
     };
     
