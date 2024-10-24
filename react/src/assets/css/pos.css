@@ -1,5 +1,5 @@
 :root {
-    --pos-right-cont-width: 600px;
+    --pos-right-cont-width: 500px;
 }
 
 .pos-cat-cont {
@@ -26,7 +26,7 @@
     gap: 20px;
 }
 .pos-medicine {
-    width: calc(100% / 4 - 40px);
+    width: calc(100% / 4 - 20px);
     padding: 10px;
     background: var(--white1);
     border-radius: 5px;

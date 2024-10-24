@@ -94,8 +94,7 @@ export default function AdminPOSIndex() {
     };
     const incrementMed = (selectedMedicine) => {
         const medQty = medicines.find(med => med.id === selectedMedicine.id).qty
-        console.log(medQty);
-        if(selectedMedicine.qty > medQty) {
+        if(medQty > 0) {
             setSelectedMeds(prev =>
                 prev.find(selmed => selmed.id === selectedMedicine.id)
                     ? prev.map(selmed => 
@@ -186,7 +185,7 @@ export default function AdminPOSIndex() {
                                             </div>
                                             <div className="d-flex align-items-center gap3">
                                                 <Icon.DashLg className="cursor-pointer text-m1" onClick={() => decrementSelectedMed(selectedMed)}/> 
-                                                <Icon.PlusLg className="cursor-pointer text-m1" onClick={() => handleSelectMed(selectedMed)}/>
+                                                <Icon.PlusLg className="cursor-pointer text-m1" onClick={() => incrementMed(selectedMed)}/>
                                             </div>
                                         </div>
                                     </div>                                    
@@ -206,7 +205,8 @@ export default function AdminPOSIndex() {
                             <div className="color-blue2">{formatToPhilPeso(selectedMeds.reduce((acc, med) => acc + med.price * med.qty, 0))}</div>
                         </div>
 
-                        <div className="primary-btn-dark-blue1 text-center">Pay Now</div>
+                        <div className="secondary-btn-black1 text-center">Add Discount</div>
+                        <div className="primary-btn-dark-blue1 text-center">Check out</div>
                     </div>
                 </>
             )

@@ -116,19 +116,21 @@ const AdminSidenav = ({onLogout}) => {
 
                 <Link 
                 to={"POS"}  
-                className="admin-sidenav1-link">
+                className={`admin-sidenav1-link ${location.pathname === '/OrtegaAdmin/POS'? 'active' : ''}`}>
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/options1.svg" alt="" />
+                        <img src="/src/assets/media/icons/cash-register.svg" alt="" />
                         <div>POS</div>
                     </div>
                 </Link>
 
-                <div className="admin-sidenav1-link">
+                <Link 
+                to={"Configurations"}
+                className={`admin-sidenav1-link ${location.pathname === '/OrtegaAdmin/Configurations'? 'active' : ''}`}>
                     <div className="d-flex align-items-center" style={{gap: 15}}>
                         <img src="/src/assets/media/icons/options1.svg" alt="" />
                         <div>Configurations</div>
                     </div>
-                </div>
+                </Link>
 
 
                 <div className="hr-line1-white1 mar-y-2"></div>

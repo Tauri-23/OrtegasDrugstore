@@ -12,6 +12,8 @@ import AdminMedicineGroups from "./views/Admin/Inventory/medicine_groups/medicin
 import AdminViewMedicineGroup from "./views/Admin/Inventory/medicine_groups/viewMedicineGroup";
 import AdminPOSDefault from "./views/Admin/POS/admin_pos_default";
 import AdminPOSIndex from "./views/Admin/POS/admin_pos_index";
+import AdminConfigDefault from "./views/Admin/ConfigPages/config_default";
+import AdminConfigIndex from "./views/Admin/ConfigPages/config_index";
 
 const router = createBrowserRouter([
     /*
@@ -94,6 +96,18 @@ const router = createBrowserRouter([
                     {
                         index: true,
                         element: <AdminPOSIndex/>
+                    }
+                ]
+            },
+
+            // Configurations
+            {
+                path: 'Configurations',
+                element: <AdminConfigDefault/>,
+                children: [
+                    {
+                        index: true,
+                        element: <AdminConfigIndex/>
                     }
                 ]
             }
