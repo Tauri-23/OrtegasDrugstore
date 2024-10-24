@@ -1,5 +1,5 @@
 :root {
-    --pos-right-cont-width: 400px;
+    --pos-right-cont-width: 600px;
 }
 
 .pos-cat-cont {
@@ -31,6 +31,7 @@
     background: var(--white1);
     border-radius: 5px;
     filter: drop-shadow(0 0 2px var(--grey1));
+    cursor: pointer;
 }
 .pos-medicine-pic {
     width: 100%;
@@ -63,4 +64,33 @@
     flex-grow: 1;
     overflow-y: auto;
     border: 1px dashed var(--grey1);
+}
+
+.pos-order-box {
+    width: 100%;
+    padding: 5px;
+    background: var(--white1);
+    display: flex;
+    gap: 10px;
+    filter: drop-shadow(0 0 1px var(--grey1));
+    position: relative;
+}
+.pos-order-box-x {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+}
+.pos-order-box-pic {
+    height: 100%;
+    aspect-ratio: 1/1;
+    background: var(--grey1);
+    border-radius: 5px;
+}
+.pos-order-box-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 5px 0;
 }

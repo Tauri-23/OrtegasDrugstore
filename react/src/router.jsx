@@ -11,7 +11,7 @@ import AdminViewMedicine from "./views/Admin/Inventory/medicines/viewMedicine";
 import AdminMedicineGroups from "./views/Admin/Inventory/medicine_groups/medicineGroups";
 import AdminViewMedicineGroup from "./views/Admin/Inventory/medicine_groups/viewMedicineGroup";
 import AdminPOSDefault from "./views/Admin/POS/admin_pos_default";
-import AdminPOSIndex from "./views/Admin/POS/admin_post_index";
+import AdminPOSIndex from "./views/Admin/POS/admin_pos_index";
 
 const router = createBrowserRouter([
     /*
