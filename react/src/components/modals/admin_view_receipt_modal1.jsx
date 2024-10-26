@@ -1,8 +1,30 @@
 import propTypes from 'prop-types';
 import * as Icon from "react-bootstrap-icons";
-import { formatToPhilPeso } from '../../assets/js/utils';
+import { formatDateTime, formatToPhilPeso } from '../../assets/js/utils';
+import BarcodeGenerator from '../../Services/BarcodeGenerator';
+import QRCodeGenerator from '../../Services/QrcodeGenerator';
+import { useRef } from 'react';
+import { useReactToPrint } from 'react-to-print';
 
 const AdminViewReceiptModal1 = ({ data, onClose}) => {
+    const receiptRef = useRef(null);
+
+    // const UseReactToPrintFn = useReactToPrint({
+    //     contentRef: () => receiptRef,
+    //     // documentTitle: `Receipt-${data.id}`,  // Optional: set the document title
+    //     // onAfterPrint: () => onClose()  // Close modal after printing
+    // });
+
+    const UseReactToPrintFn = useReactToPrint({ receiptRef });
+    
+
+    const handlePrintClick = () => {
+
+        if(receiptRef.current){
+            console.log(receiptRef);
+            UseReactToPrintFn();
+        }        
+    }
 
     /**
      * Render
@@ -19,21 +41,21 @@ const AdminViewReceiptModal1 = ({ data, onClose}) => {
 
                 {/* Receipt */}
                 <div className="receipt-cont mar-top-l1 mar-bottom-l1">
-                    <div className="receipt-box">
+                    <div ref={receiptRef} className="receipt-box">
                         <div className="text-l3 text-center mar-bottom-2">Ortega's Drugstore</div>
                         <div className="text-m3">Address: 2464 Tejeron St. Brgy. 874 Sta. Ana Manila Zone 96</div>
                         <div className="text-m3">Tel: 123-1456-789</div>
 
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
 
-                        <div className="text-m3">Receipt ID: XXXXXXXXXXXX</div>
+                        <div className="text-m3">Receipt ID: {data.id}</div>
 
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
 
-                        {data.meds.map(med => (
+                        {data.items.map(med => (
                             <div key={med.id} className="d-flex justify-content-between text-m3">
-                                <div>{med.qty} x {med.name}</div>
-                                <div>{formatToPhilPeso(med.price * med.qty)}</div>
+                                <div>{med.qty} x {med.medicine.name}</div>
+                                <div>{formatToPhilPeso(med.medicine.price * med.qty)}</div>
                             </div>
                         ))}
 
@@ -44,19 +66,21 @@ const AdminViewReceiptModal1 = ({ data, onClose}) => {
                             <div>{formatToPhilPeso(data.subtotal)}</div>
                         </div>
 
-                        {data.selectedDiscounts?.length > 0 && (<div className="">
-                            <div className='text-m2'>Discount(s)</div>
-                            <div className="mar-start-3 d-flex justify-content-between">
-                                {data.selectedDiscounts.map(seldis => (
-                                    <div key={seldis.id} className="d-flex justify-content-between text-m3 w-100">
-                                        <div>{seldis.discount_name}</div>
-                                        <div>
-                                            {seldis.discount_type === "Amount" ? ` - ${formatToPhilPeso(seldis.discount_value)}` : `- ${seldis.discount_value}%`}
+                        {data.discounts?.length > 0 && (
+                            <div>
+                                <div className='text-m2'>Discount(s)</div>
+                                <div className="mar-start-3 d-flex justify-content-between">
+                                    {data.discounts.map(seldis => (
+                                        <div key={seldis.id} className="d-flex justify-content-between text-m3 w-100">
+                                            <div>{seldis.discount.discount_name}</div>
+                                            <div>
+                                                {seldis.discount.discount_type === "Amount" ? ` - ${formatToPhilPeso(seldis.discount.discount_value)}` : `- ${seldis.discount.discount_value}%`}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>)}
+                        )}
 
                         <div className="d-flex justify-content-between">
                             <div className='text-m1 fw-bold'>Total</div>
@@ -65,15 +89,22 @@ const AdminViewReceiptModal1 = ({ data, onClose}) => {
 
                         <div className="d-flex justify-content-between">
                             <div className='text-m3'>Cash</div>
-                            <div className='text-m3'>{formatToPhilPeso(data.subtotal)}</div>
+                            <div className='text-m3'>{formatToPhilPeso(data.cash)}</div>
                         </div>
 
                         <div className="d-flex justify-content-between">
                             <div className='text-m3'>Change</div>
-                            <div className='text-m3'>{formatToPhilPeso(data.subtotal)}</div>
+                            <div className='text-m3'>{formatToPhilPeso(data.cash - data.total)}</div>
                         </div>
 
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
+
+                        <div className="d-flex justify-content-center mar-bottom-3">
+                            {/* <BarcodeGenerator value={String(data.id)}/> */}
+                            <QRCodeGenerator value={String(data.id)}/>
+                        </div>
+
+                        <div className="text-center text-m3">Transaction date: {formatDateTime(data.created_at)}</div>
                     </div>
                 </div>
 
@@ -82,14 +113,13 @@ const AdminViewReceiptModal1 = ({ data, onClose}) => {
                     className={`primary-btn-red1 text-center flex-grow-1`} 
                     onClick={() => {onClose()}}
                     >
-                        Cancel
+                        Void
                     </button>
                     <button 
-                    //disabled={!addBtnReady}
                     className={`primary-btn-dark-blue1 text-center flex-grow-1`} 
-                    onClick={() => {handleApplyDiscount(); onClose()}}
+                    onClick={onClose}
                     >
-                        Done
+                        Print
                     </button>
                 </div>
             </div>

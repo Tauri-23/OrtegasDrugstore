@@ -76,11 +76,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 0;
 }
 .receipt-box {
     font-family: 'Merchant Copy', sans-serif;
-    margin-top: 50px;
+    margin: 25% 0 10px 0;
     width: 400px;
     padding: 20px;
     background: var(--white1);

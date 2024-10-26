@@ -6,6 +6,7 @@ import { fetchAllMedicinesFull } from "../../../Services/GeneralMedicineService"
 import { formatToPhilPeso, isEmptyOrSpaces } from "../../../assets/js/utils";
 import { fetchAllDiscounts } from "../../../Services/GeneralDiscountService";
 import { useModal } from "../../../Context/ModalContext";
+import axiosClient from "../../../axios-client";
 
 export default function AdminPOSIndex() {
     const {showModal} = useModal();
@@ -144,6 +145,15 @@ export default function AdminPOSIndex() {
         return total;
     }, [selectedMeds, selectedDiscounts]);
 
+    const calculateDiscountDeduction = useCallback(() => {
+        let totalDiscount = 0;
+        selectedDiscounts.forEach(discount => {
+            totalDiscount += discount.discount_type === "Amount" ? discount.discount_value : calculateSubTotal() * discount.discount_value / 100;
+        });
+
+        return totalDiscount;
+    }, [selectedMeds, selectedDiscounts]);
+
 
 
     /**
@@ -170,14 +180,46 @@ export default function AdminPOSIndex() {
      * Receipt Handler
      */
     const handleCheckout = () => {
-        showModal('AdminPayCashModal1', {cash, setCash, amountDue: calculateGrandTotal()});
-        // const data = {
-        //     meds: selectedMeds,
-        //     subtotal: calculateSubTotal(),
-        //     selectedDiscounts: selectedDiscounts,
-        //     total: calculateGrandTotal()
-        // }
-        // showModal('AdminViewReceiptModal1', {data});
+        showModal('AdminPayCashModal1', {cash, setCash, amountDue: calculateGrandTotal(), handlePayPost});
+        
+    }
+
+    const handlePayPost = (cash) => {
+        const formData = new FormData();
+        // for customer
+        formData.append('hasCustomer', customer ? true : false)
+        if(customer) {
+            formData.append('name', customer.name);
+            formData.append('phone', customer.phone);
+            formData.append('address', customer.address);
+            formData.append('note', customer.note);
+        }
+
+        // For Transaction
+        formData.append('subtotal', calculateSubTotal());
+        formData.append('discount_deduction', calculateDiscountDeduction());
+        formData.append('total', calculateGrandTotal());
+        formData.append('cash', cash);
+        formData.append('change', cash - calculateGrandTotal());
+
+        // For Discounts
+        selectedDiscounts.forEach((discount, index) => {
+            formData.append('discounts[]', discount.id);
+        });
+
+        // For Discounts
+        selectedMeds.forEach((med, index) => {
+            formData.append('items[]', med.id);
+            formData.append('qty[]', med.qty);
+        });
+
+        axiosClient.post('/add-purchase-transaction', formData)
+        .then(({data}) => {
+            if(data.status === 200) {
+                showModal('AdminViewReceiptModal1', {data: data.transaction[0]});
+            }
+            console.log(data.transaction[0]);
+        }).catch(error => console.error(error));
     }
 
 

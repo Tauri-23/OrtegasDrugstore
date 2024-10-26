@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\MedicineController;
 use App\Http\Controllers\Api\MedicineGroupController;
+use App\Http\Controllers\Api\PurchaseTransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -69,3 +70,14 @@ Route::post('/update-medicine', [MedicineController::class, 'UpdateMedicine']);
 Route::get('/get-all-discount', [DiscountController::class, 'GetAllDiscount']);
 
 Route::post('/add-discount', [DiscountController::class, 'AddDiscount']);
+
+
+
+
+
+/*
+|----------------------------------------
+| Purchase Transaction 
+|----------------------------------------
+*/
+Route::post('/add-purchase-transaction', [PurchaseTransactionController::class, 'AddPurchase']);

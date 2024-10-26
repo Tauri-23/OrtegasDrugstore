@@ -3,11 +3,12 @@ import { useState } from 'react';
 import * as Icon from "react-bootstrap-icons";
 import { formatToPhilPeso } from '../../assets/js/utils';
 
-const AdminPayCashModal1 = ({cash, setCash, amountDue, handlePay, onClose}) => {
+const AdminPayCashModal1 = ({cash, setCash, amountDue, handlePayPost, onClose}) => {
     const [_cash, _setCash] = useState(cash);
 
     const handlePayClick = () => {
-        handlePay(_cash);
+        setCash(_cash);
+        handlePayPost(_cash);
     }
 
     return(
@@ -27,7 +28,13 @@ const AdminPayCashModal1 = ({cash, setCash, amountDue, handlePay, onClose}) => {
                 </div>
 
                 <div className="d-flex flex-direction-y gap3">
-                    <div className="primary-btn-dark-blue1 text-center" onClick={() => {handlePayClick(); onClose()}}>Pay</div>
+                    <button 
+                    disabled={amountDue > _cash}
+                    className={`primary-btn-dark-blue1 text-center ${amountDue > _cash ? 'disabled' : ''}`}
+                    onClick={() => {handlePayClick()}}
+                    >
+                        Pay
+                    </button>
                     {/* <div className="secondary-btn-black1 text-center" onClick={onClose}>Cancel</div> */}
                 </div>
             </div>
