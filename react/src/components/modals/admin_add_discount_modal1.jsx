@@ -1,12 +1,44 @@
 import propTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Icon from "react-bootstrap-icons";
+import { isEmptyOrSpaces } from '../../assets/js/utils';
 
 const AdminAddDiscountModal1 = ({handeAddPost, onClose}) => {
     const [discountType, setDiscountType] = useState("Amount");
     const [discountName, setDiscountName] = useState("");
-    const [discountValue, setDiscountValue] = useState("");
+    const [discountValue, setDiscountValue] = useState(1);
 
+    const [addBtnReady, setBtnReady] = useState(false);
+
+
+    useEffect(() => {
+        if(isEmptyOrSpaces(discountName)) {
+            setBtnReady(false);
+        }
+        else {
+            setBtnReady(true);
+        }
+    }, [discountName]);
+
+
+
+    /**
+     * handleAddClick
+     */
+    const handleAddClick = () => {
+        const data = {
+            discountType,
+            discountName,
+            discountValue
+        }
+        handeAddPost(data);
+    }
+
+
+
+    /**
+     * Render
+     */
     return(
         <div className="modal1">
             <div className="modal-box3">
@@ -30,12 +62,17 @@ const AdminAddDiscountModal1 = ({handeAddPost, onClose}) => {
                 </div>
                 <div className='d-flex flex-direction-y gap4 mar-bottom-1'>
                     <label htmlFor="discvalue">Discount Value</label>
-                    <input type="number" id="discvalue" className="input1" step="any" value={discountValue} onInput={(e) => setDiscountValue(e.target.value)}/>
+                    <input type="number" id="discvalue" className="input1" step="any" min={1} value={discountValue} onInput={(e) => setDiscountValue(e.target.value)}/>
                 </div>
 
                 <div className="d-flex flex-direction-y gap3">
-                    <div className="primary-btn-dark-blue1 text-center" onClick={() => {handeAddPost(groupName); onClose()}}>Add</div>
-                    {/* <div className="secondary-btn-black1 text-center" onClick={onClose}>Cancel</div> */}
+                    <button 
+                    disabled={!addBtnReady}
+                    className={`primary-btn-dark-blue1 text-center ${addBtnReady ? '' : 'disabled'}`} 
+                    onClick={() => {handleAddClick(); onClose()}}
+                    >
+                        Add
+                    </button>
                 </div>
             </div>
         </div>

@@ -18,6 +18,12 @@
     background: var(--white1);
     filter: drop-shadow(0 0 2px var(--grey1));
     flex-shrink: 1;
+    cursor: pointer;
+    user-select: none;
+}
+.pos-cat-box.active {
+    background: var(--blue1);
+    color: var(--white1);
 }
 
 .pos-medicines-cont {
@@ -32,6 +38,15 @@
     border-radius: 5px;
     filter: drop-shadow(0 0 2px var(--grey1));
     cursor: pointer;
+    user-select: none;
+}
+.pos-medicine.active {
+    background: var(--blue1);
+    color: var(--white1);
+}
+.pos-medicine.disabled {
+    opacity: .5;
+    cursor: not-allowed;
 }
 .pos-medicine-pic {
     width: 100%;

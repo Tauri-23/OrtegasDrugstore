@@ -1,7 +1,11 @@
+import AdminAddCustomerInfoModal1 from "../components/modals/admin_add_customer_info_modal1";
 import AdminAddDiscountModal1 from "../components/modals/admin_add_discount_modal1";
 import AdminAddMedGroupModal1 from "../components/modals/admin_add_med_group_modal1";
+import AdminApplyDiscountModal1 from "../components/modals/admin_apply_discount_modal1";
 import AdminDelMedConfirmationModal1 from "../components/modals/admin_del_med_confirmation_modal1";
 import AdminDelMedGroupConfirmationModal1 from "../components/modals/admin_del_med_group_confirmation_modal1";
+import AdminPayCashModal1 from "../components/modals/admin_pay_cash_modal1";
+import AdminViewReceiptModal1 from "../components/modals/admin_view_receipt_modal1";
 import { useModal } from "../Context/ModalContext"
 
 const ModalManager = () => {
@@ -9,7 +13,7 @@ const ModalManager = () => {
 
     const renderModal = () => {
         switch(modalState.type) {
-            /*
+            /**
              * Inventory
              */
             case 'AdminAddMedGroupModal1':
@@ -18,7 +22,21 @@ const ModalManager = () => {
                     return <AdminDelMedConfirmationModal1 {...modalState.props} onClose={hideModal}/>;
             case 'AdminDelMedGroupConfirmationModal1':
                 return <AdminDelMedGroupConfirmationModal1 {...modalState.props} onClose={hideModal}/>;
+            
 
+
+            /**
+             * POS
+             */
+            case 'AdminApplyDiscountModal1':
+                return <AdminApplyDiscountModal1 {...modalState.props} onClose={hideModal}/>;
+            case 'AdminAddCustomerInfoModal1':
+                return <AdminAddCustomerInfoModal1 {...modalState.props} onClose={hideModal}/>;
+            case 'AdminViewReceiptModal1':
+                return <AdminViewReceiptModal1 {...modalState.props} onClose={hideModal}/>;
+            case 'AdminPayCashModal1':
+                return <AdminPayCashModal1 {...modalState.props} onClose={hideModal}/>;
+                
 
 
             /**

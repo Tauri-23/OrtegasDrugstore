@@ -1,17 +1,26 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as Icon from 'react-bootstrap-icons';
 import "../../../assets/css/pos.css";
 import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService";
 import { fetchAllMedicinesFull } from "../../../Services/GeneralMedicineService";
-import { formatToPhilPeso } from "../../../assets/js/utils";
+import { formatToPhilPeso, isEmptyOrSpaces } from "../../../assets/js/utils";
+import { fetchAllDiscounts } from "../../../Services/GeneralDiscountService";
+import { useModal } from "../../../Context/ModalContext";
 
 export default function AdminPOSIndex() {
+    const {showModal} = useModal();
+
     const [medGroups, setMedGroups] = useState(null);
     const [medicines, setMedicines] = useState(null);
+    const [discounts, setDiscounts] = useState(null);
+    const [cash, setCash] = useState(0);
 
-    const [selectedCategory, setSelectedCat] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("");
 
     const [selectedMeds, setSelectedMeds] = useState([]);
+    const [selectedDiscounts, setSelectedDiscounts] = useState([]);
+
+    const [customer, setCustomer] = useState(null);
 
 
 
@@ -20,13 +29,15 @@ export default function AdminPOSIndex() {
      */
     useEffect(() => {
         const getAll = async() => {
-            const [medGpDb, medsDb] = await Promise.all([
+            const [medGpDb, medsDb, discountsDb] = await Promise.all([
                 fetchAllMedGroups(),
-                fetchAllMedicinesFull()
+                fetchAllMedicinesFull(),
+                fetchAllDiscounts()
             ]);
 
             setMedGroups(medGpDb);
             setMedicines(medsDb);
+            setDiscounts(discountsDb);
         }
 
         getAll();
@@ -113,11 +124,61 @@ export default function AdminPOSIndex() {
             )
         }
     };
-    
 
-    useEffect(() => {
-        console.log(selectedMeds)
+
+
+    /**
+     * Calculate
+     */
+    const calculateSubTotal = useCallback(() => {
+        return selectedMeds.reduce((acc, med) => acc + med.price * med.qty, 0);
     }, [selectedMeds]);
+
+    const calculateGrandTotal = useCallback(() => {
+        let total = calculateSubTotal();
+        selectedDiscounts.forEach(seldis => {
+            seldis.discount_type === "Amount"
+                ? total = total - seldis.discount_value
+                : total = (total - (seldis.discount_value * total / 100))
+        });
+        return total;
+    }, [selectedMeds, selectedDiscounts]);
+
+
+
+    /**
+     * Discounts Handler
+     */
+    const handleAddDiscountClick = () => {
+        showModal('AdminApplyDiscountModal1', {discounts, selectedDiscounts, setSelectedDiscounts});
+    }
+
+
+
+    /**
+     * Customer Info Handler
+     */
+    const handleAddCustomerInfoClick = () => {
+        showModal('AdminAddCustomerInfoModal1', {
+            customer, setCustomer
+        });
+    }
+
+
+
+    /**
+     * Receipt Handler
+     */
+    const handleCheckout = () => {
+        showModal('AdminPayCashModal1', {cash, setCash, amountDue: calculateGrandTotal()});
+        // const data = {
+        //     meds: selectedMeds,
+        //     subtotal: calculateSubTotal(),
+        //     selectedDiscounts: selectedDiscounts,
+        //     total: calculateGrandTotal()
+        // }
+        // showModal('AdminViewReceiptModal1', {data});
+    }
 
 
 
@@ -126,9 +187,10 @@ export default function AdminPOSIndex() {
      */
     return(
         <div className="content1 d-flex">
-            {medGroups && medicines
+            {medGroups && medicines && discounts
             ? (
                 <>
+                    {/* Left */}
                     <div className="pos-left-cont">
                         <div className="d-flex mar-bottom-l1">
                             <div className="d-flex position-relative align-items-center">
@@ -140,16 +202,26 @@ export default function AdminPOSIndex() {
                         {/* Categories */}
                         <div className="text-l3 fw-bold mar-bottom-2">Categories</div>
                         <div className="pos-cat-cont mar-bottom-1">
-                            <div className="pos-cat-box">All</div>
+                            <div 
+                            onClick={() => setSelectedCategory("")}
+                            className={`pos-cat-box ${selectedCategory === "" ? 'active' : ''}`}>All</div>
                             {medGroups.map(group => (
-                                <div key={group.id} className="pos-cat-box">{group.group_name}</div>
+                                <div 
+                                key={group.id} 
+                                onClick={() => setSelectedCategory(group.id)}
+                                className={`pos-cat-box ${selectedCategory === group.id ? 'active' : ''}`}>
+                                    {group.group_name}
+                                </div>
                             ))}
                         </div>
 
                         {/* Medicines */}
                         <div className="pos-medicines-cont">
                             {medicines.map(med => (
-                                <div key={med.id} className="pos-medicine" onClick={() => handleSelectMed(med)}>
+                                <div 
+                                key={med.id} 
+                                className={`pos-medicine ${selectedMeds.some(selmed => selmed.id === med.id) ? 'active' : ''} ${med.qty < 1 ? 'disabled' : ''}`}
+                                onClick={() => handleSelectMed(med)}>
                                     <div className="pos-medicine-pic">
                                     </div>
                                     <div className="text-m1">{med.name}</div>
@@ -200,13 +272,42 @@ export default function AdminPOSIndex() {
 
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
 
+                        {selectedDiscounts.length > 0 && (
+                            <div className="d-flex justify-content-between text-m1">
+                                <div className="color-black2">Sub-total</div>
+                                <div className="color-blue2">{formatToPhilPeso(calculateSubTotal())}</div>
+                            </div>
+                        )}
+
+                        {selectedDiscounts.length > 0 && (
+                            <div>
+                                <div className="color-black2 text-m1">Discounts</div>
+                                {selectedDiscounts.map(seldis => (
+                                    <div key={seldis.id} className="d-flex justify-content-between text-m3 mar-start-3">
+                                        <div className="color-black2">{seldis.discount_name}</div>
+                                        <div className="color-blue2">
+                                            {seldis.discount_type === "Amount" ? ` - ${formatToPhilPeso(seldis.discount_value)}` : `- ${seldis.discount_value}%`}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         <div className="d-flex justify-content-between text-m1 mar-bottom-3">
                             <div className="color-black2">Total</div>
-                            <div className="color-blue2">{formatToPhilPeso(selectedMeds.reduce((acc, med) => acc + med.price * med.qty, 0))}</div>
+                            <div className="color-blue2">
+                                {formatToPhilPeso(calculateGrandTotal())}
+                            </div>
                         </div>
 
-                        <div className="secondary-btn-black1 text-center">Add Discount</div>
-                        <div className="primary-btn-dark-blue1 text-center">Check out</div>
+                        <div className="secondary-btn-black1 text-center" onClick={handleAddDiscountClick}>Add Discount {selectedDiscounts.length > 0 && selectedDiscounts.length}</div>
+                        <div className="secondary-btn-black1 text-center" onClick={handleAddCustomerInfoClick}>
+                            {customer ? 'Edit Customer Information' : 'Add Customer Information'}
+                        </div>
+                        <button 
+                        className="primary-btn-dark-blue1 text-center" onClick={handleCheckout}>
+                            Check out
+                        </button>
                     </div>
                 </>
             )

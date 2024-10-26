@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\MedicineController;
 use App\Http\Controllers\Api\MedicineGroupController;
 use Illuminate\Http\Request;
@@ -55,3 +56,16 @@ Route::get('/get-medicines-where-group/{groupId}', [MedicineController::class,'G
 Route::post('/create-medicine', [MedicineController::class,'CreateMedicine']);
 Route::post('/del-medicine', [MedicineController::class, 'DelMedicine']);
 Route::post('/update-medicine', [MedicineController::class, 'UpdateMedicine']);
+
+
+
+
+
+/*
+|----------------------------------------
+| Discount 
+|----------------------------------------
+*/
+Route::get('/get-all-discount', [DiscountController::class, 'GetAllDiscount']);
+
+Route::post('/add-discount', [DiscountController::class, 'AddDiscount']);
