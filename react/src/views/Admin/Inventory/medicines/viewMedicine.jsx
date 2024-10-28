@@ -25,6 +25,8 @@ export default function AdminViewMedicine() {
     const [isEditSideFx, setEditSideFx] = useState(false);
     const [isEditQty, setEditQty] = useState(false);
 
+    const [newMedPic, setNewMedPic] = useState(null);
+
 
 
     useEffect(() => {
@@ -39,8 +41,47 @@ export default function AdminViewMedicine() {
         getMedicineInfo();
     }, []);
 
+
+
+    /**
+     * Handle Edit Med Pic
+     */
+    const handleUploadClick = () => {
+        document.getElementById('fileInput').click();
+    }
+
+    const handleFileChange = (event) => {
+        const files = Array.from(event.target.files);
+        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+        setNewMedPic(...imageFiles);
+    }
+
+    const handleChangePfp = () => {
+        const formData = new FormData();
+        formData.append('medicine_id', medicine.id);
+        formData.append('pic', newMedPic);
+
+        axiosClient.post('/update-medicine-pic', formData)
+        .then(({data}) => {
+            if(data.status === 200) {
+                setMedicine(data.medicine);
+            }
+            notify(data.status === 200 ? "success" : "error", data.message, 'top-center', 3000);
+        });
+    }
+
+    useEffect(() => {
+        if(newMedPic !== null && newMedPic !== undefined) {
+            console.log(newMedPic);
+            showModal('AdminEditMedPicPreviewModal1', {pic: newMedPic, handleUpdatePost: handleChangePfp});
+        }
+    }, [newMedPic])
+
     
 
+    /**
+     * Handle Edit Med Info
+     */
     const handleDelPost = (id) => {
         const formData = new FormData();
         formData.append('medId', id);
@@ -96,6 +137,11 @@ export default function AdminViewMedicine() {
         
     }
     
+
+
+    /**
+     * Render
+     */
     if(medicine) {
         return(
             <div className="content1">
@@ -105,6 +151,25 @@ export default function AdminViewMedicine() {
 
                 <div className="d-flex mar-bottom-l1 align-items-center justify-content-between">
                     <div className="text-l1 fw-bolder">{medicine.name}</div>
+                </div>
+
+                {/* Photo */}
+                <div className="view-medicine-photo-box mar-bottom-1">
+                    {medicine.pic
+                    ? (<img src={`/src/assets/media/medicines/${medicine.pic}`}/>)
+                    : (<>{medicine.name[0]}</>)}
+
+                    <div className="view-medicine-photo-box-overlay">
+                        <Icon.PenFill onClick={handleUploadClick}/>
+                        <input 
+                            type="file" 
+                            id="fileInput"
+                            className='d-none'
+                            multiple 
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                    </div>
                 </div>
 
                 <div className="d-flex gap1 mar-bottom-1">
@@ -193,6 +258,8 @@ export default function AdminViewMedicine() {
                     handleEditPost={() => handleEditPost('sidefx')}
                     />
                 </div>
+
+                
 
                 <div className="d-flex justify-content-start">
                     <div onClick={handleDelBtn} className="primary-btn-red1 text-m1 d-flex align-items-center gap3"><Icon.Trash/>Delete Medicine</div>

@@ -57,6 +57,7 @@ Route::get('/get-medicines-where-group/{groupId}', [MedicineController::class,'G
 Route::post('/create-medicine', [MedicineController::class,'CreateMedicine']);
 Route::post('/del-medicine', [MedicineController::class, 'DelMedicine']);
 Route::post('/update-medicine', [MedicineController::class, 'UpdateMedicine']);
+Route::post('/update-medicine-pic', [MedicineController::class, 'UpdateMedicinePic']);
 
 
 
@@ -81,3 +82,4 @@ Route::post('/add-discount', [DiscountController::class, 'AddDiscount']);
 |----------------------------------------
 */
 Route::post('/add-purchase-transaction', [PurchaseTransactionController::class, 'AddPurchase']);
+Route::post('/void-purchase-transaction', [PurchaseTransactionController::class, 'VoidPurchase']);

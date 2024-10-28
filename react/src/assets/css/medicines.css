@@ -9,3 +9,40 @@
 .view-medicine-box1-body.editable {
     border: black;
 }
+
+.view-medicine-photo-box {
+    width: 200px;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    border-radius: 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--black1);
+    font-size: 80px;
+    color: var(--white1);
+    cursor: pointer;
+}
+
+.view-medicine-photo-box img {
+    position: absolute;
+    height: 100%;
+    z-index: 1;
+}
+
+.view-medicine-photo-box-overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgba(0, 0, 0, .5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    z-index: 2;
+    color: var(--white1);
+}
+.view-medicine-photo-box:hover .view-medicine-photo-box-overlay {
+    display: flex;
+}

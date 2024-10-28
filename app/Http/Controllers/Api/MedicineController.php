@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\IGenerateFilenameService;
 use App\Contracts\IGenerateIdService;
 use App\Http\Controllers\Controller;
 use App\Models\medicines;
@@ -10,10 +11,12 @@ use Illuminate\Http\Request;
 class MedicineController extends Controller
 {
     protected $generateId;
+    protected $generateFilename;
 
-    public function __construct(IGenerateIdService $generateId)
+    public function __construct(IGenerateIdService $generateId, IGenerateFilenameService $generateFilename)
     {
         $this->generateId = $generateId;
+        $this->generateFilename = $generateFilename;
     }
 
 
@@ -136,6 +139,37 @@ class MedicineController extends Controller
             return response()->json([
                 'status' => 401,
                 'message' => 'Something went wrong please try again later.'
+            ]);
+        }
+    }
+
+    public function UpdateMedicinePic(Request $request)
+    {
+        try
+        {
+            $pic = $request->file('pic');
+            $medicine = medicines::where('id', $request->medicine_id)->with('group')->first();
+
+            $targetDirectory = base_path("react/src/assets/media/medicines");
+            $newFilename = $this->generateFilename->generate($pic, $targetDirectory);
+
+            $pic->move($targetDirectory, $newFilename);
+
+            $medicine->pic = $newFilename;
+            $medicine->save();
+
+            return response()->json([
+                'status' => 200,
+                'message' => "Medicine picture updated.",
+                'medicine' => $medicine
+            ]);
+            
+        }
+        catch(\Exception $e)
+        {
+            return response()->json([
+                'status' => 500,
+                'message' => "Something went wrong please try again later" . $e->getMessage()
             ]);
         }
     }

@@ -3,7 +3,7 @@ import * as Icon from 'react-bootstrap-icons';
 import "../../../assets/css/pos.css";
 import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService";
 import { fetchAllMedicinesFull } from "../../../Services/GeneralMedicineService";
-import { formatToPhilPeso, isEmptyOrSpaces } from "../../../assets/js/utils";
+import { formatToPhilPeso, isEmptyOrSpaces, notify } from "../../../assets/js/utils";
 import { fetchAllDiscounts } from "../../../Services/GeneralDiscountService";
 import { useModal } from "../../../Context/ModalContext";
 import axiosClient from "../../../axios-client";
@@ -203,9 +203,12 @@ export default function AdminPOSIndex() {
         formData.append('change', cash - calculateGrandTotal());
 
         // For Discounts
-        selectedDiscounts.forEach((discount, index) => {
-            formData.append('discounts[]', discount.id);
-        });
+        formData.append('hasDiscount', selectedDiscounts.length > 0 ? true : false)
+        if(selectedDiscounts.length > 0) {
+            selectedDiscounts.forEach((discount, index) => {
+                formData.append('discounts[]', discount.id);
+            });
+        }
 
         // For Discounts
         selectedMeds.forEach((med, index) => {
@@ -216,10 +219,44 @@ export default function AdminPOSIndex() {
         axiosClient.post('/add-purchase-transaction', formData)
         .then(({data}) => {
             if(data.status === 200) {
-                showModal('AdminViewReceiptModal1', {data: data.transaction[0]});
+                showModal('AdminViewReceiptModal1', {data: data.transaction[0], handleDoneTransaction, handleVoid});
             }
             console.log(data.transaction[0]);
         }).catch(error => console.error(error));
+    }
+
+    const handleDoneTransaction = () => {
+        // TODO::Make a function that will print the receipt in the receipt printer.
+
+        setSelectedMeds([]);
+        setSelectedDiscounts([]);
+        setCustomer(null);
+        setCash(0);
+    }
+
+    const handleVoid = (transactionId) => {
+        showModal('GeneralConfirmationModal1', {
+            title: "Void Transaction", 
+            text: "Do you want to void this transaction?", 
+            btnTitle: "Void", 
+            handleBtnClick: () => {
+                const formData = new FormData();
+                formData.append('transactionId', transactionId);
+
+                axiosClient.post('/void-purchase-transaction', formData)
+                .then(({data}) => {
+                    console.log(data);
+                    if(data.status === 200) {
+                        setSelectedMeds([]);
+                        setSelectedDiscounts([]);
+                        setCustomer(null);
+                        setMedicines(data.medicines);
+                        setCash(0);
+                    }
+                    notify(data.status === 200 ? 'success' : 'error', data.message, 'top-center', 3000);
+                }).catch(error => console.error(error));
+            }
+        });
     }
 
 
@@ -265,6 +302,7 @@ export default function AdminPOSIndex() {
                                 className={`pos-medicine ${selectedMeds.some(selmed => selmed.id === med.id) ? 'active' : ''} ${med.qty < 1 ? 'disabled' : ''}`}
                                 onClick={() => handleSelectMed(med)}>
                                     <div className="pos-medicine-pic">
+                                        {med.name[0]}
                                     </div>
                                     <div className="text-m1">{med.name}</div>
                                     <div className="text-m3">{med.group.group_name}</div>

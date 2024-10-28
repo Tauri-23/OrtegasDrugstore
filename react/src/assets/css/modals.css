@@ -86,3 +86,26 @@
     filter: drop-shadow(0 0 3px var(--grey1));
     user-select: none;
 }
+
+
+
+
+/**
+ * Edit Medicine Pic Modal
+ */
+.med-pic-modal {
+    margin: 0 auto 30px auto;
+    width: 200px;
+    aspect-ratio: 1/1;
+    position: relative;
+    border-radius: 10px;
+    background: var(--black3);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+}
+.med-pic-modal img {
+    position: absolute;
+    height: 100%;
+}

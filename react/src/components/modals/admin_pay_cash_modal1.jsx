@@ -35,6 +35,12 @@ const AdminPayCashModal1 = ({cash, setCash, amountDue, handlePayPost, onClose}) 
                     >
                         Pay
                     </button>
+                    <button 
+                    className={`secondary-btn-black1 text-center`}
+                    onClick={() => {_setCash(amountDue)}}
+                    >
+                        Exact Amount
+                    </button>
                     {/* <div className="secondary-btn-black1 text-center" onClick={onClose}>Cancel</div> */}
                 </div>
             </div>

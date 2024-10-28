@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\IGenerateIdService;
 use App\Http\Controllers\Controller;
+use App\Models\medicines;
 use App\Models\purchase_transaction_customer;
 use App\Models\purchase_transaction_discounts;
 use App\Models\purchase_transaction_items;
@@ -52,21 +53,30 @@ class PurchaseTransactionController extends Controller
 
             $transaction->save();
 
-            foreach($request->discounts as $discount)
+            if($request->hasDiscount == "true")
             {
-                $transactionDiscount = new purchase_transaction_discounts();
-                $transactionDiscount->purchase_transaction = $transactionId;
-                $transactionDiscount->discount = $discount;
-                $transactionDiscount->save();
-            }
+                foreach($request->discounts as $discount)
+                {
+                    $transactionDiscount = new purchase_transaction_discounts();
+                    $transactionDiscount->purchase_transaction = $transactionId;
+                    $transactionDiscount->discount = $discount;
+                    $transactionDiscount->save();
+                }
+            }            
 
             foreach($request->items as $key=>$item)
             {
+                
                 $transactionItem = new purchase_transaction_items();
                 $transactionItem->purchase_transaction = $transactionId;
                 $transactionItem->medicine = $item;
                 $transactionItem->qty = $request->qty[$key];
+
+                $medicine = medicines::find($item);
+                $medicine->qty -= $request->qty[$key];
+                
                 $transactionItem->save();
+                $medicine->save();
             }
 
             DB::commit();
@@ -80,10 +90,68 @@ class PurchaseTransactionController extends Controller
         }
         catch(\Exception $e)
         {
+            DB::rollBack();
             return response()->json([
                 'status' => 500,
                 'message' => "Failed" . $e->getMessage()
             ]);
         }
     }
+
+    public function VoidPurchase(Request $request)
+    {
+        // Start a database transaction
+        DB::beginTransaction();
+
+        try {
+            // Find the transaction
+            $transaction = purchase_transactions::where('id', $request->transactionId)->first();
+            $items = purchase_transaction_items::where('purchase_transaction', $transaction->id)->get();
+
+            if (!$transaction) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Transaction not found'
+                ]);
+            }
+
+            // Mark transaction as void
+            $transaction->is_void = 1;
+
+            // Restock the medicine because transaction is voided
+            foreach ($items as $item) { // Accessing 'items' without parentheses if it's a relationship
+                $medicine = medicines::find($item->medicine);
+
+                if ($medicine) {
+                    $medicine->qty += $item->qty;
+                    $medicine->save();
+                } else {
+                    // Log or handle the missing medicine case as needed
+                }
+            }
+
+            // Save the transaction after voiding it
+            $transaction->save();
+
+            // Commit the transaction
+            DB::commit();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Transaction voided.',
+                'medicines' => medicines::with('group')->get()
+            ]);
+
+        } catch (\Exception $e) {
+            // Roll back on error
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 500,
+                'message' => 'An error occurred while voiding the transaction',
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
 }

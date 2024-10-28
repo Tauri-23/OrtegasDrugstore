@@ -19,6 +19,7 @@ return new class extends Migration
             $table->float('cash');
             $table->float('change');
             $table->unsignedBigInteger('customer')->nullable(); // Foreign
+            $table->boolean('is_void')->default(false);
             $table->timestamps();
 
             $table->foreign('customer')
