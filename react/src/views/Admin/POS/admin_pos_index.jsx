@@ -58,7 +58,7 @@ export default function AdminPOSIndex() {
                             ? { ...selmed, qty: selmed.qty + 1 }  // Increment QTY
                             : selmed
                       )
-                    : [...prev, { id: medicine.id, name: medicine.name, qty: 1, price: medicine.price }] // Add new medicine with qty 1
+                    : [...prev, { id: medicine.id, pic: medicine.pic, name: medicine.name, qty: 1, price: medicine.price }] // Add new medicine with qty 1
             );
             setMedicines(prev => 
                 prev.map(med => 
@@ -258,7 +258,7 @@ export default function AdminPOSIndex() {
             }
         });
     }
-
+    
 
 
     /**
@@ -302,7 +302,9 @@ export default function AdminPOSIndex() {
                                 className={`pos-medicine ${selectedMeds.some(selmed => selmed.id === med.id) ? 'active' : ''} ${med.qty < 1 ? 'disabled' : ''}`}
                                 onClick={() => handleSelectMed(med)}>
                                     <div className="pos-medicine-pic">
-                                        {med.name[0]}
+                                        {med.pic
+                                        ? (<img src={`/src/assets/media/medicines/${med.pic}`}/>)
+                                        : (<>{med.name[0]}</>)}
                                     </div>
                                     <div className="text-m1">{med.name}</div>
                                     <div className="text-m3">{med.group.group_name}</div>
@@ -325,7 +327,9 @@ export default function AdminPOSIndex() {
                                 <div key={selectedMed.id} className="pos-order-box">
                                     <div className="pos-order-box-x" onClick={() => removeFromSelectedMed(selectedMed.id, selectedMed.qty)}><Icon.XLg/></div>
                                     <div className="pos-order-box-pic">
-
+                                        {selectedMed.pic
+                                            ? (<img src={`/src/assets/media/medicines/${selectedMed.pic}`}/>)
+                                            : (<>{selectedMed.name[0]}</>)}
                                     </div>
                                     <div className="pos-order-box-content">
                                         <div className="text-m1 fw-bold">{selectedMed.name}</div>

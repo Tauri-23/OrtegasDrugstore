@@ -58,6 +58,13 @@
     justify-content: center;
     font-size: 60px;
     color: var(--white1);
+    position: relative;
+    overflow: hidden;
+}
+
+.pos-medicine-pic img {
+    position: absolute;
+    height: 100%;
 }
 
 
@@ -104,9 +111,21 @@
 .pos-order-box-pic {
     height: 100%;
     aspect-ratio: 1/1;
-    background: var(--grey1);
+    background: var(--black1);
     border-radius: 5px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: var(--white1);
+    overflow: hidden;
 }
+.pos-order-box-pic img {
+    position: absolute;
+    height: 100%;
+}
+
 .pos-order-box-content {
     width: 100%;
     display: flex;
