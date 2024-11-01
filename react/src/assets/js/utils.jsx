@@ -85,6 +85,10 @@ export const formatToPhilPeso = (value) => {
     return new Intl.NumberFormat('en-PH', {style: 'currency', currency: 'PHP'}).format(value);
 }
 
+export const formatNumbersTwoDec = (value) => {
+    return Number(value).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
+
 
 
 

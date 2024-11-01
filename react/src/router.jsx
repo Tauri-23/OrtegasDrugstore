@@ -14,8 +14,22 @@ import AdminPOSDefault from "./views/Admin/POS/admin_pos_default";
 import AdminPOSIndex from "./views/Admin/POS/admin_pos_index";
 import AdminConfigDefault from "./views/Admin/ConfigPages/config_default";
 import AdminConfigIndex from "./views/Admin/ConfigPages/config_index";
+import Prophet from "./views/AlgoModels/prophet";
 
 const router = createBrowserRouter([
+    /*
+    |----------------------------------------
+    | Guest 
+    |----------------------------------------
+    */
+    {
+        path: 'Prophet',
+        element: <Prophet/>
+    },
+
+
+    
+
     /*
     |----------------------------------------
     | Guest 
