@@ -142,4 +142,5 @@
 }
 .cont-box1-head, .cont-box1-body {
     padding: 20px;
+    overflow-y: auto;
 }

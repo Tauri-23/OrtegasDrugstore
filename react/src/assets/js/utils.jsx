@@ -105,13 +105,18 @@ export const formatDate = (date) => {
 }
 
 export const formatDateTime = (dateTime) => {
-    const realDateTime = new Date();
+    // Convert the input dateTime string to a Date object
+    const realDateTime = new Date(dateTime);
 
-    const timeOptions = {hour: 'numeric', minute: 'numeric', hour12: true};
+    // Format the date part (assuming you have a formatDate function)
+    const formattedDate = formatDate(realDateTime);
+
+    // Format the time part
+    const timeOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
     const formattedTime = realDateTime.toLocaleTimeString('en-PH', timeOptions);
 
-    return `${formatDate(dateTime)} ${formattedTime}`;
-}
+    return `${formattedDate} ${formattedTime}`;
+};
 
 export const getTimeAgo = (timestamp) => {
     // Convert Firestore Timestamp to JavaScript Date object

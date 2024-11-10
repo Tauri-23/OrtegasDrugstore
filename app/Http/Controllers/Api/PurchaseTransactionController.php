@@ -84,7 +84,7 @@ class PurchaseTransactionController extends Controller
             return response()->json([
                 'status' => 200,
                 'message' => 'Success',
-                'transaction' => $transaction->with(['items', 'discounts', 'customer'])->get()
+                'transaction' => purchase_transactions::with(['items', 'discounts', 'customer'])->find($transactionId)
             ]);
             
         }
@@ -152,6 +152,23 @@ class PurchaseTransactionController extends Controller
                 'error' => $e->getMessage()
             ]);
         }
+    }
+
+
+
+    // GET
+    public function GetAllPurchaseTransactions()
+    {
+        return response()->json(purchase_transactions::with(['items', 'discounts', 'customer'])->orderBy('created_at', 'DESC')->get());
+    }
+
+    public function GetAllPurchasTransactionsWhereDateRange($fromDate, $toDate)
+    {
+        // Ensure 'created_at' (not 'create_at') and add relationship filters
+        $purchaseRecordBetweenDate = purchase_transactions::whereDate('created_at', '>=', $fromDate)->whereDate('created_at', '<=', $toDate)
+        ->with('items')->get();
+
+        return response()->json($purchaseRecordBetweenDate);
     }
 
 }

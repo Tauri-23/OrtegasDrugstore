@@ -81,5 +81,8 @@ Route::post('/add-discount', [DiscountController::class, 'AddDiscount']);
 | Purchase Transaction 
 |----------------------------------------
 */
+Route::get('/get-all-full-purchase-transactions', [PurchaseTransactionController::class, 'GetAllPurchaseTransactions']);
+Route::get('/get-all-full-purchase-transactions-where-date-range/{fromDate}/{toDate}', [PurchaseTransactionController::class, 'GetAllPurchasTransactionsWhereDateRange']);
+
 Route::post('/add-purchase-transaction', [PurchaseTransactionController::class, 'AddPurchase']);
 Route::post('/void-purchase-transaction', [PurchaseTransactionController::class, 'VoidPurchase']);
