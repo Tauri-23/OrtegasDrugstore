@@ -11,6 +11,7 @@ use App\Models\purchase_transaction_items;
 use App\Models\purchase_transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PurchaseTransactionController extends Controller
 {
@@ -171,4 +172,35 @@ class PurchaseTransactionController extends Controller
         return response()->json($purchaseRecordBetweenDate);
     }
 
+    public function GenerateReport($month, $year){
+        $purchaseTransactionsFullNow = purchase_transactions::
+        whereMonth('created_at', $month)->whereYear('created_at', $year)
+        ->with(['items', 'discounts', 'customer'])
+        ->get();
+
+        $extractedItemsNow = $purchaseTransactionsFullNow->pluck('items')->flatten();
+
+        $totalSalesNow = purchase_transactions::
+        whereMonth('created_at', $month)->whereYear('created_at', $year)->sum('total');
+
+
+        $purchaseTransactionsFullLastMonth = purchase_transactions::
+        whereMonth('created_at', $month - 1)->whereYear('created_at', $year)
+        ->with(['items', 'discounts', 'customer'])
+        ->get();
+
+        $extractedItemsLastMonth = $purchaseTransactionsFullLastMonth->pluck('items')->flatten();
+
+        $totalSalesLastMonth = purchase_transactions::
+        whereMonth('created_at', $month - 1)->whereYear('created_at', $year)->sum('total');
+        
+        return response()->json([
+            'purchase_transactions_now' => $purchaseTransactionsFullNow,
+            'extracted_items_now' => $extractedItemsNow,
+            'total_sales_now' => $totalSalesNow,
+            'purchase_transactions_last_month' => $purchaseTransactionsFullLastMonth,
+            'extracted_items_last_month' => $extractedItemsLastMonth,
+            'total_sales_last_month' => $totalSalesLastMonth,
+        ]);
+    }
 }

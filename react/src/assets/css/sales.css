@@ -10,7 +10,7 @@
     background: var(--white1);
     filter: drop-shadow(0 0 2px var(--black3));
     width: 8.5in;
-    height: 11in;
+    /* height: 11in; */
     padding: 30px;
 }
 

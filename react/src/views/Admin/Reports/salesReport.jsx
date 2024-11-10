@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService";
-import { fetchAllFullPurchaseTransactions, fetchAllPurchasTransactionsWhereDateRange } from "../../../Services/PurchaseTransactionServices";
-import { formatDateTime, formatToPhilPeso, isEmptyOrSpaces } from "../../../assets/js/utils";
+import { fetchAllFullPurchaseTransactions, fetchAllPurchasTransactionsWhereDateRange, fetchNecessaryForReport } from "../../../Services/PurchaseTransactionServices";
+import { calculatePercentageDifference, formatDateTime, formatToPhilPeso, isEmptyOrSpaces } from "../../../assets/js/utils";
 import '../../../assets/css/sales.css'
 
 export default function AdminSalesReports() {
@@ -12,6 +12,7 @@ export default function AdminSalesReports() {
     const [toDate, setToDate] = useState(`${dateToday.getFullYear()}-${dateToday.getMonth() + 1}-${dateToday.getDate()}`);
 
     const [isShowReport, setShowReport] = useState(true);
+
 
     useEffect(() => {
         const getAll = async() => {
@@ -30,14 +31,6 @@ export default function AdminSalesReports() {
     }, []);
 
 
-    /**
-     * Dugging
-     */
-    useEffect(() => {
-        console.log(sales);
-    }, [sales]);
-
-
 
     /**
      * Handlers
@@ -47,8 +40,36 @@ export default function AdminSalesReports() {
         setSales(data);
     }
 
-    const downloadReport = () => {
-        return
+    const downloadReport = async () => {
+        try {
+            const data = await fetchNecessaryForReport(11, 2024);
+            console.log(data);
+            let medicineAndQtyNow = [];
+
+            await data.extracted_items_now.forEach(element => {
+                const medicineId = element.medicine.id;
+                // Check if the medicine already exists in the medicineAndQty array
+                const existingMedicine = medicineAndQtyNow.find(med => med.id === medicineId);
+                if(existingMedicine) {
+                    existingMedicine.qty += element.qty;
+                }
+                else {
+                    medicineAndQtyNow.push({
+                        id: medicineId,
+                        name: element.medicine.name,
+                        qty: element.qty
+                    });
+                }
+            });
+
+            const sortedMedicineAndQty = medicineAndQtyNow.sort((a, b) => b.qty - a.qty);
+
+            console.log(calculatePercentageDifference(data.total_sales_now, data.total_sales_last_month));
+
+            console.log(sortedMedicineAndQty);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
 
@@ -62,7 +83,7 @@ export default function AdminSalesReports() {
                 <>
                     <div className="d-flex align-items-center justify-content-between mar-bottom-l1 w-100">
                         <div className="text-l1 fw-bolder">Sales Reports</div>
-                        <div className="primary-btn-dark-blue1">Download Report</div>
+                        <div className="primary-btn-dark-blue1" onClick={downloadReport}>Download Report</div>
                     </div>
                     
                     <div className="d-flex gap1 w-100 mar-bottom-l1">
@@ -159,24 +180,66 @@ export default function AdminSalesReports() {
                             </tr>
                         </thead>
                         <tbody className="report-paper-table-tbody">
+                            {Array.from({length: 3}).map((_, index) => (
+                                <tr key={index}>
+                                    <td>{index}</td>
+                                    <td>Item Name {index}</td>
+                                    <td>101 + 50%</td>
+                                    <td>{formatToPhilPeso(100)} + 100%</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    <div className="text-m1 mar-y-2 fw-bold">New Items (3):</div>
+
+                    <table className="report-paper-table">
+                        <thead className="report-paper-table-thead">
                             <tr>
-                                <td>Item ID</td>
-                                <td>Item Name</td>
-                                <td>Quantity Sold</td>
-                                <td>Sales</td>
+                                <th>Item ID</th>
+                                <th>Item Name</th>
+                                <th>Group</th>
+                                <th>Price</th>
+                                <th>QTY</th>
                             </tr>
+                        </thead>
+                        <tbody className="report-paper-table-tbody">
+                            {Array.from({length: 3}).map((_, index) => (
+                                <tr key={index}>
+                                    <td>{index}</td>
+                                    <td>item{index}</td>
+                                    <td>Group {index}</td>
+                                    <td>{formatToPhilPeso(100)}</td>
+                                    <td>100</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    <div className="hr-line1-black3 mar-y-1"></div>
+
+                    <div className="text-m1 mar-y-2 fw-bold">All Item Sales (3):</div>
+
+                    <table className="report-paper-table">
+                        <thead className="report-paper-table-thead">
                             <tr>
-                                <td>Item ID</td>
-                                <td>Item Name</td>
-                                <td>Quantity Sold</td>
-                                <td>Sales</td>
+                                <th>Item ID</th>
+                                <th>Item Name</th>
+                                <th>Group</th>
+                                <th>Price</th>
+                                <th>QTY</th>
                             </tr>
-                            <tr>
-                                <td>Item ID</td>
-                                <td>Item Name</td>
-                                <td>Quantity Sold</td>
-                                <td>Sales</td>
-                            </tr>
+                        </thead>
+                        <tbody className="report-paper-table-tbody">
+                            {Array.from({length: 3}).map((_, index) => (
+                                <tr key={index}>
+                                    <td>{index}</td>
+                                    <td>item{index}</td>
+                                    <td>Group {index}</td>
+                                    <td>{formatToPhilPeso(100)}</td>
+                                    <td>100</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>

@@ -95,6 +95,20 @@ export const formatNumbersTwoDec = (value) => {
 
 /*
 |----------------------------------------
+| Format Currency to
+|----------------------------------------
+*/
+export const calculatePercentageDifference = (a, b) => {
+    const result = (Math.abs(a - b) / ((a + b) / 2)) * 100;
+    return parseFloat(result.toFixed(2));
+};
+
+
+
+
+
+/*
+|----------------------------------------
 | Format Date MM dd, YYYY && MM dd, YYYY h:s a
 |----------------------------------------
 */

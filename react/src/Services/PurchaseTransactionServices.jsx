@@ -19,3 +19,13 @@ export const fetchAllPurchasTransactionsWhereDateRange = async(fromDate, toDate)
         throw error;
     }
 }
+
+export const fetchNecessaryForReport = async(month, year) => {
+    try {
+        const response = await axiosClient.get(`/get-necessary-data-for-report/${month}/${year}`);
+        return response.data;
+    } catch(error) {
+        console.error(error);
+        throw error;
+    }
+}
