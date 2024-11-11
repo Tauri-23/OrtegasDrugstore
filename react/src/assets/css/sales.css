@@ -13,6 +13,13 @@
     /* height: 11in; */
     padding: 30px;
 }
+#printable-report {
+    position: relative;
+    z-index: 1; /* Ensure the element is on top of other content */
+    width: 100%; /* Ensure full width */
+    transform: none; /* Ensure no transforms are affecting layout */
+    display: block; /* Make sure it's displayed */
+}
 
 .report-paper-table {
     width: 100%;

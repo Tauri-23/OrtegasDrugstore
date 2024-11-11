@@ -177,30 +177,32 @@ class PurchaseTransactionController extends Controller
         whereMonth('created_at', $month)->whereYear('created_at', $year)
         ->with(['items', 'discounts', 'customer'])
         ->get();
-
         $extractedItemsNow = $purchaseTransactionsFullNow->pluck('items')->flatten();
-
         $totalSalesNow = purchase_transactions::
         whereMonth('created_at', $month)->whereYear('created_at', $year)->sum('total');
+        $totalQtyNow = $purchaseTransactionsFullNow->pluck('items')->flatten()->sum('total');
+        $newItems = medicines::whereMonth('created_at', $month)->whereYear('created_at', $year)->with('group')->get();
 
 
         $purchaseTransactionsFullLastMonth = purchase_transactions::
         whereMonth('created_at', $month - 1)->whereYear('created_at', $year)
         ->with(['items', 'discounts', 'customer'])
         ->get();
-
         $extractedItemsLastMonth = $purchaseTransactionsFullLastMonth->pluck('items')->flatten();
-
         $totalSalesLastMonth = purchase_transactions::
         whereMonth('created_at', $month - 1)->whereYear('created_at', $year)->sum('total');
+        $totalQtyLastMonth = $extractedItemsLastMonth->pluck('items')->flatten()->sum('total');
         
         return response()->json([
             'purchase_transactions_now' => $purchaseTransactionsFullNow,
             'extracted_items_now' => $extractedItemsNow,
             'total_sales_now' => $totalSalesNow,
+            'total_qty_now' => $totalQtyNow,
             'purchase_transactions_last_month' => $purchaseTransactionsFullLastMonth,
             'extracted_items_last_month' => $extractedItemsLastMonth,
             'total_sales_last_month' => $totalSalesLastMonth,
+            'total_qty_last_month' => $totalQtyLastMonth,
+            'new_items' => $newItems
         ]);
     }
 }

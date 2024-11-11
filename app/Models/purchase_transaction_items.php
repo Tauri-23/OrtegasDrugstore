@@ -11,6 +11,6 @@ class purchase_transaction_items extends Model
 
     public function medicine()
     {
-        return $this->belongsTo(medicines::class, 'medicine', 'id');
+        return $this->belongsTo(medicines::class, 'medicine', 'id')->with('group');
     }
 }
