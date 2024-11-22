@@ -19,7 +19,7 @@ import Prophet from "./views/AlgoModels/prophet";
 const router = createBrowserRouter([
     /*
     |----------------------------------------
-    | Guest 
+    | Algo 
     |----------------------------------------
     */
     {

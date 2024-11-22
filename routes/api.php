@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\ForecastController;
 use App\Http\Controllers\Api\MedicineController;
 use App\Http\Controllers\Api\MedicineGroupController;
 use App\Http\Controllers\Api\PurchaseTransactionController;
@@ -13,6 +14,17 @@ Route::middleware('auth:sanctum')
         Route::get('/user', [AuthController::class, 'getUser']);
         Route::post('/logout', [AuthController::class, 'logout']);
     });
+
+
+
+
+
+/*
+|----------------------------------------
+| Algo 
+|----------------------------------------
+*/
+Route::get('/get-forecasted-data', [ForecastController::class,'GetForecast']);
 
 
 
