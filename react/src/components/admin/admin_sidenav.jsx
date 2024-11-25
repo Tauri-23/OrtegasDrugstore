@@ -54,7 +54,7 @@ const AdminSidenav = ({onLogout}) => {
                 to={'/OrtegaAdmin'} 
                 className={`admin-sidenav1-link ${location.pathname === '/OrtegaAdmin' || location.pathname === '/OrtegaAdmin/' ? 'active' : ''}`}>
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/dashboard.svg" alt="" />
+                        <img src="/media/icons/dashboard.svg" alt="" />
                         <div>Dashboard</div>
                     </div>
                 </Link>
@@ -65,7 +65,7 @@ const AdminSidenav = ({onLogout}) => {
                 onClick={() => setInventoryOpen(!inventoryOpen)}
                 >
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/medicine.svg" alt="" />
+                        <img src="/media/icons/medicine.svg" alt="" />
                         <div>Inventory</div>
                     </div>
                     {inventoryOpen
@@ -93,7 +93,7 @@ const AdminSidenav = ({onLogout}) => {
                 onClick={() => setReportsOpen(!reportsOpen)}
                 >
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/trend.svg" alt="" />
+                        <img src="/media/icons/trend.svg" alt="" />
                         <div>Reports</div>
                     </div>
                     {reportsOpen
@@ -118,7 +118,7 @@ const AdminSidenav = ({onLogout}) => {
                 to={"POS"}  
                 className={`admin-sidenav1-link ${location.pathname === '/OrtegaAdmin/POS'? 'active' : ''}`}>
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/cash-register.svg" alt="" />
+                        <img src="/media/icons/cash-register.svg" alt="" />
                         <div>POS</div>
                     </div>
                 </Link>
@@ -127,7 +127,7 @@ const AdminSidenav = ({onLogout}) => {
                 to={"Configurations"}
                 className={`admin-sidenav1-link ${location.pathname === '/OrtegaAdmin/Configurations'? 'active' : ''}`}>
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/options1.svg" alt="" />
+                        <img src="/media/icons/options1.svg" alt="" />
                         <div>Configurations</div>
                     </div>
                 </Link>
@@ -138,7 +138,7 @@ const AdminSidenav = ({onLogout}) => {
 
                 <div className="admin-sidenav1-link">
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/users.svg" alt="" />
+                        <img src="/media/icons/users.svg" alt="" />
                         <div>Contract Management</div>
                     </div>
                     <Icon.CaretDownFill className="text-m3"/>
@@ -146,7 +146,7 @@ const AdminSidenav = ({onLogout}) => {
 
                 <div className="admin-sidenav1-link">
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/bell.svg" alt="" />
+                        <img src="/media/icons/bell.svg" alt="" />
                         <div>Notifications</div>
                     </div>
                 </div>
@@ -157,14 +157,14 @@ const AdminSidenav = ({onLogout}) => {
 
                 <div className="admin-sidenav1-link">
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/gear.svg" alt="" />
+                        <img src="/media/icons/gear.svg" alt="" />
                         <div>App Settings</div>
                     </div>
                 </div>
 
                 <div className="admin-sidenav1-link">
                     <div className="d-flex align-items-center" style={{gap: 15}}>
-                        <img src="/src/assets/media/icons/info-box.svg" alt="" />
+                        <img src="/media/icons/info-box.svg" alt="" />
                         <div>Get Technical Help</div>
                     </div>
                 </div>
