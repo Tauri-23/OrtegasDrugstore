@@ -1,6 +1,6 @@
 # OrtegasDrugstore
  
- to run python
- .\venv\Scripts\activate
+to run python
+.\venv\Scripts\activate
 python python/forecasting.py
 

@@ -3,9 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from prophet import Prophet
 import json
+import os
 
 # Load the dataset
-file_path = 'python/Expanded_Ortega_Synthetic_Data_v2.csv'
+file_path = os.path.join(os.path.dirname(__file__), 'Expanded_Ortega_Synthetic_Data_v2.csv')
 df = pd.read_csv(file_path)
 
 # Preprocess the data
