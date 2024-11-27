@@ -46,9 +46,10 @@ class MedicineController extends Controller
         $medicine = new medicines();
         $medicine->id = $medicineId;
         $medicine->name = $request->medName;
-        $medicine->medicine_id = $request->medId;
+        $medicine->price = $request->medPrice;
         $medicine->group = $request->medGp;
         $medicine->qty = $request->medQty;
+        $medicine->expiration = $request->expiration;
         $medicine->directions = $request->medDirection;
         $medicine->side_effects = $request->medSideFx;
 

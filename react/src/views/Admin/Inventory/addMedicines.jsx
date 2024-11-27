@@ -10,7 +10,8 @@ export default function AdminAddMedicines() {
     const [medicineGroups, setMedicineGroups] = useState(null);
 
     const [medName, setMedName] = useState("");
-    const [medId, setMedId] = useState("");
+    const [medPrice, setMedPrice] = useState(0);
+    const [expiration, setExpiration] = useState("");
     const [medGp, setMedGp] = useState("");
     const [medQty, setMedQty] = useState(0);
     const [medDirectionForCheck, setMedDirectionForCheck] = useState("");
@@ -35,7 +36,7 @@ export default function AdminAddMedicines() {
 
     // Enable or disable the add Btn
     useEffect(() => {
-        if(!isEmptyOrSpaces(medName) && !isEmptyOrSpaces(medId) && medGp !== ""
+        if(!isEmptyOrSpaces(medName) && medPrice !== undefined && medGp !== "" && expiration !== ""
             && !isEmptyOrSpaces(medDirectionForCheck) && !isEmptyOrSpaces(medSideFxForCheck)) {
             setAddBtnActive(true);
         } else {
@@ -43,7 +44,8 @@ export default function AdminAddMedicines() {
         }
     }, [
         medName,
-        medId,
+        medPrice,
+        expiration,
         medGp,
         medQty,
         medDirection,
@@ -56,9 +58,10 @@ export default function AdminAddMedicines() {
         console.log(medSideFx);
         const formData = new FormData();
         formData.append("medName", medName);
-        formData.append("medId", medId);
+        formData.append("medPrice", medPrice);
         formData.append("medGp", medGp);
         formData.append("medQty", medQty);
+        formData.append("expiration", expiration);
         formData.append("medDirection", medDirection);
         formData.append("medSideFx", medSideFx);
 
@@ -92,8 +95,8 @@ export default function AdminAddMedicines() {
                             </div>
 
                             <div className="d-flex flex-direction-y w-100 gap4">
-                                <label htmlFor="medId" className="text-m1">Medicine ID</label>
-                                <input type="text" onInput={(e) => setMedId(e.target.value)} id="medId" className="input1" value={medId} />
+                                <label htmlFor="medPrice" className="text-m1">Medicine Price</label>
+                                <input type="number" min={0} onInput={(e) => setMedPrice(e.target.value)} id="medPrice" className="input1" value={medPrice} />
                             </div>
                         </div>
 
@@ -112,6 +115,10 @@ export default function AdminAddMedicines() {
                             <div className="d-flex flex-direction-y w-100 gap4">
                                 <label htmlFor="qty" className="text-m1">Quantity in Number</label>
                                 <input type="number" min={0} id="qty" className="input1" onChange={(e) => setMedQty(e.target.value)} value={medQty}/>
+                            </div>
+                            <div className="d-flex flex-direction-y w-100 gap4">
+                                <label htmlFor="expiration" className="text-m1">Expiration Date</label>
+                                <input type="date" id="expiration" className="input1" onChange={(e) => setExpiration(e.target.value)} value={expiration}/>
                             </div>
                         </div>
 

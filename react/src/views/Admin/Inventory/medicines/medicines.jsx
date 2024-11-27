@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import * as Icon from "react-bootstrap-icons";
 import { fetchAllMedicinesFull } from "../../../../Services/GeneralMedicineService";
 import { Link, useNavigate } from "react-router-dom";
+import { formatDate, formatToPhilPeso } from "../../../../assets/js/utils";
 
 export default function AdminMedicines() {
     const [medicines, setMedicines] = useState(null);
@@ -52,9 +53,10 @@ export default function AdminMedicines() {
                 <thead className="table1-thead">
                     <tr>
                         <th>Medicine Name</th>
-                        <th>Medicine ID</th>
                         <th>Group Name</th>
+                        <th>Price</th>
                         <th>Stock in Qty</th>
+                        <th>Expiration</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -62,9 +64,10 @@ export default function AdminMedicines() {
                     {medicines?.length > 0 && medicines.map((meds, index) => (
                         <tr key={index} onClick={() => navigate(`/OrtegaAdmin/ViewMedicines/${meds.id}`)}>
                             <td>{meds.name}</td>
-                            <td>{meds.medicine_id}</td>
                             <td>{meds.group.group_name}</td>
+                            <td>{formatToPhilPeso(meds.price)}</td>
                             <td>{meds.qty}</td>
+                            <td>{formatDate(meds.expiration)}</td>
                             <td>
                                 <div className="d-flex gap1 align-items-center">
                                     <div className="text-m2">

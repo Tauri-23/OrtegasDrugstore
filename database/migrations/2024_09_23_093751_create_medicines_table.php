@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('medicines', function (Blueprint $table) {
             $table->string("id", 12)->primary();
             $table->string("name");
-            $table->string("medicine_id", 14);
             $table->text('pic')->nullable();
             $table->string("group", 6)->nullable();
             $table->integer("qty");
             $table->float('price')->default(0);
+            $table->float('competitor_price')->default(0);
+            $table->date('expiration');
             $table->longText("directions");
             $table->longText("side_effects");
             $table->timestamps();
