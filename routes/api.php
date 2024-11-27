@@ -97,5 +97,7 @@ Route::get('/get-all-full-purchase-transactions', [PurchaseTransactionController
 Route::get('/get-all-full-purchase-transactions-where-date-range/{fromDate}/{toDate}', [PurchaseTransactionController::class, 'GetAllPurchasTransactionsWhereDateRange']);
 Route::get('/get-necessary-data-for-report/{month}/{year}', [PurchaseTransactionController::class, 'GenerateReport']);
 
+Route::get('/get-all-full-purchase-transaction-items', [PurchaseTransactionController::class, 'GetAllPurchaseTransactionItems']);
+
 Route::post('/add-purchase-transaction', [PurchaseTransactionController::class, 'AddPurchase']);
 Route::post('/void-purchase-transaction', [PurchaseTransactionController::class, 'VoidPurchase']);

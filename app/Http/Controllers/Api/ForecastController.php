@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\purchase_transaction_items;
 use Illuminate\Http\Request;
 
 class ForecastController extends Controller
 {
     public function GetForecast()
     {
-        $pythonScriptPath = base_path("python/forecasting.py");
+        $pythonScriptPath = base_path("python/forecasting_v2.py");
         $output = [];
         $errorOutput = [];
 

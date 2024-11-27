@@ -162,6 +162,11 @@ class PurchaseTransactionController extends Controller
     {
         return response()->json(purchase_transactions::with(['items', 'discounts', 'customer'])->orderBy('created_at', 'DESC')->get());
     }
+    
+    public function GetAllPurchaseTransactionItems()
+    {
+        return response()->json(purchase_transaction_items::with("medicine")->orderBy("created_at","ASC")->get());
+    }
 
     public function GetAllPurchasTransactionsWhereDateRange($fromDate, $toDate)
     {
