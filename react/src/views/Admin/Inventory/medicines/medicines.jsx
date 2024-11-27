@@ -30,8 +30,8 @@ export default function AdminMedicines() {
         <div className="content1">
             <div className="d-flex justify-content-between align-items-center mar-bottom-l1">
                 <div>
-                    <div className="text-l1 fw-bolder">Medicines</div>
-                    <div className="text-m1">List of medicines available for sales.</div>
+                    <div className="text-l1 fw-bolder">Inventory Items</div>
+                    <div className="text-m1">List of items available for sales.</div>
                 </div>
                 
                 <Link to={'/OrtegaAdmin/AddMedicine'} className="primary-btn-dark-blue1 d-flex gap3 align-items-center"><Icon.PlusLg className="text-l3"/> Add Medicine</Link>

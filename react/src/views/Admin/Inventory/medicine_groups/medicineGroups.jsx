@@ -64,8 +64,8 @@ export default function AdminMedicineGroups() {
         <div className="content1">
             <div className="d-flex justify-content-between align-items-center mar-bottom-l1">
                 <div>
-                    <div className="text-l1 fw-bolder">Medicines</div>
-                    <div className="text-m1">List of medicines available for sales.</div>
+                    <div className="text-l1 fw-bolder">Inventory Groups</div>
+                    <div className="text-m1">List of groups available for sales.</div>
                 </div>
                 
                 <button onClick={handleAddMedGroup} className="primary-btn-dark-blue1 d-flex gap3 align-items-center"><Icon.PlusLg className="text-l3"/> Add New Group</button>
