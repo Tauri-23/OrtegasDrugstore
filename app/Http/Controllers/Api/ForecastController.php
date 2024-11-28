@@ -10,7 +10,7 @@ class ForecastController extends Controller
 {
     public function GetForecast()
     {
-        $pythonScriptPath = base_path("python/forecasting_v2.py");
+        $pythonScriptPath = base_path("python/forecasting.py");
         $output = [];
         $errorOutput = [];
 

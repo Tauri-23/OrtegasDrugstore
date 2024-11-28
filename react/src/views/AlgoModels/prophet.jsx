@@ -9,12 +9,19 @@ export default function Prophet() {
     const [weekChartData, setWeekChartData] = useState(null);
     const [monthChartData, setMonthChartData] = useState(null);
 
+    const [metrics, setMetrics] = useState();
+
     useEffect(() => {
         const getAll = async() => {
             try {
                 const data = await axiosClient.get('/get-forecasted-data');
                 setForecastWeek(data.data.forecast.forecast_week);
                 setForecastMonth(data.data.forecast.forecast_month);
+                setMetrics([
+                    data.data.forecast.mse,
+                    data.data.forecast.rmse,
+                    data.data.forecast.mape
+                ])
             } catch(error) {
                 console.error(error);
             }
@@ -98,12 +105,8 @@ export default function Prophet() {
      * Debugging
      */
     useEffect(() => {
-        console.log(weekChartData);
-    }, [weekChartData]);
-    
-    useEffect(() => {
-        console.log(monthChartData);
-    }, [monthChartData]);
+        console.log(metrics);
+    }, [metrics]);
 
 
 
@@ -115,6 +118,10 @@ export default function Prophet() {
             {weekChartData && monthChartData
             ? (
                 <>
+                    {/* Metrics */}
+                    <div className="text-m1">MSE: {metrics[0]}</div>
+                    <div className="text-m1">RMSE: {metrics[1]}</div>
+                    <div className="text-m1">MAE: {metrics[2]}</div>
                     
                     {/* Chart here */}
                     <div className="w-50">
