@@ -47,7 +47,7 @@ Route::post('/login', [AuthController::class, 'login']);
 | Medicine Groups 
 |----------------------------------------
 */
-Route::get('/get-all-medicine', [MedicineGroupController::class,'GetAllMedGroups']);
+Route::get('/get-all-medicine-groups', [MedicineGroupController::class,'GetAllMedGroups']);
 Route::get('/get-all-med-group-where-id/{medGpId}', [MedicineGroupController::class, 'GetMedGroupWhereId']);
 
 Route::post('/add-medicine-group-post', [MedicineGroupController::class, 'AddMedGroup']);

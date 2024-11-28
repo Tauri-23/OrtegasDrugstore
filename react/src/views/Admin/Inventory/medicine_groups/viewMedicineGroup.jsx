@@ -5,7 +5,7 @@ import '../../../../assets/css/medicines.css';
 import { useModal } from "../../../../Context/ModalContext";
 import { fetchMedGroupById } from "../../../../Services/GeneralMedicineGroupService";
 import { fetchMedicinesWhereGroup } from "../../../../Services/GeneralMedicineService";
-import { notify } from "../../../../assets/js/utils";
+import { formatDate, formatToPhilPeso, notify } from "../../../../assets/js/utils";
 import axiosClient from "../../../../axios-client";
 
 export default function AdminViewMedicineGroup() {
@@ -86,8 +86,10 @@ export default function AdminViewMedicineGroup() {
                     <thead className="table1-thead">
                         <tr>
                             <th>Medicine Name</th>
-                            <th>Medicine ID</th>
+                            <th>Group Name</th>
+                            <th>Price</th>
                             <th>Stock in Qty</th>
+                            <th>Expiration</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -95,8 +97,10 @@ export default function AdminViewMedicineGroup() {
                         {medicines?.length > 0 && medicines.map((meds, index) => (
                             <tr key={index} onClick={() => navigate(`/OrtegaAdmin/ViewMedicines/${meds.id}`)}>
                                 <td>{meds.name}</td>
-                                <td>{meds.medicine_id}</td>
+                                <td>{meds.group.group_name}</td>
+                                <td>{formatToPhilPeso(meds.price)}</td>
                                 <td>{meds.qty}</td>
+                                <td>{formatDate(meds.expiration)}</td>
                                 <td>
                                     <div className="d-flex gap1 align-items-center">
                                         <div className="text-m2">

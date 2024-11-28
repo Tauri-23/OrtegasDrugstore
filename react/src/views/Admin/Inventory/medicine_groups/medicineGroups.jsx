@@ -90,7 +90,7 @@ export default function AdminMedicineGroups() {
                     {medicineGroups?.length > 0 && medicineGroups.map((meds, index) => (
                         <tr key={index} onClick={() => navigate(`/OrtegaAdmin/ViewMedicineGroup/${meds.id}`)}>
                             <td>{meds.group_name}</td>
-                            <td>{meds.number_meds}</td>
+                            <td>{meds.total_qty}</td>
                             <td>
                                 <div className="d-flex gap1 align-items-center">
                                     <div className="text-m2">

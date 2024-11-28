@@ -23,7 +23,13 @@ class MedicineGroupController extends Controller
     // GET
     public function GetAllMedGroups()
     {
-        return response()->json(medicine_groups::all());
+        $medGroups = medicine_groups::all();
+
+        foreach ($medGroups as $medGroup) {
+            $medGroup->total_qty = $medGroup->medicines()->sum('qty');
+        }
+
+        return response()->json($medGroups);
     }
 
     public function GetMedGroupWhereId($medGpId)

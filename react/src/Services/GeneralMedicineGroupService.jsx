@@ -2,7 +2,7 @@ import axiosClient from "../axios-client";
 
 export const fetchAllMedGroups = async() => {
     try {
-        const response = await axiosClient.get('/get-all-medicine');
+        const response = await axiosClient.get('/get-all-medicine-groups');
         return response.data;
     } catch (error) {
         console.error('Failed fetching medicine groups : ', error);
