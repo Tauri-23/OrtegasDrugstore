@@ -1,0 +1,180 @@
+POPULATE purchase transcations
+DROP PROCEDURE IF EXISTS GenerateTransactions;
+
+DELIMITER $$
+
+CREATE PROCEDURE GenerateTransactions()
+BEGIN
+    DECLARE counter INT DEFAULT 0;
+    DECLARE medicine_count INT;
+    DECLARE rand_idx1 INT;
+    DECLARE rand_idx2 INT;
+    DECLARE med1_id BIGINT;
+    DECLARE med2_id BIGINT;
+    DECLARE med1_price DECIMAL(10,2);
+    DECLARE med2_price DECIMAL(10,2);
+    DECLARE med1_qty INT;
+    DECLARE med2_qty INT;
+    DECLARE subtotal DECIMAL(10,2);
+    DECLARE total DECIMAL(10,2);
+    DECLARE discount_deduction DECIMAL(10,2) DEFAULT 0;
+    DECLARE cash DECIMAL(10,2) DEFAULT 1000; -- Example cash value
+    DECLARE customer_id INT DEFAULT 1; -- Example customer ID
+    DECLARE transaction_id BIGINT;
+
+    -- Fetch all medicines into a temporary table
+    DROP TEMPORARY TABLE IF EXISTS all_medicines;
+    CREATE TEMPORARY TABLE all_medicines AS
+    SELECT id, price, qty FROM medicines;
+
+    -- Get the count of medicines
+    SELECT COUNT(*) INTO medicine_count FROM all_medicines;
+
+    WHILE counter < 2000 DO
+        -- Step 1: Generate a transaction ID
+        SET transaction_id = FLOOR(RAND() * 900000000000) + 100000000000;
+
+        -- Step 2: Select two random indices
+        SET rand_idx1 = FLOOR(RAND() * medicine_count) + 1;
+        SET rand_idx2 = FLOOR(RAND() * medicine_count) + 1;
+
+        -- Ensure unique indices
+        WHILE rand_idx2 = rand_idx1 DO
+            SET rand_idx2 = FLOOR(RAND() * medicine_count) + 1;
+        END WHILE;
+
+        -- Fetch details of the first random medicine
+        SELECT id, price, qty INTO med1_id, med1_price, med1_qty
+        FROM all_medicines
+        WHERE id = (SELECT id FROM all_medicines LIMIT rand_idx1, 1);
+
+        -- Fetch details of the second random medicine
+        SELECT id, price, qty INTO med2_id, med2_price, med2_qty
+        FROM all_medicines
+        WHERE id = (SELECT id FROM all_medicines LIMIT rand_idx2, 1);
+
+        -- Generate random quantities for the selected medicines
+        SET med1_qty = LEAST(med1_qty, FLOOR(1 + RAND() * 5));
+        SET med2_qty = LEAST(med2_qty, FLOOR(1 + RAND() * 5));
+
+        -- Step 3: Calculate subtotal and total
+        SET subtotal = (med1_price * med1_qty) + (med2_price * med2_qty);
+        SET total = subtotal - discount_deduction;
+
+        -- Step 4: Insert into `purchase_transactions`
+        INSERT INTO purchase_transactions (id, subtotal, discount_deduction, total, cash, `change`, created_at)
+        VALUES (transaction_id, subtotal, discount_deduction, total, cash, cash - total, NOW());
+
+        -- Step 5: Insert into `purchase_transaction_items`
+        INSERT INTO purchase_transaction_items (purchase_transaction, medicine, qty, created_at)
+        VALUES (transaction_id, med1_id, med1_qty, NOW()),
+               (transaction_id, med2_id, med2_qty, NOW());
+
+        -- Step 6: Update the stock for selected medicines
+        UPDATE medicines
+        SET qty = qty - med1_qty
+        WHERE id = med1_id;
+
+        UPDATE medicines
+        SET qty = qty - med2_qty
+        WHERE id = med2_id;
+
+        -- Increment the counter
+        SET counter = counter + 1;
+    END WHILE;
+END$$
+
+DELIMITER ;
+
+-- Execute the procedure
+CALL GenerateTransactions();
+
+
+
+
+
+
+
+
+
+
+Update DATE
+-- Drop procedure if it already exists
+DROP PROCEDURE IF EXISTS UpdatePurchaseTransactionDates;
+
+DELIMITER //
+
+CREATE PROCEDURE UpdatePurchaseTransactionDates()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE transaction_id VARCHAR(12);
+    DECLARE base_date DATE DEFAULT '2021-01-01';  -- Starting from Jan 1, 2021
+    DECLARE today DATE DEFAULT CURDATE();  -- Get today's date
+
+    -- Cursor to select all transaction IDs
+    DECLARE transaction_cursor CURSOR FOR SELECT id FROM purchase_transactions;
+
+    -- Continue handler for cursor loop
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Open the cursor
+    OPEN transaction_cursor;
+
+    -- Start the loop
+    WHILE NOT done AND base_date <= today DO
+        -- Fetch the transaction id
+        FETCH transaction_cursor INTO transaction_id;
+
+        IF NOT done THEN
+            -- Update the first transaction for the current day
+            UPDATE purchase_transactions
+            SET created_at = base_date,
+                updated_at = base_date
+            WHERE id = transaction_id;
+
+            -- Update the related purchase_transaction_items
+            UPDATE purchase_transaction_items
+            SET created_at = base_date,
+                updated_at = base_date
+            WHERE purchase_transaction = transaction_id;
+
+            -- Increment the base date for the second transaction
+            SET base_date = DATE_ADD(base_date, INTERVAL 1 DAY);
+
+            -- Fetch the second transaction for the current day
+            FETCH transaction_cursor INTO transaction_id;
+
+            IF NOT done THEN
+                -- Update the second transaction for the current day
+                UPDATE purchase_transactions
+                SET created_at = base_date,
+                    updated_at = base_date
+                WHERE id = transaction_id;
+
+                -- Update the related purchase_transaction_items
+                UPDATE purchase_transaction_items
+                SET created_at = base_date,
+                    updated_at = base_date
+                WHERE purchase_transaction = transaction_id;
+
+                -- Increment the base date for the next day's transactions
+                SET base_date = DATE_ADD(base_date, INTERVAL 1 DAY);
+            END IF;
+        END IF;
+    END WHILE;
+
+    -- Close the cursor
+    CLOSE transaction_cursor;
+END//
+
+DELIMITER ;
+
+-- Execute the procedure
+CALL UpdatePurchaseTransactionDates();
+
+-- Clean up: Drop the procedure if no longer needed
+DROP PROCEDURE IF EXISTS UpdatePurchaseTransactionDates;
+
+-- Verify updates
+SELECT * FROM purchase_transactions ORDER BY created_at;
+SELECT * FROM purchase_transaction_items ORDER BY created_at;
