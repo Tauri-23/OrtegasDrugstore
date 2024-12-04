@@ -261,6 +261,15 @@ body {background: var(--white2);}
 }
 
 
+.mar-y-l1 {
+    margin: 60px 0;
+}
+.mar-y-l2 {
+    margin: 50px 0;
+}
+.mar-y-l3 {
+    margin: 40px 0;
+}
 .mar-y-1 {
     margin: 30px 0;
 }

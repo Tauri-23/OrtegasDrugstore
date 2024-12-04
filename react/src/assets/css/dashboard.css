@@ -60,3 +60,21 @@
     border-top: 2px solid var(--red1);
     background: var(--red1-03);
 }
+
+
+
+.dashboard-content-2 {
+    width: 100%;
+    display: flex;
+    gap: 60px;
+    margin: 30px 0;
+}
+.dashboard-content-1-box-2 {
+    width: calc(100% / 4);
+    background: var(--white1);
+    filter: drop-shadow(0 0 3px var(--grey1));
+    min-height: 200px;
+    border-radius: 10px;
+    padding: 20px;
+    overflow: hidden;
+}
