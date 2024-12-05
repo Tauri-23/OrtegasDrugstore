@@ -3,13 +3,26 @@ import "../../assets/css/dashboard.css";
 import { formatToPhilPeso } from "../../assets/js/utils";
 import LineChart1 from "../../components/charts/LineChart1";
 import axiosClient from "../../axios-client";
+import { fetchAllForecast } from "../../Services/ForecastServices";
+import { fetchAllMedicineCount, fetchAllMedicineShortage, fetchAllRevenue } from "../../Services/DashboardService";
+import { fetchAllMedicinesFull } from "../../Services/GeneralMedicineService";
+import { useModal } from "../../Context/ModalContext";
+import { useNavigate } from "react-router-dom";
 
 const AdminIndex = () => {
+    const navigate = useNavigate();
+
     const [forecastWeek, setForecastWeek] = useState(null);
     const [forecastMonth, setForecastMonth] = useState(null);
 
     const [weekChartData, setWeekChartData] = useState(null);
     const [monthChartData, setMonthChartData] = useState(null);
+
+    const [revenue, setRevenue] = useState(0);
+    const [medCount, setMedCount] = useState(0);
+    const [medShortage, setMedShortage] = useState(0);
+
+    const [medicines, setMedicines] = useState(0);
 
     const [metrics, setMetrics] = useState();
 
@@ -21,14 +34,24 @@ const AdminIndex = () => {
     useEffect(() => {
         const getAll = async() => {
             try {
-                const data = await axiosClient.get('/get-forecasted-data');
-                setForecastWeek(data.data.forecast.forecast_week);
-                setForecastMonth(data.data.forecast.forecast_month);
+                const [forecastDb, revenueDb, medCountDb, medShortageDb, medicinesDb] = await Promise.all([
+                    fetchAllForecast(),
+                    fetchAllRevenue(),
+                    fetchAllMedicineCount(),
+                    fetchAllMedicineShortage(),
+                    fetchAllMedicinesFull()
+                ]);
+                setForecastWeek(forecastDb.forecast.forecast_week);
+                setForecastMonth(forecastDb.forecast.forecast_month);
                 setMetrics([
-                    data.data.forecast.mse,
-                    data.data.forecast.rmse,
-                    data.data.forecast.mape
-                ])
+                    forecastDb.forecast.mse,
+                    forecastDb.forecast.rmse,
+                    forecastDb.forecast.mape
+                ]);
+                setRevenue(revenueDb);
+                setMedCount(medCountDb);
+                setMedShortage(medShortageDb);
+                setMedicines(medicinesDb);
             } catch(error) {
                 console.error(error);
             }
@@ -109,6 +132,23 @@ const AdminIndex = () => {
 
 
     /**
+     * Functions
+     */
+    const getStatus = (qty) => {
+        if(qty > (medicines.length * .3)) {
+            return "Bad"
+        }
+        else if(qty > (medicines.length * .2)) {
+            return "Low Stock"
+        }
+        else{
+            return "Good"
+        }
+    }
+
+
+
+    /**
      * Render
      */
     return(
@@ -125,10 +165,10 @@ const AdminIndex = () => {
                     </div>
 
                     <div className="dashboard-content-1">
-                        <div className="dashboard-content-1-box green">
+                        <div className={`dashboard-content-1-box ${getStatus(medShortage.length) === "Good" ? "green" : (getStatus(medShortage.length) === "Low Stock" ? "yellow" : "red")}`}>
                             <div className="dashboard-content-1-box-upper">
                                 <img src="/media/icons/sheild-green1.svg" className="dashboard-content-1-icon"/>
-                                <div className="text-l2 fw-bold">GOOD</div>
+                                <div className="text-l2 fw-bold">{getStatus(medShortage.length)}</div>
                                 <div className="text-l3">Inventory Status</div>
                             </div>
 
@@ -140,7 +180,7 @@ const AdminIndex = () => {
                         <div className="dashboard-content-1-box yellow">
                             <div className="dashboard-content-1-box-upper">
                                 <img src="/media/icons/budget-yellow1.svg" className="dashboard-content-1-icon"/>
-                                <div className="text-l2 fw-bold">{formatToPhilPeso(30000)}</div>
+                                <div className="text-l2 fw-bold">{formatToPhilPeso(revenue)}</div>
                                 <div className="text-l3">Revenue</div>
                             </div>
 
@@ -152,7 +192,7 @@ const AdminIndex = () => {
                         <div className="dashboard-content-1-box blue">
                             <div className="dashboard-content-1-box-upper">
                                 <img src="/media/icons/medicine2-blue2.svg" className="dashboard-content-1-icon"/>
-                                <div className="text-l2 fw-bold">300</div>
+                                <div className="text-l2 fw-bold">{medCount}</div>
                                 <div className="text-l3">Medicines Available</div>
                             </div>
 
@@ -161,10 +201,10 @@ const AdminIndex = () => {
                             </div>
                         </div>
 
-                        <div className="dashboard-content-1-box red">
+                        <div className="dashboard-content-1-box red" onClick={() => navigate('/OrtegaAdmin/MedicineShortage')}>
                             <div className="dashboard-content-1-box-upper">
                                 <img src="/media/icons/danger-red1.svg" className="dashboard-content-1-icon"/>
-                                <div className="text-l2 fw-bold">0</div>
+                                <div className="text-l2 fw-bold">{medShortage.length}</div>
                                 <div className="text-l3">Medicine Shortage</div>
                             </div>
 

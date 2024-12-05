@@ -9,6 +9,7 @@
     height: 200px;
     border-radius: 10px;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .dashboard-content-1-box-upper {

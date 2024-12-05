@@ -15,6 +15,7 @@ import AdminPOSIndex from "./views/Admin/POS/admin_pos_index";
 import AdminConfigDefault from "./views/Admin/ConfigPages/config_default";
 import AdminConfigIndex from "./views/Admin/ConfigPages/config_index";
 import Prophet from "./views/AlgoModels/prophet";
+import ViewShortage from "./views/Admin/viewShortage";
 
 const router = createBrowserRouter([
     /*
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
             {
                 index: true,
                 element: <AdminIndex/>
+            },
+            {
+                path: 'MedicineShortage',
+                element: <ViewShortage/>
             },
 
             /**

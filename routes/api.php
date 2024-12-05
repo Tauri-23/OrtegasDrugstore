@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ForecastController;
 use App\Http\Controllers\Api\MedicineController;
@@ -25,6 +26,7 @@ Route::middleware('auth:sanctum')
 |----------------------------------------
 */
 Route::get('/get-forecasted-data', [ForecastController::class,'GetForecast']);
+Route::get('/get-forecasted-data-where-medicine/{medicineId}', [ForecastController::class,'GetForecastWhereMedicine']);
 
 
 
@@ -101,3 +103,16 @@ Route::get('/get-all-full-purchase-transaction-items', [PurchaseTransactionContr
 
 Route::post('/add-purchase-transaction', [PurchaseTransactionController::class, 'AddPurchase']);
 Route::post('/void-purchase-transaction', [PurchaseTransactionController::class, 'VoidPurchase']);
+
+
+
+
+
+/*
+|----------------------------------------
+| Dashboard 
+|----------------------------------------
+*/
+Route::get('/get-all-revenues', [DashboardController::class, 'GetAllRevenues']);
+Route::get('/get-all-medicine-count', [DashboardController::class, 'GetAllMedicineCount']);
+Route::get('/get-all-medicine-shortage', [DashboardController::class, 'GetAllMedicineShortage']);

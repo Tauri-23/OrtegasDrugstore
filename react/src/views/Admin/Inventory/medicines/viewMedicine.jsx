@@ -7,6 +7,8 @@ import { useModal } from "../../../../Context/ModalContext";
 import axiosClient from "../../../../axios-client";
 import { isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { EditMedInfo1 } from "../../../../components/admin/edit_med_info1";
+import { fetchAllForecastWhereMedicine } from "../../../../Services/ForecastServices";
+import LineChart1 from "../../../../components/charts/LineChart1";
 
 export default function AdminViewMedicine() {
     const {showModal} = useModal();
@@ -27,19 +29,105 @@ export default function AdminViewMedicine() {
 
     const [newMedPic, setNewMedPic] = useState(null);
 
+    const [forecastWeek, setForecastWeek] = useState(null);
+    const [forecastMonth, setForecastMonth] = useState(null);
+
+    const [weekChartData, setWeekChartData] = useState(null);
+    const [monthChartData, setMonthChartData] = useState(null);
+
+    const [metrics, setMetrics] = useState();
+
 
 
     useEffect(() => {
-        const getMedicineInfo = async() => {
+
+        const getAll = async() => {
             try {
-                const data = await fetchMedicineFullInfoById(medId);
-                setMedicine(data);
-                setNewQty(data.qty);
-            } catch(error) {console.error(error)}
+                const [medicineDb, forecastDb] = await Promise.all([
+                    fetchMedicineFullInfoById(medId),
+                    fetchAllForecastWhereMedicine(medId)
+                ]);
+                setMedicine(medicineDb);
+                setNewQty(medicineDb.qty);
+                setForecastWeek(forecastDb.forecast.forecast_week);
+                setForecastMonth(forecastDb.forecast.forecast_month);
+            } catch (error) {
+                console.error(error);
+            }
         }
 
-        getMedicineInfo();
+        getAll();
     }, []);
+
+
+
+    /**
+     * Prep Data for Charts
+     */
+    useEffect(() => {
+        if(forecastWeek) {
+            setWeekChartData({
+                labels: forecastWeek.map((entry) => entry.ds),
+                datasets: [
+                    {
+                        label: 'Weekly Forecast',
+                        data: forecastWeek.map((entry) => entry.yhat),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                    },
+                ],
+            })
+        }
+    }, [forecastWeek]);
+
+    useEffect(() => {
+        if(forecastWeek) {
+            setWeekChartData({
+                labels: forecastWeek.map((entry) => entry.ds),
+                datasets: [
+                    {
+                        label: 'Weekly Forecast',
+                        data: forecastWeek.map((entry) => entry.yhat),
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        fill: true,
+                    },
+                ],
+            })
+        }
+    }, [forecastWeek]);
+
+    useEffect(() => {
+        if(forecastMonth) {
+            setMonthChartData({
+                labels: forecastMonth.map((entry) => entry.ds),
+                datasets: [
+                    {
+                        label: 'Monthly Forecast',
+                        data: forecastMonth.map((entry) => entry.yhat),
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        fill: true,
+                    },
+                ],
+            })
+        }
+    }, [forecastMonth]);
+
+    const chartOptions = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Sales Forecast',
+            },
+        },
+        tension: .2
+    };
 
 
 
@@ -142,7 +230,7 @@ export default function AdminViewMedicine() {
     /**
      * Render
      */
-    if(medicine) {
+    if(medicine && weekChartData && monthChartData) {
         return(
             <div className="content1">
                 <div className="d-flex justify-content-start mar-bottom-3">
@@ -169,6 +257,28 @@ export default function AdminViewMedicine() {
                             accept="image/*"
                             onChange={handleFileChange}
                         />
+                    </div>
+                </div>
+
+                <div className="d-flex gap1 mar-bottom-1">
+                    <div className="view-medicine-box1 w-50">
+                        <div className="view-medicine-box1-body">
+                            <LineChart1
+                                title="Weekly Forecast"
+                                data={weekChartData}
+                                options={chartOptions}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="view-medicine-box1 w-50">
+                        <div className="view-medicine-box1-body">
+                            <LineChart1
+                                title="Monthly Forecast"
+                                data={monthChartData}
+                                options={chartOptions}
+                            />
+                        </div>
                     </div>
                 </div>
 
