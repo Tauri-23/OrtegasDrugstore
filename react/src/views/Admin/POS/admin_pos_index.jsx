@@ -218,6 +218,7 @@ export default function AdminPOSIndex() {
 
         axiosClient.post('/add-purchase-transaction', formData)
         .then(({data}) => {
+            console.log(data);
             if(data.status === 200) {
                 showModal('AdminViewReceiptModal1', {data: data.transaction, handleDoneTransaction, handleVoid});
             }
