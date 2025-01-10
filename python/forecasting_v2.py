@@ -19,7 +19,7 @@ def fetch_data_from_mysql():
         host="127.0.0.1",  # Replace with your DB host
         user="root",  # Replace with your DB user
         password="",  # Replace with your DB password
-        database="ortegas_drugstore"  # Replace with your database name
+        database="u590703896_ortegasmed"  # Replace with your database name
     )
 
     philippine_regular_holidays = [
