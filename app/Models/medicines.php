@@ -13,4 +13,9 @@ class medicines extends Model
     {
         return $this->belongsTo(medicine_groups::class, "group", "id");
     }
+
+    public function medicine_items()
+    {
+        return $this->hasMany(medicine_items::class, "medicine", "id");
+    }
 }

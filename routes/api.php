@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\DiscountController;
 use App\Http\Controllers\Api\ForecastController;
 use App\Http\Controllers\Api\MedicineController;
 use App\Http\Controllers\Api\MedicineGroupController;
+use App\Http\Controllers\Api\MedicineItemsController;
 use App\Http\Controllers\Api\PurchaseTransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -72,6 +73,17 @@ Route::post('/create-medicine', [MedicineController::class,'CreateMedicine']);
 Route::post('/del-medicine', [MedicineController::class, 'DelMedicine']);
 Route::post('/update-medicine', [MedicineController::class, 'UpdateMedicine']);
 Route::post('/update-medicine-pic', [MedicineController::class, 'UpdateMedicinePic']);
+
+
+
+
+
+/*
+|----------------------------------------
+| Medicines 
+|----------------------------------------
+*/
+Route::post('/add-medicine-item', [MedicineItemsController::class,'AddMedicineItem']);
 
 
 

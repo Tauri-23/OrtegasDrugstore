@@ -12,19 +12,13 @@ export default function AdminMedicines() {
         const getAllMedicines = async() => {
             try {
                 const data = await fetchAllMedicinesFull();
+                console.log(data);
                 setMedicines(data);
             } catch(error) {console.error(error)}
         };
 
         getAllMedicines();
     }, []);
-
-    /*
-    | Debugging
-    */
-    // useEffect(() => {
-    //     console.log(medicines);
-    // }, [medicines])
 
     return(
         <div className="content1">

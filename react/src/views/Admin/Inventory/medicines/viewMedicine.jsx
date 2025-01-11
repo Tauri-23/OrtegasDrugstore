@@ -5,7 +5,7 @@ import { fetchMedicineFullInfoById } from "../../../../Services/GeneralMedicineS
 import '../../../../assets/css/medicines.css';
 import { useModal } from "../../../../Context/ModalContext";
 import axiosClient from "../../../../axios-client";
-import { isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
+import { formatDateTime, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { EditMedInfo1 } from "../../../../components/admin/edit_med_info1";
 import { fetchAllForecastWhereMedicine } from "../../../../Services/ForecastServices";
 import LineChart1 from "../../../../components/charts/LineChart1";
@@ -166,7 +166,6 @@ export default function AdminViewMedicine() {
     }, [newMedPic])
 
     
-
     /**
      * Handle Edit Med Info
      */
@@ -223,6 +222,29 @@ export default function AdminViewMedicine() {
             }
         }).catch(error => console.error(error));
         
+    }
+
+
+    /**
+     * Handle Edit Med Info
+     */
+    const handleAddMedicineItem = () => {
+        showModal('AdminAddMedItemModal1', {handleAddPost: (expiration, sku) => {
+            /**
+             * TODO::Cheker if id(SKU) is already exist
+             */
+
+            const formData = new FormData();
+            formData.append('sku', sku);
+            formData.append('medicine', medicine.id);
+            formData.append('expiration', expiration);
+
+            axiosClient.post('/add-medicine-item', formData)
+            .then(({data}) => {
+                setMedicine(data.medicine);
+                notify(data.status === 200 ? 'success' : 'error', data.message, 'top-center', 3000);
+            }).catch(error => console.error(error));
+        }});
     }
     
 
@@ -301,40 +323,37 @@ export default function AdminViewMedicine() {
                         </div>
                     </div>
 
-                    <div className="view-medicine-box1 w-50">
-                        <div className="view-medicine-box1-head d-flex align-items-center justify-content-between">
+                    {/* Inventory */}
+                    <div className="view-medicine-box1 w-50" style={{height: '300px', overflow: 'auto'}}>
+                        <div 
+                        className="view-medicine-box1-head d-flex align-items-center justify-content-between"
+                        style={{position: 'sticky', top: 0, background: 'white', filter: 'drop-shadow(0 0 1px #555555)'}}>
                             <div className="text-l3">Inventory</div>
-                            <div 
-                            className={`primary-btn-dark-blue1 d-flex gap3 align-items-center text-m2 ${isEditQty ? 'd-none' : ''}`}
-                            onClick={() => setEditQty(true)}
+                            <button 
+                            className={`primary-btn-dark-blue1 d-flex gap3 align-items-center text-m2`}
+                            onClick={handleAddMedicineItem}
                             >
-                                <Icon.Pen/> Edit
-                            </div>
+                                <Icon.Capsule/> Add Item
+                            </button>
                         </div>
-                        <div className="hr-line1-black3"></div>
                         <div className="view-medicine-box1-body d-flex gapl1">
-                            <div className="d-flex flex-direction-y w-50">
-                                <div className={`text-m1 fw-bold ${isEditQty ? 'd-none' : ''}`}>{medicine.qty}</div>
-                                <div className={`text-m3 ${isEditQty ? 'd-none' : ''}`}>Stocks</div>
-                                <div className={`d-flex flex-direction-y gap3  ${isEditQty ? '' : 'd-none'}`}>
-                                    <input 
-                                    type="number" 
-                                    className={`input1`} 
-                                    min={0} 
-                                    onChange={(e) => setNewQty(e.target.value)} 
-                                    value={newQty}/>
-
-                                    <div className={`d-flex gap3`}>
-                                        <div className={`colorless-btn1`} onClick={() => setEditQty(false)}>Cancel</div>
-                                        <button 
-                                        disabled={newQty === '' && newQty === medicine.qty} 
-                                        className={`primary-btn-dark-blue1 ${newQty !== '' && newQty !== medicine.qty ? '' : 'disabled'} `}
-                                        onClick={() => handleEditPost('qty')}
-                                        >
-                                            Save
-                                        </button>
+                            <div className="d-flex flex-direction-y w-100">
+                                <div className="d-flex justify-content-between w-100 fw-bold">
+                                    <p>SKU</p>
+                                    <p>Expiration Date</p>
+                                    <p>Added Date</p>
+                                </div>
+                                {medicine.medicine_items.length > 0
+                                ? medicine.medicine_items.map(item => (
+                                    <div key={item.id} className="d-flex justify-content-between w-100">
+                                        <p>{item.id}</p>
+                                        <p>{item.expiration_date}</p>
+                                        <p>{formatDateTime(item.created_at)}</p>
                                     </div>
-                                </div>                                
+                                ))
+                                : (
+                                    <>No Items</>
+                                )}              
                             </div>
                         </div>
                     </div>

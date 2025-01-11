@@ -1,6 +1,7 @@
 import AdminAddCustomerInfoModal1 from "../components/modals/admin_add_customer_info_modal1";
 import AdminAddDiscountModal1 from "../components/modals/admin_add_discount_modal1";
 import AdminAddMedGroupModal1 from "../components/modals/admin_add_med_group_modal1";
+import AdminAddMedItemModal1 from "../components/modals/admin_add_med_item_moda1";
 import AdminApplyDiscountModal1 from "../components/modals/admin_apply_discount_modal1";
 import AdminDelMedConfirmationModal1 from "../components/modals/admin_del_med_confirmation_modal1";
 import AdminDelMedGroupConfirmationModal1 from "../components/modals/admin_del_med_group_confirmation_modal1";
@@ -20,6 +21,8 @@ const ModalManager = () => {
              */
             case 'AdminAddMedGroupModal1':
                 return <AdminAddMedGroupModal1 {...modalState.props} onClose={hideModal}/>;
+            case 'AdminAddMedItemModal1':
+                return <AdminAddMedItemModal1 {...modalState.props} onClose={hideModal}/>;
             case 'AdminDelMedConfirmationModal1':
                     return <AdminDelMedConfirmationModal1 {...modalState.props} onClose={hideModal}/>;
             case 'AdminDelMedGroupConfirmationModal1':

@@ -23,17 +23,17 @@ class MedicineController extends Controller
     // GET
     public function GetAllMedicineFull()
     {
-        return response()->json(medicines::with("group")->get());
+        return response()->json(medicines::with(["group", "medicine_items"])->get());
     }
 
     public function GetFullMedicineInfoById($medId)
     {
-        return response()->json(medicines::with("group")->where('id', $medId)->first());
+        return response()->json(medicines::with(["group", "medicine_items"])->where('id', $medId)->first());
     }
 
     public function GetFullMedicines($groupId)
     {
-        return response()->json(medicines::with("group")->where('group', $groupId)->get());
+        return response()->json(medicines::with(["group", "medicine_items"])->where('group', $groupId)->get());
     }
 
 
