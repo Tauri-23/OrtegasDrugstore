@@ -23,7 +23,7 @@ class MedicineGroupController extends Controller
     // GET
     public function GetAllMedGroups()
     {
-        $medGroups = medicine_groups::all();
+        $medGroups = medicine_groups::orderBy('group_name', 'asc')->get();
 
         foreach ($medGroups as $medGroup) {
             $medGroup->total_qty = $medGroup->medicines()->sum('qty');

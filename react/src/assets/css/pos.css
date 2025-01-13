@@ -11,7 +11,13 @@
 }
 
 .pos-cat-cont::-webkit-scrollbar {
-    display: none;
+    /* display: none; */
+    background: transparent;
+    height: 5px;
+}
+.pos-cat-cont::-webkit-scrollbar-thumb {
+    /* display: none; */
+    background: var(--grey1);
 }
 
 .pos-cat-box {
@@ -20,10 +26,11 @@
     padding: 20px 40px;
     background: var(--white1);
     filter: drop-shadow(0 0 2px var(--grey1));
-    flex-shrink: 1;
     cursor: pointer;
     user-select: none;
     flex-grow: 1;
+    display: flex;
+    align-items: center;
 }
 .pos-cat-box.active {
     background: var(--blue1);

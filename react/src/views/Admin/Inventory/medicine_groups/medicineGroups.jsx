@@ -2,7 +2,7 @@ import * as Icon from "react-bootstrap-icons";
 import { useModal } from "../../../../Context/ModalContext";
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axios-client";
-import { notify } from "../../../../assets/js/utils";
+import { isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { toast } from "react-toastify";
 import { fetchAllMedGroups } from "../../../../Services/GeneralMedicineGroupService";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,15 @@ export default function AdminMedicineGroups() {
     const {showModal} = useModal();
     const navigate = useNavigate();
     const [medicineGroups, setMedicineGroups] = useState(null);
+    const [groupTemp, setGroupTemp] = useState([]);
 
+    const [searchValue, setSearchValue] = useState("");
+
+
+
+    /**
+     * Ready Data
+     */
     useEffect(() => {
         const GetAllMedGroups = async() => {
             try {
@@ -24,13 +32,10 @@ export default function AdminMedicineGroups() {
     }, []);
 
 
-    /*
-    | Debugging
-    */
-    useEffect(() => {
-        console.log(medicineGroups);
-    }, [medicineGroups])
 
+    /**
+     * For Add Medicine Group
+     */
     const handeAddPost = (medGroupName) => {
 
         const formData = new FormData();
@@ -60,6 +65,43 @@ export default function AdminMedicineGroups() {
         showModal('AdminAddMedGroupModal1', {handeAddPost});
     }
 
+
+
+    /**
+     * For Search
+     */
+    useEffect(() => {
+        if(medicineGroups == null && groupTemp.length < 1) {
+            return
+        }
+    
+        if (!isEmptyOrSpaces(searchValue)) {
+            if (groupTemp.length === 0) {
+                // Save the original list and filter medicines
+                setGroupTemp(medicineGroups);
+                setMedicineGroups(
+                    medicineGroups.filter(group =>
+                        group.group_name.toLowerCase().includes(searchValue.toLowerCase())
+                    )
+                );
+            } else {
+                // Use the temporary storage for filtering
+                setMedicineGroups(
+                    groupTemp.filter(group =>
+                        group.group_name.toLowerCase().includes(searchValue.toLowerCase())
+                    )
+                );
+            }
+        } else {
+            setMedicineGroups(groupTemp);
+            setGroupTemp([]);           
+        }
+    }, [searchValue]);
+
+
+    /**
+     * Render
+     */
     return(
         <div className="content1">
             <div className="d-flex justify-content-between align-items-center mar-bottom-l1">
@@ -73,7 +115,12 @@ export default function AdminMedicineGroups() {
 
             <div className="d-flex justify-content-between mar-bottom-1">
                 <div className="d-flex position-relative align-items-center">
-                    <input type="text" className="search-box1 text-m1" placeholder="Search Medicine Groups.."/>
+                    <input 
+                    type="text" 
+                    className="search-box1 text-m1" 
+                    placeholder="Search Medicine Groups.."
+                    onInput={(e) => setSearchValue(e.target.value)}
+                    value={searchValue}/>
                     <div className="search-box1-icon"><Icon.Search className="text-l3"/></div>
                 </div>                
             </div>

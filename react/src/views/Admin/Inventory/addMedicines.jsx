@@ -36,8 +36,8 @@ export default function AdminAddMedicines() {
 
     // Enable or disable the add Btn
     useEffect(() => {
-        if(!isEmptyOrSpaces(medName) && medPrice !== undefined && medGp !== "" && expiration !== ""
-            && !isEmptyOrSpaces(medDirectionForCheck) && !isEmptyOrSpaces(medSideFxForCheck)) {
+        if(!isEmptyOrSpaces(medName) && medPrice !== undefined && medGp !== "" && !isEmptyOrSpaces(medDirectionForCheck) 
+            && !isEmptyOrSpaces(medSideFxForCheck)) {
             setAddBtnActive(true);
         } else {
             setAddBtnActive(false);
@@ -45,9 +45,7 @@ export default function AdminAddMedicines() {
     }, [
         medName,
         medPrice,
-        expiration,
         medGp,
-        medQty,
         medDirection,
         medSideFx
     ]);
@@ -60,8 +58,6 @@ export default function AdminAddMedicines() {
         formData.append("medName", medName);
         formData.append("medPrice", medPrice);
         formData.append("medGp", medGp);
-        formData.append("medQty", medQty);
-        formData.append("expiration", expiration);
         formData.append("medDirection", medDirection);
         formData.append("medSideFx", medSideFx);
 
@@ -112,14 +108,14 @@ export default function AdminAddMedicines() {
                                 </select>
                             </div>
 
-                            <div className="d-flex flex-direction-y w-100 gap4">
+                            {/* <div className="d-flex flex-direction-y w-100 gap4">
                                 <label htmlFor="qty" className="text-m1">Quantity in Number</label>
                                 <input type="number" min={0} id="qty" className="input1" onChange={(e) => setMedQty(e.target.value)} value={medQty}/>
                             </div>
                             <div className="d-flex flex-direction-y w-100 gap4">
                                 <label htmlFor="expiration" className="text-m1">Expiration Date</label>
                                 <input type="date" id="expiration" className="input1" onChange={(e) => setExpiration(e.target.value)} value={expiration}/>
-                            </div>
+                            </div> */}
                         </div>
 
 
@@ -146,7 +142,10 @@ export default function AdminAddMedicines() {
 
                         
                         <div className="d-flex">
-                            <button disabled={!addBtnActive} className={`primary-btn-dark-blue1 ${addBtnActive ? '' : 'disabled'}`} onClick={handleAddMedicinePost}>Add Medicine</button>
+                            <button 
+                            disabled={!addBtnActive} 
+                            className={`primary-btn-dark-blue1 ${addBtnActive ? '' : 'disabled'}`} 
+                            onClick={handleAddMedicinePost}>Add Medicine</button>
                         </div>
                     </div>
                 )

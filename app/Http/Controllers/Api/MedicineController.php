@@ -23,7 +23,7 @@ class MedicineController extends Controller
     // GET
     public function GetAllMedicineFull()
     {
-        return response()->json(medicines::with(["group", "medicine_items"])->get());
+        return response()->json(medicines::with(["group", "medicine_items"])->orderBy('name', 'asc')->get());
     }
 
     public function GetFullMedicineInfoById($medId)
@@ -33,7 +33,7 @@ class MedicineController extends Controller
 
     public function GetFullMedicines($groupId)
     {
-        return response()->json(medicines::with(["group", "medicine_items"])->where('group', $groupId)->get());
+        return response()->json(medicines::with(["group", "medicine_items"])->where('group', $groupId)->orderBy('name', 'asc')->get());
     }
 
 
@@ -48,8 +48,6 @@ class MedicineController extends Controller
         $medicine->name = $request->medName;
         $medicine->price = $request->medPrice;
         $medicine->group = $request->medGp;
-        $medicine->qty = $request->medQty;
-        $medicine->expiration = $request->expiration;
         $medicine->directions = $request->medDirection;
         $medicine->side_effects = $request->medSideFx;
 

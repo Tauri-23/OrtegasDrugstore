@@ -2,24 +2,117 @@ import { useEffect, useState } from "react";
 import * as Icon from "react-bootstrap-icons";
 import { fetchAllMedicinesFull } from "../../../../Services/GeneralMedicineService";
 import { Link, useNavigate } from "react-router-dom";
-import { formatDate, formatToPhilPeso } from "../../../../assets/js/utils";
+import { formatDate, formatToPhilPeso, isEmptyOrSpaces } from "../../../../assets/js/utils";
+import { fetchAllMedGroups } from "../../../../Services/GeneralMedicineGroupService";
 
 export default function AdminMedicines() {
     const [medicines, setMedicines] = useState(null);
+    const [medicineTemp, setMedicineTemp] = useState([]);
+
+    const [groups, setGroups] = useState(null);
+    
+    const [searchValue, setSearchValue] = useState("");
+    const [selectedGroup, setSelectedGroup] = useState("");
+
     const navigate = useNavigate();
 
     useEffect(() => {
         const getAllMedicines = async() => {
             try {
-                const data = await fetchAllMedicinesFull();
-                console.log(data);
-                setMedicines(data);
+                const [medicinesDb, groupsDb] = await Promise.all([
+                    fetchAllMedicinesFull(),
+                    fetchAllMedGroups()
+                ]);
+                setMedicines(medicinesDb);
+                setGroups(groupsDb);
             } catch(error) {console.error(error)}
         };
 
         getAllMedicines();
     }, []);
 
+
+
+    /**
+     * For Search
+     */
+    useEffect(() => {
+
+        if(medicines == null && medicineTemp.length < 1) {
+            return
+        }
+    
+        if (!isEmptyOrSpaces(searchValue)) {
+            if (medicineTemp.length === 0) {
+                // Save the original list and filter medicines
+                setMedicineTemp(medicines);
+                setMedicines(
+                    medicines.filter(med =>
+                        med.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+                        (isEmptyOrSpaces(selectedGroup) ? true : String(med.group.id) == selectedGroup)
+                    )
+                );
+            } else {
+                // Use the temporary storage for filtering
+                setMedicines(
+                    medicineTemp.filter(med =>
+                        med.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+                        (isEmptyOrSpaces(selectedGroup) ? true : String(med.group.id) == selectedGroup)
+                    )
+                );
+            }
+        } else {
+            if(!isEmptyOrSpaces(selectedGroup)) {
+                setMedicines(medicineTemp.filter(med => String(med.group.id) == selectedGroup));
+            }
+            else {
+                setMedicines(medicineTemp);
+                setMedicineTemp([]);
+            }            
+        }
+    }, [searchValue]);
+
+    useEffect(() => {
+        if(medicines == null && medicineTemp.length < 1) {
+            return
+        }
+    
+        if (!isEmptyOrSpaces(selectedGroup)) {
+            if (medicineTemp.length === 0) {
+                // Save the original list and filter medicines
+                setMedicineTemp(medicines);
+                setMedicines(
+                    medicines.filter(med =>
+                        String(med.group.id) == selectedGroup && 
+                        (isEmptyOrSpaces(searchValue) ? true : med.name.toLowerCase().includes(searchValue.toLowerCase()))
+                    )
+                );
+            } else {
+                // Use the temporary storage for filtering
+                setMedicines(
+                    medicineTemp.filter(med =>
+                        String(med.group.id) == selectedGroup && 
+                        (isEmptyOrSpaces(searchValue) ? true : med.name.toLowerCase().includes(searchValue.toLowerCase()))
+                    )
+                );
+            }
+        } else {
+            if(!isEmptyOrSpaces(searchValue)) {
+                setMedicines(medicineTemp.filter(med => med.name.toLowerCase().includes(searchValue.toLowerCase())));
+            }
+            else {
+                setMedicines(medicineTemp);
+                setMedicineTemp([]);
+            }  
+        }
+    }, [selectedGroup]);
+    
+
+
+
+    /**
+     * Render
+     */
     return(
         <div className="content1">
             <div className="d-flex justify-content-between align-items-center mar-bottom-l1">
@@ -33,12 +126,24 @@ export default function AdminMedicines() {
 
             <div className="d-flex justify-content-between mar-bottom-1">
                 <div className="d-flex position-relative align-items-center">
-                    <input type="text" className="search-box1 text-m1" placeholder="Search Medicine Inventory.."/>
+                    <input 
+                    type="text" 
+                    className="search-box1 text-m1" 
+                    placeholder="Search Medicine Inventory.."
+                    onInput={(e) => setSearchValue(e.target.value)}
+                    value={searchValue}/>
+
                     <div className="search-box1-icon"><Icon.Search className="text-l3"/></div>
                 </div>
 
-                <select className="input1">
+                <select 
+                className="input1"
+                onChange={(e) => setSelectedGroup(e.target.value)}
+                value={selectedGroup}>
                     <option value="">- Select Group -</option>
+                    {groups?.map(group => (
+                        <option key={group.id} value={String(group.id)}>{group.group_name}</option>
+                    ))}
                 </select>
                 
             </div>
@@ -50,7 +155,7 @@ export default function AdminMedicines() {
                         <th>Group Name</th>
                         <th>Price</th>
                         <th>Stock in Qty</th>
-                        <th>Expiration</th>
+                        {/* <th>Expiration</th> */}
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -61,7 +166,7 @@ export default function AdminMedicines() {
                             <td>{meds.group.group_name}</td>
                             <td>{formatToPhilPeso(meds.price)}</td>
                             <td>{meds.qty}</td>
-                            <td>{formatDate(meds.expiration)}</td>
+                            {/* <td>{formatDate(meds.expiration)}</td> */}
                             <td>
                                 <div className="d-flex gap1 align-items-center">
                                     <div className="text-m2">

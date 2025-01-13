@@ -252,7 +252,7 @@ export default function AdminViewMedicine() {
     /**
      * Render
      */
-    if(medicine && weekChartData && monthChartData) {
+    if(medicine) {
         return(
             <div className="content1">
                 <div className="d-flex justify-content-start mar-bottom-3">
@@ -284,24 +284,36 @@ export default function AdminViewMedicine() {
 
                 <div className="d-flex gap1 mar-bottom-1">
                     <div className="view-medicine-box1 w-50">
-                        <div className="view-medicine-box1-body">
-                            <LineChart1
-                                title="Weekly Forecast"
-                                data={weekChartData}
-                                options={chartOptions}
-                            />
-                        </div>
+                        {(weekChartData)
+                        ? (
+                            <div className="view-medicine-box1-body">
+                                <LineChart1
+                                    title="Weekly Forecast"
+                                    data={weekChartData}
+                                    options={chartOptions}
+                                />
+                            </div>
+                        )
+                        : (
+                            <>Loading Weekly Forecast</>
+                        )}
                     </div>
 
                     <div className="view-medicine-box1 w-50">
-                        <div className="view-medicine-box1-body">
-                            <LineChart1
-                                title="Monthly Forecast"
-                                data={monthChartData}
-                                options={chartOptions}
-                            />
-                        </div>
-                    </div>
+                        {(monthChartData)
+                        ? (
+                            <div className="view-medicine-box1-body">
+                                <LineChart1
+                                    title="Monthly Forecast"
+                                    data={monthChartData}
+                                    options={chartOptions}
+                                />
+                            </div>
+                        )
+                        : (
+                            <>Loading Monthly Forecast</>
+                        )}                        
+                    </div>                    
                 </div>
 
                 <div className="d-flex gap1 mar-bottom-1">

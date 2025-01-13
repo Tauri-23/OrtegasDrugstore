@@ -14,9 +14,13 @@ export default function AdminPOSIndex() {
     const [medGroups, setMedGroups] = useState(null);
     const [medicines, setMedicines] = useState(null);
     const [discounts, setDiscounts] = useState(null);
+
+    const [medicineTemp, setMedicineTemp] = useState([]);
+
     const [cash, setCash] = useState(0);
 
     const [selectedCategory, setSelectedCategory] = useState("");
+    const [searchValue, setSearchValue] = useState("");
 
     const [selectedMeds, setSelectedMeds] = useState([]);
     const [selectedDiscounts, setSelectedDiscounts] = useState([]);
@@ -35,7 +39,6 @@ export default function AdminPOSIndex() {
                 fetchAllMedicinesFull(),
                 fetchAllDiscounts()
             ]);
-
             setMedGroups(medGpDb);
             setMedicines(medsDb);
             setDiscounts(discountsDb);
@@ -259,6 +262,81 @@ export default function AdminPOSIndex() {
             }
         });
     }
+
+
+
+    /**
+     * For Search and Filter by group
+     */
+    useEffect(() => {
+        if(medicines == null && medicineTemp.length < 1) {
+            return
+        }
+    
+        if (!isEmptyOrSpaces(searchValue)) {
+            if (medicineTemp.length === 0) {
+                // Save the original list and filter medicines
+                setMedicineTemp(medicines);
+                setMedicines(
+                    medicines.filter(med =>
+                        med.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+                        (isEmptyOrSpaces(selectedCategory) ? true : String(med.group.id) == selectedCategory)
+                    )
+                );
+            } else {
+                // Use the temporary storage for filtering
+                setMedicines(
+                    medicineTemp.filter(med =>
+                        med.name.toLowerCase().includes(searchValue.toLowerCase()) &&
+                        (isEmptyOrSpaces(selectedCategory) ? true : String(med.group.id) == selectedCategory)
+                    )
+                );
+            }
+        } else {
+            if(!isEmptyOrSpaces(selectedCategory)) {
+                setMedicines(medicineTemp.filter(med => String(med.group.id) == selectedCategory));
+            }
+            else {
+                setMedicines(medicineTemp);
+                setMedicineTemp([]);
+            }  
+        }
+    }, [searchValue]);
+
+    useEffect(() => {
+        if(medicines == null && medicineTemp.length < 1) {
+            return
+        }
+    
+        if (!isEmptyOrSpaces(selectedCategory)) {
+            if (medicineTemp.length === 0) {
+                // Save the original list and filter medicines
+                setMedicineTemp(medicines);
+                setMedicines(
+                    medicines.filter(med =>
+                        String(med.group.id) == selectedCategory && 
+                        (isEmptyOrSpaces(searchValue) ? true : med.name.toLowerCase().includes(searchValue.toLowerCase()))
+                    )
+                );
+            } else {
+                // Use the temporary storage for filtering
+                setMedicines(
+                    medicineTemp.filter(med =>
+                        String(med.group.id) == selectedCategory && 
+                        (isEmptyOrSpaces(searchValue) ? true : med.name.toLowerCase().includes(searchValue.toLowerCase()))
+                    )
+                );
+            }
+        } else {
+            if(!isEmptyOrSpaces(searchValue)) {
+                setMedicines(medicineTemp.filter(med => med.name.toLowerCase().includes(searchValue.toLowerCase())));
+            }
+            else {
+                setMedicines(medicineTemp);
+                setMedicineTemp([]);
+            } 
+        }
+    }, [selectedCategory]);
     
 
 
@@ -274,7 +352,12 @@ export default function AdminPOSIndex() {
                     <div className="pos-left-cont">
                         <div className="d-flex mar-bottom-l1">
                             <div className="d-flex position-relative align-items-center">
-                                <input type="text" className="search-box1 text-m1" placeholder="Search Medicine Inventory.."/>
+                                <input 
+                                type="text" 
+                                className="search-box1 text-m1" 
+                                placeholder="Search Medicine Inventory.."
+                                onInput={(e) => setSearchValue(e.target.value)}
+                                value={searchValue}/>
                                 <div className="search-box1-icon"><Icon.Search className="text-l3"/></div>
                             </div>
                         </div>
@@ -288,8 +371,8 @@ export default function AdminPOSIndex() {
                             {medGroups.map(group => (
                                 <div 
                                 key={group.id} 
-                                onClick={() => setSelectedCategory(group.id)}
-                                className={`pos-cat-box ${selectedCategory === group.id ? 'active' : ''}`}>
+                                onClick={() => setSelectedCategory(String(group.id))}
+                                className={`pos-cat-box ${selectedCategory === String(group.id) ? 'active' : ''}`}>
                                     {group.group_name}
                                 </div>
                             ))}
@@ -297,7 +380,10 @@ export default function AdminPOSIndex() {
 
                         {/* Medicines */}
                         <div className="pos-medicines-cont">
-                            {medicines.map(med => (
+                            {medicines.length < 1 && (
+                                <>No Items</>
+                            )}
+                            {medicines.length > 0 && medicines.map(med => (
                                 <div 
                                 key={med.id} 
                                 className={`pos-medicine ${selectedMeds.some(selmed => selmed.id === med.id) ? 'active' : ''} ${med.qty < 1 ? 'disabled' : ''}`}
