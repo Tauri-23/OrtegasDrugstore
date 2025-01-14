@@ -241,8 +241,10 @@ export default function AdminViewMedicine() {
 
             axiosClient.post('/add-medicine-item', formData)
             .then(({data}) => {
-                setMedicine(data.medicine);
                 notify(data.status === 200 ? 'success' : 'error', data.message, 'top-center', 3000);
+                if(data.status === 200) {                    
+                    setMedicine(data.medicine);
+                }
             }).catch(error => console.error(error));
         }});
     }

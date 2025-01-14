@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\IGenerateIdService;
 use App\Http\Controllers\Controller;
+use App\Models\medicine_items;
 use App\Models\medicines;
 use App\Models\purchase_transaction_customer;
 use App\Models\purchase_transaction_discounts;
 use App\Models\purchase_transaction_items;
+use App\Models\purchase_transaction_medicine_items;
 use App\Models\purchase_transactions;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -65,9 +67,16 @@ class PurchaseTransactionController extends Controller
                 }
             }            
 
+            /**
+             * Update the medicine
+             */
             foreach($request->items as $key=>$item)
             {
-                
+                $transactionItemToTransfers = medicine_items::where('medicine', $item)
+                ->orderBy('expiration_date', 'asc')
+                ->take($request->qty[$key])
+                ->get();
+
                 $transactionItem = new purchase_transaction_items();
                 $transactionItem->purchase_transaction = $transactionId;
                 $transactionItem->medicine = $item;
@@ -78,6 +87,29 @@ class PurchaseTransactionController extends Controller
                 
                 $transactionItem->save();
                 $medicine->save();
+
+                /**
+                 * transfer the medicine_item to purchase_transaction_item
+                 */
+                $transferData = [];
+                foreach ($transactionItemToTransfers as $itemToTransfer) {
+                    $transferData[] = [
+                        'purchase_transaction_item' => $transactionItem->id,
+                        'medicine_item_id' => $itemToTransfer->id,
+                        'medicine' => $itemToTransfer->medicine,
+                        'expiration_date' => $itemToTransfer->expiration_date,
+                        'medicine_item_created_at' => $itemToTransfer->created_at,
+                        'medicine_item_updated_at' => $itemToTransfer->updated_at,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                // Insert data in bulk
+                purchase_transaction_medicine_items::insert($transferData);
+
+                // Delete transferred medicine items
+                medicine_items::whereIn('id', $transactionItemToTransfers->pluck('id'))->delete();
             }
 
             DB::commit();
@@ -122,13 +154,30 @@ class PurchaseTransactionController extends Controller
             // Restock the medicine because transaction is voided
             foreach ($items as $item) { // Accessing 'items' without parentheses if it's a relationship
                 $medicine = medicines::find($item->medicine);
+                $transactionItemToTransfers = purchase_transaction_medicine_items::where('purchase_transaction_item', $item->id)->get();
 
-                if ($medicine) {
-                    $medicine->qty += $item->qty;
-                    $medicine->save();
-                } else {
-                    // Log or handle the missing medicine case as needed
+                $medicine->qty += $item->qty;
+                $medicine->save();
+
+                /**
+                 * Transfer data from purchase_transaction_medicine_items back to medicine_items
+                 */
+                $transferData = [];
+                foreach ($transactionItemToTransfers as $itemToTransfer) {
+                    $transferData[] = [
+                        'id' => $itemToTransfer->medicine_item_id,
+                        'medicine' => $itemToTransfer->medicine,
+                        'expiration_date' => $itemToTransfer->expiration_date,
+                        'created_at' => $itemToTransfer->created_at,
+                        'updated_at' => $itemToTransfer->updated_at
+                    ];
                 }
+
+                // Insert data in bulk
+                medicine_items::insert($transferData);
+
+                // Delete transferred medicine items
+                purchase_transaction_medicine_items::whereIn('id', $transactionItemToTransfers->pluck('id'))->delete();
             }
 
             // Save the transaction after voiding it

@@ -17,6 +17,16 @@ class MedicineItemsController extends Controller
         {
             DB::beginTransaction();
 
+            $SkuExist = medicine_items::find($request->sku);
+
+            if($SkuExist)
+            {
+                return response()->json([
+                    'status' => 400,
+                    'message' => 'SKU already exists'
+                ]);
+            }
+
             // Add Medicine Item
             $medicineItem = new medicine_items();
             $medicineItem->id = $request->sku;
