@@ -133,7 +133,7 @@ const AdminSidenav = ({onLogout}) => {
                 </Link>
 
 
-                <div className="hr-line1-white1 mar-y-2"></div>
+                {/* <div className="hr-line1-white1 mar-y-2"></div>
 
 
                 <div className="admin-sidenav1-link">
@@ -167,7 +167,7 @@ const AdminSidenav = ({onLogout}) => {
                         <img src="/media/icons/info-box.svg" alt="" />
                         <div>Get Technical Help</div>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );
