@@ -43,11 +43,10 @@ class ForecastController extends Controller
         $output = [];
         $errorOutput = [];
 
-        // Execute the Python script and capture both standard output and error output
+        // Execute Python
         $command = "python " . escapeshellarg($pythonScriptPath) . " " . escapeshellarg($medicineId);
         exec($command, $output, $returnVar);
 
-        // Log output and error messages for debugging
         if ($returnVar != 0) {
             exec("python " . escapeshellarg($pythonScriptPath) . " 2>&1", $errorOutput);
             return response()->json([
@@ -56,11 +55,10 @@ class ForecastController extends Controller
                 'error' => $errorOutput
             ], 500);
         } else {
-            // Ensure the output is returned correctly as a JSON
-            $result = implode('', $output); // Join the output array to get the full response
+            $result = implode('', $output);
             return response()->json([
                 'status' => 'success',
-                'forecast' => json_decode($result, true) // Decode the JSON response from Python
+                'forecast' => json_decode($result, true)
             ]);
         }
     }
