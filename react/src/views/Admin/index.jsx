@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import "../../assets/css/dashboard.css";
 import { formatToPhilPeso } from "../../assets/js/utils";
 import LineChart1 from "../../components/charts/LineChart1";
-import axiosClient from "../../axios-client";
 import { fetchAllForecast } from "../../Services/ForecastServices";
 import { fetchAllMedicineCount, fetchAllMedicineShortage, fetchAllRevenue } from "../../Services/DashboardService";
 import { fetchAllMedicinesFull } from "../../Services/GeneralMedicineService";
-import { useModal } from "../../Context/ModalContext";
 import { useNavigate } from "react-router-dom";
 
 const AdminIndex = () => {
@@ -135,6 +133,7 @@ const AdminIndex = () => {
      * Functions
      */
     const getStatus = (qty) => {
+        console.log(qty);
         if(qty > (medicines.length * .3)) {
             return "Bad"
         }
