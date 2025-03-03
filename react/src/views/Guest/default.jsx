@@ -30,6 +30,9 @@ export default function GuestDefault() {
         if(userType === 'admin') {
             return <Navigate to={"/OrtegaAdmin"}/>
         }
+        else if (userType === 'cashier') {
+            return <Navigate to={'/OrtegaCashier'}/>
+        }
     }
 
     return(

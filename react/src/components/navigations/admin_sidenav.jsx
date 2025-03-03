@@ -114,14 +114,14 @@ const AdminSidenav = ({onLogout}) => {
                     Payments Report
                 </Link>
 
-                <Link 
+                {/* <Link 
                 to={"POS"}  
                 className={`admin-sidenav1-link ${location.pathname === '/OrtegaAdmin/POS'? 'active' : ''}`}>
                     <div className="d-flex align-items-center" style={{gap: 15}}>
                         <img src="/media/icons/cash-register.svg" alt="" />
                         <div>POS</div>
                     </div>
-                </Link>
+                </Link> */}
 
                 <Link 
                 to={"Configurations"}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Contracts\IGenerateIdService;
 use App\Http\Controllers\Controller;
 use App\Models\user_admins;
+use App\Models\user_cashiers;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
@@ -24,6 +25,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $admin = user_admins::where("username", $request->uname)->first();
+        $cashier = user_cashiers::where("username", $request->uname)->first();
 
         if ($admin && $admin->password == $request->pass) {
 
@@ -35,6 +37,17 @@ class AuthController extends Controller
                 'user' => $admin,
                 'token' => $token,
                 'user_type' => "admin"
+            ]);
+        }
+        else if ($cashier && $cashier->password == $request->pass) {
+            $token = $cashier->createToken('main')->plainTextToken;
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Success',
+                'user' => $cashier,
+                'token' => $token,
+                'user_type' => "cashier"
             ]);
         }
         else

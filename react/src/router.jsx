@@ -16,6 +16,8 @@ import AdminConfigDefault from "./views/Admin/ConfigPages/config_default";
 import AdminConfigIndex from "./views/Admin/ConfigPages/config_index";
 import Prophet from "./views/AlgoModels/prophet";
 import ViewShortage from "./views/Admin/viewShortage";
+import CashierDefault from "./views/Cashier/default";
+import CashierPOSIndex from "./views/Cashier/POS/cashier_pos_index";
 
 const router = createBrowserRouter([
     /*
@@ -131,6 +133,27 @@ const router = createBrowserRouter([
                 ]
             }
         ]
+    },
+
+
+
+
+
+    /*
+    |----------------------------------------
+    | Client 
+    |----------------------------------------
+    */
+    {
+        path: "OrtegaCashier",
+        element: <CashierDefault/>,
+        children: [
+            {
+                index: true,
+                element: <CashierPOSIndex/>
+            }
+        ]
+        
     }
 ]);
 

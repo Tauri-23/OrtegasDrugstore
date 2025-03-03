@@ -89,16 +89,17 @@
     background: var(--white1);
     filter: drop-shadow(0 0 2px var(--grey1));
     height: calc(100% - 70px);
-    position: fixed;
+    position: sticky;
     right: 50px;
     bottom: 20px;
-    top: 50px;
+    top: 10px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 .pos-orders-cont {
     width: 100%;
+    height: 300px;
     flex-grow: 1;
     overflow-y: auto;
     border: 1px dashed var(--grey1);

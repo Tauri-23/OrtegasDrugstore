@@ -3,11 +3,16 @@
 | Contents
 |----------------------------------------
 */
-.content1 {
+.content1, .content1-v2 {
     width: calc(100% - var(--admin-sidenav-w));
     padding: 50px;
     margin-left: var(--admin-sidenav-w);
     min-height: 100vh;
+}
+
+.content1-v2 {
+    width: 100%;
+    margin: 0;
 }
 
 

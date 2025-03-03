@@ -1,13 +1,12 @@
 import { Navigate, Outlet } from "react-router-dom";
-import AdminSidenav from "../../components/navigations/admin_sidenav";
+import { ModalProvider } from "../../Context/ModalContext";
+import ModalManager from "../../Managers/ModalManagers";
 import { useStateContext } from "../../Context/ContextProvider";
 import { useEffect } from "react";
 import axiosClient from "../../axios-client";
-import { ModalProvider } from "../../Context/ModalContext";
-import ModalManager from "../../Managers/ModalManagers";
-import { ToastContainer } from "react-toastify";
+import CashierTopNav from "../../components/navigations/cashier_topnav";
 
-export default function AdminDefault() {
+const CashierDefault = () => {
     const {user, userType, token, setUser, setUserType, setToken} = useStateContext();
 
     useEffect(() => {
@@ -25,6 +24,10 @@ export default function AdminDefault() {
         }
     }, []);
 
+    if(!token || userType !== "cashier") {
+        return <Navigate to={"/"}/>;
+    }
+
     const onLogout = (e) => {
         axiosClient.post('/logout')
             .then(() => {
@@ -34,24 +37,18 @@ export default function AdminDefault() {
             });
     };
 
-    if(!token || userType !== "admin") {
-        return <Navigate to={"/"}/>;
-    }
-
     return(
         <ModalProvider>
             <div className="position-relative">
                 <ModalManager/>
 
-                {/* Sidenav */}
-                <AdminSidenav
-                onLogout={onLogout}/>
+                <CashierTopNav onLogout={onLogout}/>
 
                 {/* Children */}
                 <Outlet/>
-
-                <ToastContainer/>
             </div>
         </ModalProvider>
-    );
+    )
 }
+
+export default CashierDefault;
