@@ -2,10 +2,11 @@ import * as Icon from "react-bootstrap-icons";
 import { useModal } from "../../../../Context/ModalContext";
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axios-client";
-import { isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
+import { formatToPhilPeso, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { toast } from "react-toastify";
 import { fetchAllMedGroups } from "../../../../Services/GeneralMedicineGroupService";
 import { useNavigate } from "react-router-dom";
+import { Spin, Table } from "antd";
 
 export default function AdminMedicineGroups() {
     const {showModal} = useModal();
@@ -18,7 +19,7 @@ export default function AdminMedicineGroups() {
 
 
     /**
-     * Ready Data
+     * Onmount
      */
     useEffect(() => {
         const GetAllMedGroups = async() => {
@@ -30,6 +31,26 @@ export default function AdminMedicineGroups() {
 
         GetAllMedGroups();
     }, []);
+
+
+
+    /**
+     * Setup Column
+     */
+    const medGroupsColumns = [
+        {
+            title: 'Group Name',
+            dataIndex: 'group_name',
+            key: 'id',
+            sorter: (a, b) => a.group_name.localeCompare(b.group_name)
+        },
+        {
+            title: 'No. of Medicines',
+            dataIndex: 'total_qty',
+            key: 'id',
+            sorter: (a, b) => a.total_qty - b.total_qty
+        },
+    ]
 
 
 
@@ -125,7 +146,7 @@ export default function AdminMedicineGroups() {
                 </div>                
             </div>
 
-            <table className="table1">
+            {/* <table className="table1">
                 <thead className="table1-thead">
                     <tr>
                         <th>Group Name</th>
@@ -163,7 +184,18 @@ export default function AdminMedicineGroups() {
                         </tr>
                     )}
                 </tbody>
-            </table>
+            </table> */}
+            {/* Table */}
+            {!medicineGroups
+            ? (<Spin size="large"/>)
+            : (
+                <Table
+                columns={medGroupsColumns}
+                dataSource={medicineGroups}
+                pagination={{pageSize: 10}}
+                bordered
+                />
+            )}
         </div>
     );
 }

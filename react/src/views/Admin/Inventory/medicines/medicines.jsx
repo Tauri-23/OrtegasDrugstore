@@ -4,6 +4,7 @@ import { fetchAllMedicinesFull } from "../../../../Services/GeneralMedicineServi
 import { Link, useNavigate } from "react-router-dom";
 import { formatDate, formatToPhilPeso, isEmptyOrSpaces } from "../../../../assets/js/utils";
 import { fetchAllMedGroups } from "../../../../Services/GeneralMedicineGroupService";
+import { Space, Spin, Table, Tag } from 'antd';
 
 export default function AdminMedicines() {
     const [medicines, setMedicines] = useState(null);
@@ -16,6 +17,11 @@ export default function AdminMedicines() {
 
     const navigate = useNavigate();
 
+
+
+    /**
+     * Onmount
+     */
     useEffect(() => {
         const getAllMedicines = async() => {
             try {
@@ -30,6 +36,40 @@ export default function AdminMedicines() {
 
         getAllMedicines();
     }, []);
+
+
+
+    /**
+     * Setup Column
+     */
+    const medicinesColumn = [
+        {
+            title: 'Medicine Name',
+            dataIndex: 'name',
+            key: 'id',
+            sorter: (a, b) => a.name.localeCompare(b.name)
+        },
+        {
+            title: 'Group Name',
+            dataIndex: 'group',
+            key: 'group_name',
+            render: (group) => group?.group_name || 'N/A',
+            sorter: (a, b) => (a.group?.group_name || '').localeCompare(b.group?.group_name || '')
+        },
+        {
+            title: 'Price',
+            dataIndex: 'price',
+            key: 'price',
+            render: (price) => formatToPhilPeso(price),
+            sorter: (a, b) => parseFloat(a.price) - parseFloat(b.price)
+        },
+        {
+            title: 'Stock in Qty',
+            dataIndex: 'qty',
+            key: 'qty',
+            sorter: (a, b) => a.qty - b.qty
+        },
+    ]
 
 
 
@@ -148,25 +188,24 @@ export default function AdminMedicines() {
                 
             </div>
 
-            <table className="table1">
+            
+            {/* <table className="table1">
                 <thead className="table1-thead">
                     <tr>
                         <th>Medicine Name</th>
                         <th>Group Name</th>
                         <th>Price</th>
                         <th>Stock in Qty</th>
-                        {/* <th>Expiration</th> */}
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody className="table1-tbody">
                     {medicines?.length > 0 && medicines.map((meds, index) => (
-                        <tr key={index} onClick={() => navigate(`/OrtegaAdmin/ViewMedicines/${meds.id}`)}>
+                        <tr key={index} >
                             <td>{meds.name}</td>
                             <td>{meds.group.group_name}</td>
                             <td>{formatToPhilPeso(meds.price)}</td>
                             <td>{meds.qty}</td>
-                            {/* <td>{formatDate(meds.expiration)}</td> */}
                             <td>
                                 <div className="d-flex gap1 align-items-center">
                                     <div className="text-m2">
@@ -192,7 +231,23 @@ export default function AdminMedicines() {
                         </tr>
                     )}
                 </tbody>
-            </table>
+            </table> */}
+
+            
+
+            {!medicines
+            ? (<Spin size="large"/>)
+            : (
+                <Table
+                columns={medicinesColumn}
+                dataSource={medicines}
+                pagination={{pageSize: 10}}
+                onRow={(record) => ({
+                    onDoubleClick: () => navigate(`/OrtegaAdmin/ViewMedicines/${record.id}`)
+                })}
+                bordered
+                />
+            )}
         </div>
     );
 }
