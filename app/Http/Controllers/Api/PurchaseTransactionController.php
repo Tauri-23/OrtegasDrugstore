@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\IGenerateIdService;
 use App\Http\Controllers\Controller;
+use App\Models\audit_logs;
 use App\Models\medicine_items;
 use App\Models\medicines;
 use App\Models\purchase_transaction_customer;
@@ -112,6 +113,14 @@ class PurchaseTransactionController extends Controller
                 medicine_items::whereIn('id', $transactionItemToTransfers->pluck('id'))->delete();
             }
 
+            // LOG IT
+            $log = new audit_logs();
+            $log->sale_activity = "Sale for";
+            $log->transaction = $transactionId;
+            $log->cashier = $request->cashier;
+            $log->type = "Sale";
+            $log->save();
+
             DB::commit();
 
             return response()->json([
@@ -182,6 +191,14 @@ class PurchaseTransactionController extends Controller
 
             // Save the transaction after voiding it
             $transaction->save();
+
+            // LOG IT
+            $log = new audit_logs();
+            $log->sale_activity = "Void for";
+            $log->transaction = $request->transactionId;
+            $log->cashier = $request->cashier;
+            $log->type = "Sale";
+            $log->save();
 
             // Commit the transaction
             DB::commit();

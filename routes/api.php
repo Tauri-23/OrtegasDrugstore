@@ -139,4 +139,4 @@ Route::get('/get-all-medicine-shortage', [DashboardController::class, 'GetAllMed
 | AUDIT LOGS 
 |----------------------------------------
 */
-Route::get('/get-all-audit-logs', [AuditLogsController::class, 'GetAllAuditLogs']);
+Route::get('/get-all-audit-logs-where-type/{type}', [AuditLogsController::class, 'GetAllAuditLogsWhereType']);

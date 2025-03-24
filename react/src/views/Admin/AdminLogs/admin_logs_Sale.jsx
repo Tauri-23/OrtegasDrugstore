@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { fetchAllLogsWhereType } from "../../../Services/AdminLogsServices";
 import {Spin, Table} from "antd";
-import { formatDateTime } from "../../../assets/js/utils";
+import { formatDateTime, formatToPhilPeso } from "../../../assets/js/utils";
 
-export default function AdminLogsInventory() {
+export default function AdminLogsSale() {
     const [logs, setLogs] = useState(null);
 
 
@@ -13,7 +13,7 @@ export default function AdminLogsInventory() {
      */
     useEffect(() => {
         const getAll = async() => {
-            const data = await fetchAllLogsWhereType("Inventory");
+            const data = await fetchAllLogsWhereType("Sale");
             setLogs(data);
         }
 
@@ -32,22 +32,28 @@ export default function AdminLogsInventory() {
             key: 'id',
         },
         {
-            title: "Admin",
-            render: (_, row) =>  row.admin ? `${row.admin.firstname} ${row.admin.lastname}` : "N/A",
+            title: "Cashier",
+            render: (_, row) =>  row.cashier ? `${row.cashier.firstname} ${row.cashier.lastname}` : "N/A",
             key: 'id',
         },
         {
             title: "Activity",
-            dataIndex: 'inventory_activity',
+            dataIndex: 'sale_activity',
             key: 'id',
         },
         {
-            title: "Item ID",
-            dataIndex: 'inventory_item_id',
+            title: "Reference Id",
+            render: (_, row) =>  row.transaction ? row.transaction.id : "N/A",
+            key: 'id',
+        },
+        {
+            title: "Total Price",
+            render: (_, row) =>  row.transaction ? formatToPhilPeso(row.transaction.total) : "N/A",
             key: 'id',
         },
         {
             title: "Timestamp",
+            dataIndex: 'created_at',
             render: (_, row) => formatDateTime(row.created_at),
             key: 'id',
         },

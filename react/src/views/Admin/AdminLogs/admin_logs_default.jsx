@@ -10,7 +10,7 @@ export default function AdminLogsDefault() {
      */
     return(
         <div className="content1">
-            <div className="text-l1 fw-bolder mar-bottom-1">Sales Reports</div>
+            <div className="text-l1 fw-bolder mar-bottom-1">Logs</div>
 
             <div className="d-flex align-items-center gap3 mar-bottom-1">
                 <Link 

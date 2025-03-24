@@ -3,7 +3,7 @@ import { fetchAllLogsWhereType } from "../../../Services/AdminLogsServices";
 import {Spin, Table} from "antd";
 import { formatDateTime } from "../../../assets/js/utils";
 
-export default function AdminLogsInventory() {
+export default function AdminLogsSettings() {
     const [logs, setLogs] = useState(null);
 
 
@@ -13,7 +13,7 @@ export default function AdminLogsInventory() {
      */
     useEffect(() => {
         const getAll = async() => {
-            const data = await fetchAllLogsWhereType("Inventory");
+            const data = await fetchAllLogsWhereType("Settings");
             setLogs(data);
         }
 
@@ -38,12 +38,12 @@ export default function AdminLogsInventory() {
         },
         {
             title: "Activity",
-            dataIndex: 'inventory_activity',
+            dataIndex: 'settings_activity',
             key: 'id',
         },
         {
-            title: "Item ID",
-            dataIndex: 'inventory_item_id',
+            title: "Discount",
+            render: (_, row) =>  row.discount ? row.discount.discount_name : "N/A",
             key: 'id',
         },
         {
@@ -65,7 +65,7 @@ export default function AdminLogsInventory() {
             : (
                 <Table
                 columns={logsColumns}
-                dataSource={logs.map((item) => ({...item, key: item.id}))}
+                dataSource={logs}
                 pagination={{pageSize: 10}}
                 bordered
                 />

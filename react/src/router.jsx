@@ -19,6 +19,9 @@ import ViewShortage from "./views/Admin/viewShortage";
 import CashierDefault from "./views/Cashier/default";
 import CashierPOSIndex from "./views/Cashier/POS/cashier_pos_index";
 import AdminLogsDefault from "./views/Admin/AdminLogs/admin_logs_default";
+import AdminLogsInventory from "./views/Admin/AdminLogs/admin_logs_inventory";
+import AdminLogsSettings from "./views/Admin/AdminLogs/admin_logs_settings";
+import AdminLogsSale from "./views/Admin/AdminLogs/admin_logs_Sale";
 
 const router = createBrowserRouter([
     /*
@@ -113,7 +116,21 @@ const router = createBrowserRouter([
             // LOGS
             {
                 path: 'Logs',
-                element: <AdminLogsDefault/>
+                element: <AdminLogsDefault/>,
+                children: [
+                    {
+                        index: true,
+                        element: <AdminLogsInventory/>
+                    },
+                    {
+                        path: "Sales",
+                        element: <AdminLogsSale/>
+                    },
+                    {
+                        path: "Settings",
+                        element: <AdminLogsSettings/>
+                    }
+                ]
             },
 
             // POS

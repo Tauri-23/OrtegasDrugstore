@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer("added_qty")->nullable();
 
             // Sale
-            $table->enum('sale_activity', ["Sale for", "Viod for"])->nullable();
+            $table->enum('sale_activity', ["Sale for", "Void for"])->nullable();
             $table->string('transaction', 12)->nullable();
 
             // Discount Type

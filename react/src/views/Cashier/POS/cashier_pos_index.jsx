@@ -7,9 +7,11 @@ import { formatToPhilPeso, isEmptyOrSpaces, notify } from "../../../assets/js/ut
 import { fetchAllDiscounts } from "../../../Services/GeneralDiscountService";
 import { useModal } from "../../../Context/ModalContext";
 import axiosClient from "../../../axios-client";
+import { useStateContext } from "../../../Context/ContextProvider";
 
 export default function CashierPOSIndex() {
     const {showModal} = useModal();
+    const {user} = useStateContext();
 
     const [medGroups, setMedGroups] = useState(null);
     const [medicines, setMedicines] = useState(null);
@@ -204,6 +206,7 @@ export default function CashierPOSIndex() {
         formData.append('total', calculateGrandTotal());
         formData.append('cash', cash);
         formData.append('change', cash - calculateGrandTotal());
+        formData.append('cashier', user.id);
 
         // For Discounts
         formData.append('hasDiscount', selectedDiscounts.length > 0 ? true : false)
@@ -246,6 +249,7 @@ export default function CashierPOSIndex() {
             handleBtnClick: () => {
                 const formData = new FormData();
                 formData.append('transactionId', transactionId);
+                formData.append('cashier', user.id)
 
                 axiosClient.post('/void-purchase-transaction', formData)
                 .then(({data}) => {
