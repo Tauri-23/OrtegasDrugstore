@@ -7,6 +7,8 @@ import html2canvas from 'html2canvas';
 
 export default function AdminSalesReports() {
     const [sales, setSales] = useState(null);
+    const [filteredSales, setFilteredSales] = useState(null);
+
     const dateToday = new Date();
 
     const [fromDate, setFromDate] = useState('2024-01-01');
@@ -18,6 +20,10 @@ export default function AdminSalesReports() {
     const [reportData, setReportData] = useState(null);
 
 
+
+    /**
+     * Onmount
+     */
     useEffect(() => {
         const getAll = async() => {
             try {
@@ -25,6 +31,8 @@ export default function AdminSalesReports() {
                     fetchAllFullPurchaseTransactions()
                 ]);
                 setSales(salesDb);
+                setFilteredSales(salesDb);
+                console.log(salesDb);
 
             } catch (error) {
                 console.error(error);
@@ -90,55 +98,6 @@ export default function AdminSalesReports() {
         }
     }
 
-    const downloadPDF = () => {
-        if (!reportData) return;
-
-        const doc = new jsPDF({
-            orientation: "portrait",  // Set to landscape if needed
-            unit: "mm",
-            format: "a4",  // Adjust if your content requires a different page format
-        });
-
-        // Ensure that the content is fully rendered and available
-        const element = document.getElementById("printable-report");
-
-        if (!element) {
-            console.error('Error: Element with id "printable-report" not found.');
-            return;
-        }
-
-        // This line ensures proper layout recalculation before rendering
-        element.offsetHeight;
-
-        // Use jsPDF's `html` method to render the HTML to the PDF
-        doc.html(element, {
-            callback: function (doc) {
-                // Save the PDF once it's generated
-                doc.save("sales_report.pdf");
-            },
-            margin: [10, 10, 10, 10], // Adjust margins
-            x: 10, // Adjust starting x position
-            y: 10, // Adjust starting y position
-            html2canvas: {
-                scale: .3, // Ensure scale is set to 1 to avoid zooming
-                useCORS: true,  // Enable Cross-Origin Resource Sharing if needed for images
-                logging: true, // Enable logging to troubleshoot issues
-                letterRendering: true,  // Makes the text rendering more accurate
-            },
-        });
-
-        setReportData(null);
-    };
-
-
-    
-    // useEffect(() => {
-    //     console.log(reportData);
-    //     if(reportData) {
-    //         downloadPDF();
-    //     }
-    // }, [reportData]);
-
 
 
     /**
@@ -192,16 +151,8 @@ export default function AdminSalesReports() {
                     </div>
 
                     <div className="d-flex gap1 w-100">
-                        <div className="cont-box1 w-50">
-                            <div className="cont-box1-head">
-                                <div className="text-l3">Sales Made</div>
-                            </div>
-                            <div className="hr-line1-black3"></div>
-                            <div className="cont-box1-body" style={{height: "400px"}}>
-                            </div>
-                        </div>
 
-                        <div className="cont-box1 w-50">
+                        <div className="cont-box1 w-100">
                             <div className="cont-box1-head d-flex w-100">
                                 <div className="text-l3 w-50 text-center">Order Id</div>
                                 <div className="text-l3 w-50 text-center">Date & Time</div>
