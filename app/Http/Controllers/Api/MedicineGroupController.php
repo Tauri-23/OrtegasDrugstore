@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Contracts\IGenerateIdService;
 use App\Http\Controllers\Controller;
+use App\Models\audit_logs;
 use App\Models\medicine_groups;
+use DB;
 use Illuminate\Http\Request;
 
 class MedicineGroupController extends Controller
@@ -43,26 +45,40 @@ class MedicineGroupController extends Controller
     // POST
     public function AddMedGroup(Request $request)
     {
-        $medGroupId = $this->generateId->generate(medicine_groups::class, 6);
-
-        $medGroup = new medicine_groups();
-        $medGroup->id = $medGroupId;
-        $medGroup->group_name = $request->name;
-
-        if($medGroup->save())
+        try
         {
+            DB::beginTransaction();
+
+            $medGroupId = $this->generateId->generate(medicine_groups::class, 6);
+
+            $medGroup = new medicine_groups();
+            $medGroup->id = $medGroupId;
+            $medGroup->group_name = $request->name;
+            $medGroup->save();
+
+            // LOG IT
+            $log = new audit_logs();
+            $log->inventory_activity = "Added a new medicine group";
+            $log->inventory_item_id = $medGroupId;
+            $log->admin = $request->admin;
+            $log->save();
+
+            DB::commit();
+
+
             return response()->json([
                 'status' => 200,
                 'message'=> 'Success',
                 'id' => $medGroupId
             ]);
         }
-        else
+        catch(\Exception $e)
         {
+            DB::rollBack();
             return response()->json([
-                'status' => 401,
-                'message' => 'Something went wrong please try again later.'
-            ]);
+                'status' => 500,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 

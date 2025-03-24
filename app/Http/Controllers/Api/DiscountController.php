@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\audit_logs;
 use App\Models\discounts;
+use DB;
 use Illuminate\Http\Request;
 
 class DiscountController extends Controller
@@ -19,25 +21,40 @@ class DiscountController extends Controller
     // POST
     public function AddDiscount(Request $request)
     {
-        $discount = new discounts();
-        $discount->discount_name = $request->discount_name;
-        $discount->discount_type = $request->discount_type;
-        $discount->discount_value = $request->discount_value;
-
-        if($discount->save())
+        try
         {
+            DB::beginTransaction();
+
+            $discount = new discounts();
+            $discount->discount_name = $request->discount_name;
+            $discount->discount_type = $request->discount_type;
+            $discount->discount_value = $request->discount_value;
+
+            $discount->save();
+
+            // LOG IT
+            $log = new audit_logs();
+            $log->settings_activity = "Added a new discount";
+            $log->discount = $discount->id;
+            $log->admin = $request->admin;
+            $log->type = "Settings";
+            $log->save();
+
+            DB::commit();
+
             return response()->json([
                 'status' => 200, 
                 'message' => 'Discount Added',
                 'discount' => $discount
             ]);
         }
-        else
+        catch(\Exception $e)
         {
+            DB::rollBack();
             return response()->json([
-                'status' => 401, 
-                'message' => 'Something went wrong when adding discount'
-            ]);
+                'status' => 500,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

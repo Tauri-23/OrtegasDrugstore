@@ -3,8 +3,10 @@ import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService
 import { isEmptyOrSpaces, notify } from "../../../assets/js/utils";
 import axiosClient from "../../../axios-client";
 import { useNavigate } from "react-router-dom";
+import { useStateContext } from "../../../Context/ContextProvider";
 
 export default function AdminAddMedicines() {
+    const {user} = useStateContext();
     const navigate = useNavigate();
 
     const [medicineGroups, setMedicineGroups] = useState(null);
@@ -60,6 +62,7 @@ export default function AdminAddMedicines() {
         formData.append("medGp", medGp);
         formData.append("medDirection", medDirection);
         formData.append("medSideFx", medSideFx);
+        formData.append("admin", user.id);
 
         axiosClient.post('/create-medicine', formData)
         .then(({data}) => {

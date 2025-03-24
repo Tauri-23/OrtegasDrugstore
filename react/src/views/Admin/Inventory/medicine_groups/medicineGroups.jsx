@@ -2,13 +2,14 @@ import * as Icon from "react-bootstrap-icons";
 import { useModal } from "../../../../Context/ModalContext";
 import { useEffect, useState } from "react";
 import axiosClient from "../../../../axios-client";
-import { formatToPhilPeso, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
-import { toast } from "react-toastify";
+import { isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { fetchAllMedGroups } from "../../../../Services/GeneralMedicineGroupService";
 import { useNavigate } from "react-router-dom";
 import { Spin, Table } from "antd";
+import { useStateContext } from "../../../../Context/ContextProvider";
 
 export default function AdminMedicineGroups() {
+    const {user} = useStateContext();
     const {showModal} = useModal();
     const navigate = useNavigate();
     const [medicineGroups, setMedicineGroups] = useState(null);
@@ -61,6 +62,7 @@ export default function AdminMedicineGroups() {
 
         const formData = new FormData();
         formData.append("name", medGroupName);
+        formData.append("admin", user.id);
 
         axiosClient.post('/add-medicine-group-post', formData)
         .then(({data}) => {

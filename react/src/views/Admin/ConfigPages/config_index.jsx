@@ -3,8 +3,10 @@ import { useModal } from "../../../Context/ModalContext";
 import { fetchAllDiscounts } from "../../../Services/GeneralDiscountService";
 import axiosClient from "../../../axios-client";
 import { formatToPhilPeso, notify } from "../../../assets/js/utils";
+import { useStateContext } from "../../../Context/ContextProvider";
 
 export default function AdminConfigIndex() {
+    const {user} = useStateContext();
     const {showModal} = useModal();
 
     const [discounts, setDiscounts] = useState(null);
@@ -44,6 +46,7 @@ export default function AdminConfigIndex() {
         formData.append('discount_name', data.discountName);
         formData.append('discount_type', data.discountType);
         formData.append('discount_value', data.discountValue);
+        formData.append('admin', user.id);
 
         axiosClient.post('/add-discount', formData)
         .then(({data}) => {

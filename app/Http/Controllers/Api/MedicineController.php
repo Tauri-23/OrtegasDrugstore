@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Contracts\IGenerateFilenameService;
 use App\Contracts\IGenerateIdService;
 use App\Http\Controllers\Controller;
+use App\Models\audit_logs;
 use App\Models\medicines;
+use DB;
 use Illuminate\Http\Request;
 
 class MedicineController extends Controller
@@ -42,29 +44,43 @@ class MedicineController extends Controller
     // POST
     public function CreateMedicine(Request $request)
     {
-        $medicineId = $this->generateId->generate(medicines::class, 12);
-        $medicine = new medicines();
-        $medicine->id = $medicineId;
-        $medicine->name = $request->medName;
-        $medicine->price = $request->medPrice;
-        $medicine->group = $request->medGp;
-        $medicine->directions = $request->medDirection;
-        $medicine->side_effects = $request->medSideFx;
-
-        if($medicine->save())
+        try
         {
+            DB::beginTransaction();
+
+            $medicineId = $this->generateId->generate(medicines::class, 12);
+            $medicine = new medicines();
+            $medicine->id = $medicineId;
+            $medicine->name = $request->medName;
+            $medicine->price = $request->medPrice;
+            $medicine->group = $request->medGp;
+            $medicine->directions = $request->medDirection;
+            $medicine->side_effects = $request->medSideFx;
+            $medicine->save();
+
+            // LOG IT
+            $log = new audit_logs();
+            $log->inventory_activity = "Added a new medicine";
+            $log->inventory_item_id = $medicineId;
+            $log->admin = $request->admin;
+            $log->save();
+
+            DB::commit();
+
+
             return response()->json([
                 'status' => 200,
                 'message' => 'Medicine successfully added.',
                 'id' => $medicineId
             ]);
         }
-        else
+        catch(\Exception $e)
         {
+            DB::rollBack();
             return response()->json([
-                'status' => 401,
-                'message' => 'Something went wrong please try again.'
-            ]);
+                'status' => 500,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -146,6 +162,8 @@ class MedicineController extends Controller
     {
         try
         {
+            DB::beginTransaction();
+
             $pic = $request->file('pic');
             $medicine = medicines::where('id', $request->medicine_id)->with('group')->first();
 
@@ -157,6 +175,15 @@ class MedicineController extends Controller
             $medicine->pic = $newFilename;
             $medicine->save();
 
+            // LOG IT
+            $log = new audit_logs();
+            $log->inventory_activity = "Configured a medicine photo";
+            $log->inventory_item_id = $request->medicine_id;
+            $log->admin = $request->admin;
+            $log->save();
+
+            DB::commit();
+
             return response()->json([
                 'status' => 200,
                 'message' => "Medicine picture updated.",
@@ -166,10 +193,12 @@ class MedicineController extends Controller
         }
         catch(\Exception $e)
         {
+            DB::rollBack();
+
             return response()->json([
                 'status' => 500,
-                'message' => "Something went wrong please try again later" . $e->getMessage()
-            ]);
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

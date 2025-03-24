@@ -9,8 +9,10 @@ import { formatDateTime, isEmptyOrSpaces, notify } from "../../../../assets/js/u
 import { EditMedInfo1 } from "../../../../components/admin/edit_med_info1";
 import { fetchAllForecastWhereMedicine } from "../../../../Services/ForecastServices";
 import LineChart1 from "../../../../components/charts/LineChart1";
+import { useStateContext } from "../../../../Context/ContextProvider";
 
 export default function AdminViewMedicine() {
+    const {user} = useStateContext();
     const {showModal} = useModal();
     const {medId} = useParams();
     const navigate = useNavigate();
@@ -148,6 +150,7 @@ export default function AdminViewMedicine() {
         const formData = new FormData();
         formData.append('medicine_id', medicine.id);
         formData.append('pic', newMedPic);
+        formData.append('admin', user.id);
 
         axiosClient.post('/update-medicine-pic', formData)
         .then(({data}) => {
@@ -238,6 +241,7 @@ export default function AdminViewMedicine() {
             formData.append('sku', sku);
             formData.append('medicine', medicine.id);
             formData.append('expiration', expiration);
+            formData.append('admin', user.id);
 
             axiosClient.post('/add-medicine-item', formData)
             .then(({data}) => {

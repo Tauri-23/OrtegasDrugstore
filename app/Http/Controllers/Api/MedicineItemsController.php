@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\audit_logs;
 use App\Models\medicine_items;
 use App\Models\medicines;
 use DB;
@@ -40,6 +41,14 @@ class MedicineItemsController extends Controller
             // Save Changes
             $medicine->save();
             $medicineItem->save();
+
+            // LOG IT
+            $log = new audit_logs();
+            $log->inventory_activity = "Added medicine stock";
+            $log->inventory_item_id= $request->medicine;
+            $log->added_qty= 1;
+            $log->admin = $request->admin;
+            $log->save();
 
             DB::commit();
 

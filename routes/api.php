@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuditLogsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DiscountController;
@@ -128,3 +129,14 @@ Route::post('/void-purchase-transaction', [PurchaseTransactionController::class,
 Route::get('/get-all-revenues', [DashboardController::class, 'GetAllRevenues']);
 Route::get('/get-all-medicine-count', [DashboardController::class, 'GetAllMedicineCount']);
 Route::get('/get-all-medicine-shortage', [DashboardController::class, 'GetAllMedicineShortage']);
+
+
+
+
+
+/*
+|----------------------------------------
+| AUDIT LOGS 
+|----------------------------------------
+*/
+Route::get('/get-all-audit-logs', [AuditLogsController::class, 'GetAllAuditLogs']);
