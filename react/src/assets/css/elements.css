@@ -46,16 +46,21 @@
 }
 
 
-.secondary-btn-black1 {
+.secondary-btn-black1, .secondary-btn-dark-blue1 {
     padding: 10px 15px;
     text-decoration: none;
     border-radius: var(--radius3);
     cursor: pointer;
     border: none;
     background: transparent;
+    text-decoration: none;
 }
 .secondary-btn-black1 {
     border: 1px solid var(--black1);
+}
+.secondary-btn-dark-blue1 {
+    border: 1px solid var(--dark-blue1);
+    color: var(--dark-blue1);
 }
 
 .colorless-btn1 {

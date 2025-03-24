@@ -18,6 +18,7 @@ import Prophet from "./views/AlgoModels/prophet";
 import ViewShortage from "./views/Admin/viewShortage";
 import CashierDefault from "./views/Cashier/default";
 import CashierPOSIndex from "./views/Cashier/POS/cashier_pos_index";
+import AdminLogsDefault from "./views/Admin/AdminLogs/admin_logs_default";
 
 const router = createBrowserRouter([
     /*
@@ -107,6 +108,12 @@ const router = createBrowserRouter([
             {
                 path: 'PaymentReports',
                 element: <AdminPaymentReports/>
+            },
+
+            // LOGS
+            {
+                path: 'Logs',
+                element: <AdminLogsDefault/>
             },
 
             // POS
