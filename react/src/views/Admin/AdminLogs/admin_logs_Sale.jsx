@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchAllLogsWhereType } from "../../../Services/AdminLogsServices";
 import {Spin, Table} from "antd";
 import { formatDateTime, formatToPhilPeso } from "../../../assets/js/utils";
+import * as XLSX from "xlsx";
 
 export default function AdminLogsSale() {
     const [logs, setLogs] = useState(null);
@@ -57,7 +58,33 @@ export default function AdminLogsSale() {
             render: (_, row) => formatDateTime(row.created_at),
             key: 'id',
         },
-    ]
+    ];
+
+
+
+    /**
+     * Print as XLSX
+     */
+    const handlePrintAsExcel = () => {
+        if (!logs || logs.length === 0) return;
+
+        // Convert data to Excel format
+        const exportData = logs.map((log) => ({
+            "LOG ID": log.id,
+            "Cashier": log.cashier ? `${log.cashier.firstname} ${log.cashier.lastname}` : "N/A",
+            "Activity": log.sale_activity,            
+            "Reference Id": log.transaction ? String(log.transaction.id) : "N/A",
+            "Total Price": log.transaction ? formatToPhilPeso(log.transaction.total) : "N/A",
+            "Timestamp": formatDateTime(log.created_at),
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Audit Logs");
+
+        // Download the file
+        XLSX.writeFile(workbook, "sales_audit_logs.xlsx");
+    }
 
 
 
@@ -69,12 +96,20 @@ export default function AdminLogsSale() {
             {!logs
             ? (<Spin size="large"/>)
             : (
-                <Table
-                columns={logsColumns}
-                dataSource={logs.map((item) => ({...item, key: item.id}))}
-                pagination={{pageSize: 10}}
-                bordered
-                />
+                <>
+                    <button 
+                    onClick={handlePrintAsExcel}
+                    className="primary-btn-dark-blue1 mar-bottom-1">
+                        Download as .xlsx
+                    </button>
+
+                    <Table
+                    columns={logsColumns}
+                    dataSource={logs.map((item) => ({...item, key: item.id}))}
+                    pagination={{pageSize: 10}}
+                    bordered
+                    />
+                </>
             )}
         </>
     );

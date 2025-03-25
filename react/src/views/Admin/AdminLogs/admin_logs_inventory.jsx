@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { fetchAllLogsWhereType } from "../../../Services/AdminLogsServices";
 import {Spin, Table} from "antd";
 import { formatDateTime } from "../../../assets/js/utils";
+import * as XLSX from "xlsx";
+
 
 export default function AdminLogsInventory() {
     const [logs, setLogs] = useState(null);
@@ -56,6 +58,31 @@ export default function AdminLogsInventory() {
 
 
     /**
+     * Print as XLSX
+     */
+    const handlePrintAsExcel = () => {
+        if (!logs || logs.length === 0) return;
+
+        // Convert data to Excel format
+        const exportData = logs.map((log) => ({
+            "LOG ID": log.id,
+            "Admin": log.admin ? `${log.admin.firstname} ${log.admin.lastname}` : "N/A",
+            "Activity": log.inventory_activity,            
+            "Item ID": log.inventory_item_id,
+            "Timestamp": formatDateTime(log.created_at),
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Audit Logs");
+
+        // Download the file
+        XLSX.writeFile(workbook, "inventory_audit_logs.xlsx");
+    }
+
+
+
+    /**
      * Render
      */
     return(
@@ -63,12 +90,20 @@ export default function AdminLogsInventory() {
             {!logs
             ? (<Spin size="large"/>)
             : (
-                <Table
-                columns={logsColumns}
-                dataSource={logs.map((item) => ({...item, key: item.id}))}
-                pagination={{pageSize: 10}}
-                bordered
-                />
+                <>
+                    <button 
+                    onClick={handlePrintAsExcel}
+                    className="primary-btn-dark-blue1 mar-bottom-1">
+                        Download as .xlsx
+                    </button>
+
+                    <Table
+                    columns={logsColumns}
+                    dataSource={logs.map((item) => ({...item, key: item.id}))}
+                    pagination={{pageSize: 10}}
+                    bordered
+                    />
+                </>
             )}
         </>
     );

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchAllLogsWhereType } from "../../../Services/AdminLogsServices";
 import {Spin, Table} from "antd";
 import { formatDateTime } from "../../../assets/js/utils";
+import * as XLSX from "xlsx";
 
 export default function AdminLogsSettings() {
     const [logs, setLogs] = useState(null);
@@ -51,7 +52,32 @@ export default function AdminLogsSettings() {
             render: (_, row) => formatDateTime(row.created_at),
             key: 'id',
         },
-    ]
+    ];
+
+
+
+    /**
+     * Handlers
+     */
+    const handlePrintAsExcel = () => {
+        if (!logs || logs.length === 0) return;
+
+        // Convert data to Excel format
+        const exportData = logs.map((log) => ({
+            "LOG ID": log.id,
+            "Admin": log.admin ? `${log.admin.firstname} ${log.admin.lastname}` : "N/A",
+            "Activity": log.settings_activity,            
+            "Discount": log.discount ? log.discount.discount_name : "N/A",
+            "Timestamp": formatDateTime(log.created_at),
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Audit Logs");
+
+        // Download the file
+        XLSX.writeFile(workbook, "settings_audit_logs.xlsx");
+    }
 
 
 
@@ -63,12 +89,20 @@ export default function AdminLogsSettings() {
             {!logs
             ? (<Spin size="large"/>)
             : (
-                <Table
-                columns={logsColumns}
-                dataSource={logs}
-                pagination={{pageSize: 10}}
-                bordered
-                />
+                <>
+                    <button 
+                    onClick={handlePrintAsExcel}
+                    className="primary-btn-dark-blue1 mar-bottom-1">
+                        Download as .xlsx
+                    </button>
+
+                    <Table
+                    columns={logsColumns}
+                    dataSource={logs}
+                    pagination={{pageSize: 10}}
+                    bordered
+                    />
+                </>
             )}
         </>
     );
