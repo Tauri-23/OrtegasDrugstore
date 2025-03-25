@@ -63,3 +63,63 @@ class ForecastController extends Controller
         }
     }
 }
+
+
+/**
+ * For Deployment
+ */
+
+
+
+//  <?php
+
+//  namespace App\Http\Controllers\Api;
+ 
+//  use App\Http\Controllers\Controller;
+//  use App\Models\purchase_transaction_items;
+//  use Illuminate\Http\Request;
+//  use Illuminate\Support\Facades\Http;
+ 
+//  class ForecastController extends Controller
+//  {
+//      private $apiBaseUrl = "http://82.25.105.148:8100";
+     
+     
+//      public function GetForecast()
+//      {
+//          $response = Http::get("{$this->apiBaseUrl}/forecast");
+ 
+//          if ($response->failed()) {
+//              return response()->json([
+//                  'status' => 'error',
+//                  'message' => 'Failed to fetch forecast data',
+//                  'error' => $response->body()
+//              ], 500);
+//          }
+ 
+//          return response()->json([
+//              'status' => 'success',
+//              'forecast' => $response->json()
+//          ]);
+//      }
+ 
+ 
+//      public function GetForecastWhereMedicine($medicineId)
+//      {
+//          $response = Http::get("{$this->apiBaseUrl}/forecastspecific/{$medicineId}");
+ 
+//          if ($response->failed()) {
+//              return response()->json([
+//                  'status' => 'error',
+//                  'message' => 'Failed to fetch forecast data for the specified medicine',
+//                  'error' => $response->body()
+//              ], 500);
+//          }
+ 
+//          return response()->json([
+//              'status' => 'success',
+//              'forecast' => $response->json()
+//          ]);
+//      }
+//  }
+ 
