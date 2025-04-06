@@ -29,3 +29,13 @@ export const fetchNecessaryForReport = async(month, year) => {
         throw error;
     }
 }
+
+export const fetchAllReturnedItems = async() => {
+    try {
+        const response = await axiosClient.get(`/get-all-returned-items`);
+        return response.data;
+    } catch(error) {
+        console.error(error);
+        throw error;
+    }
+}

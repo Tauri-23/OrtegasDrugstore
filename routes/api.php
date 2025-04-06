@@ -114,8 +114,11 @@ Route::get('/get-necessary-data-for-report/{month}/{year}', [PurchaseTransaction
 
 Route::get('/get-all-full-purchase-transaction-items', [PurchaseTransactionController::class, 'GetAllPurchaseTransactionItems']);
 
+Route::get('/get-all-returned-items', [PurchaseTransactionController::class, 'GetAllReturnHistory']);
+
 Route::post('/add-purchase-transaction', [PurchaseTransactionController::class, 'AddPurchase']);
 Route::post('/void-purchase-transaction', [PurchaseTransactionController::class, 'VoidPurchase']);
+Route::post('/return-transaction-item', [PurchaseTransactionController::class, "ReturnTransactionItem"]);
 
 
 

@@ -9,6 +9,7 @@ import AdminEditMedPicPreviewModal1 from "../components/modals/admin_edit_med_pi
 import AdminPayCashModal1 from "../components/modals/admin_pay_cash_modal1";
 import AdminViewReceiptModal1 from "../components/modals/admin_view_receipt_modal1";
 import GeneralConfirmationModal1 from "../components/modals/general_confirmation_modal1";
+import ReturnItemsModal from "../components/modals/return_items_modal";
 import { useModal } from "../Context/ModalContext"
 
 const ModalManager = () => {
@@ -43,6 +44,13 @@ const ModalManager = () => {
                 return <AdminViewReceiptModal1 {...modalState.props} onClose={hideModal}/>;
             case 'AdminPayCashModal1':
                 return <AdminPayCashModal1 {...modalState.props} onClose={hideModal}/>;
+
+
+            /**
+             * Return Items
+             */
+            case "ReturnItemsModal":
+                return <ReturnItemsModal {...modalState.props} onClose={hideModal}/>;
                 
 
 

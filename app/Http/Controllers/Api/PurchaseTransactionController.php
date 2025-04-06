@@ -12,6 +12,7 @@ use App\Models\purchase_transaction_discounts;
 use App\Models\purchase_transaction_items;
 use App\Models\purchase_transaction_medicine_items;
 use App\Models\purchase_transactions;
+use App\Models\returned_transaction_items;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -221,6 +222,94 @@ class PurchaseTransactionController extends Controller
         }
     }
 
+    public function ReturnTransactionItem(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $retItem = json_decode($request->itemRet);
+            $transactionItem = purchase_transaction_items::with("medicine")->find($retItem->id);
+            $purchaseTransaction = purchase_transactions::with("items")->find($transactionItem->purchase_transaction);
+            $purchaseMedItems = purchase_transaction_medicine_items::where("purchase_transaction_item", $transactionItem->id)
+            ->orderBy("created_at", "asc")
+            ->take($retItem->qty)
+            ->get();
+
+            // FIRST EDIT THE PURCHASE TRANSACTION
+            $percentOfDiscount = ($purchaseTransaction->discount_deduction / $purchaseTransaction->subtotal ) * 100;
+            $updatedSubtotal = $purchaseTransaction->subtotal - $transactionItem->medicine()->first()->price * $retItem->qty;
+            $updatedDiscountDeduction = $updatedSubtotal * ($percentOfDiscount / 100);
+            $updatedTotal = $updatedSubtotal - $updatedDiscountDeduction;
+            $updatedChange = $purchaseTransaction->cash - $updatedTotal;
+
+            $purchaseTransaction->subtotal = $updatedSubtotal;
+            $purchaseTransaction->discount_deduction = $updatedDiscountDeduction;
+            $purchaseTransaction->total = $updatedTotal;
+            $purchaseTransaction->change = $updatedChange;
+            $purchaseTransaction->save();
+
+
+            // MOVE THE ITEM TO RETURNS
+            $returnedItems = new returned_transaction_items();
+            $returnedItems->purchase_transaction = $purchaseTransaction->id;
+            $returnedItems->medicine = $transactionItem->medicine()->first()->id;
+            $returnedItems->qty = $retItem->qty;
+            $returnedItems->reason = $retItem->reason;
+            $returnedItems->save();
+
+            // RETURN MEDICINE ITEM TO THE INVENTORY
+            foreach($purchaseMedItems as $medItem)
+            {
+                // MOVE THE MEDICINE ITEM TO THE INVENTORY
+                $medicineItem = new medicine_items();
+                $medicineItem->id = $medItem->medicine_item_id;
+                $medicineItem->medicine = $medItem->medicine;
+                $medicineItem->expiration_date = $medItem->expiration_date;
+                $medicineItem->created_at = $medItem->medicine_item_created_at;
+                $medicineItem->updated_at = $medItem->medicine_item_updated_at;
+                $medicineItem->save();
+
+                // Increment MEDICINE
+                $medicine = medicines::find($medItem->medicine);
+                $medicine->qty ++;
+                $medicine->save();
+
+                // NOW DELETE THE MEDICINE ITEM FROM THE PURCHASE TRANSACTION MEDICINE ITEMS
+                $medItem->delete();
+            }
+
+
+            // UPDATE THE PURCHASE TRANSACTION ITEMS
+            if($transactionItem->qty == $retItem->qty)
+            {
+                $transactionItem->delete();
+            } 
+            else 
+            {
+                $transactionItem->qty -= $retItem->qty;
+                $transactionItem->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                "status" => 200,
+                "message" => "success",
+                "transactions" => purchase_transactions::with(["items", "discounts", "customer"])->orderBy("created_at", "desc")->get()
+            ]);
+            
+        }
+        catch(\Exception $e)
+        {
+            DB::rollBack();
+            return response()->json([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 
     // GET
@@ -275,5 +364,10 @@ class PurchaseTransactionController extends Controller
             'total_qty_last_month' => $totalQtyLastMonth,
             'new_items' => $newItems
         ]);
+    }
+
+    public function GetAllReturnHistory()
+    {
+        return response()->json(returned_transaction_items::with("medicine")->orderByDesc("created_at")->get());
     }
 }

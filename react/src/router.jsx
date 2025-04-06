@@ -22,6 +22,9 @@ import AdminLogsDefault from "./views/Admin/AdminLogs/admin_logs_default";
 import AdminLogsInventory from "./views/Admin/AdminLogs/admin_logs_inventory";
 import AdminLogsSettings from "./views/Admin/AdminLogs/admin_logs_settings";
 import AdminLogsSale from "./views/Admin/AdminLogs/admin_logs_Sale";
+import AdminReturnManagementDefault from "./views/Admin/ReturnManagement/admin_ret_management_default";
+import AdminReturnManagementIndex from "./views/Admin/ReturnManagement/admin_ret_management_index";
+import AdminReturnManagementHistory from "./views/Admin/ReturnManagement/admin_ret_management_history";
 
 const router = createBrowserRouter([
     /*
@@ -141,6 +144,22 @@ const router = createBrowserRouter([
                     {
                         index: true,
                         element: <AdminPOSIndex/>
+                    }
+                ]
+            },
+
+            // Return Management
+            {
+                path: "ReturnManagement",
+                element: <AdminReturnManagementDefault/>,
+                children: [
+                    {
+                        index: true,
+                        element: <AdminReturnManagementIndex/>
+                    },
+                    {
+                        path: "History",
+                        element: <AdminReturnManagementHistory/>
                     }
                 ]
             },

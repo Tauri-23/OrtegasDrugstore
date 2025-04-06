@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\audit_logs;
 use App\Models\medicine_items;
 use App\Models\medicines;
+use App\Models\purchase_transaction_medicine_items;
 use DB;
 use Illuminate\Http\Request;
 
@@ -19,8 +20,9 @@ class MedicineItemsController extends Controller
             DB::beginTransaction();
 
             $SkuExist = medicine_items::find($request->sku);
+            $skuExistInHistory = purchase_transaction_medicine_items::where("medicine_item_id", $request->sku)->exists();
 
-            if($SkuExist)
+            if($SkuExist || $skuExistInHistory)
             {
                 return response()->json([
                     'status' => 400,

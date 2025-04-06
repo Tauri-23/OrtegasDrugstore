@@ -16,12 +16,10 @@ return new class extends Migration
             $table->string("name");
             $table->text('pic')->nullable();
             $table->string("group", 6)->nullable();
+            $table->enum("type", ["Generic", "Branded"])->default("Generic");
             $table->integer("qty")->default(0);
             $table->float('price')->default(0);
             $table->float('competitor_price')->default(0);
-            $table->date('expiration')->nullable();
-            $table->longText("directions");
-            $table->longText("side_effects");
             $table->timestamps();
 
             /**

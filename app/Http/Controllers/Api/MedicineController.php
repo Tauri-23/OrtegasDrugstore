@@ -48,14 +48,15 @@ class MedicineController extends Controller
         {
             DB::beginTransaction();
 
+            $medicineParsed = json_decode($request->medicine);
+
             $medicineId = $this->generateId->generate(medicines::class, 12);
             $medicine = new medicines();
             $medicine->id = $medicineId;
-            $medicine->name = $request->medName;
-            $medicine->price = $request->medPrice;
-            $medicine->group = $request->medGp;
-            $medicine->directions = $request->medDirection;
-            $medicine->side_effects = $request->medSideFx;
+            $medicine->name = $medicineParsed->medName;
+            $medicine->price = $medicineParsed->medPrice;
+            $medicine->group = $medicineParsed->medGroup;
+            $medicine->type = $medicineParsed->medType;
             $medicine->save();
 
             // LOG IT

@@ -4,6 +4,7 @@ import { isEmptyOrSpaces, notify } from "../../../assets/js/utils";
 import axiosClient from "../../../axios-client";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../../../Context/ContextProvider";
+import {Button, Input, InputNumber, Select} from "antd";
 
 export default function AdminAddMedicines() {
     const {user} = useStateContext();
@@ -11,20 +12,18 @@ export default function AdminAddMedicines() {
 
     const [medicineGroups, setMedicineGroups] = useState(null);
 
-    const [medName, setMedName] = useState("");
-    const [medPrice, setMedPrice] = useState(0);
-    const [expiration, setExpiration] = useState("");
-    const [medGp, setMedGp] = useState("");
-    const [medQty, setMedQty] = useState(0);
-    const [medDirectionForCheck, setMedDirectionForCheck] = useState("");
-    const [medSideFxForCheck, setMedSideFxForCheck] = useState("");
+    const [medicine, setMedicine] = useState({
+        medName: "",
+        medGroup: "",
+        medType: "",
+        medPrice: 0
+    })
 
 
-    const [medDirection, setMedDirection] = useState("");
-    const [medSideFx, setMedSideFx] = useState("");
 
-    const [addBtnActive, setAddBtnActive] = useState(false);
-
+    /**
+     * Onmount
+     */
     useEffect(() => {
         const getAllMedicineGroups = async() => {
             try {
@@ -36,32 +35,19 @@ export default function AdminAddMedicines() {
         getAllMedicineGroups();
     }, [])
 
-    // Enable or disable the add Btn
-    useEffect(() => {
-        if(!isEmptyOrSpaces(medName) && medPrice !== undefined && medGp !== "" && !isEmptyOrSpaces(medDirectionForCheck) 
-            && !isEmptyOrSpaces(medSideFxForCheck)) {
-            setAddBtnActive(true);
-        } else {
-            setAddBtnActive(false);
-        }
-    }, [
-        medName,
-        medPrice,
-        medGp,
-        medDirection,
-        medSideFx
-    ]);
+    /**
+     * Checkers
+     */
+    const isBtnDisabled = () => {
+        return isEmptyOrSpaces(medicine.medName) || medicine.medPrice == "" || medicine.medGroup == "" || medicine.medType == "";
+    }
 
-
+    /**
+     * Handlers
+     */
     const handleAddMedicinePost = () => {
-        console.log(medDirection);
-        console.log(medSideFx);
         const formData = new FormData();
-        formData.append("medName", medName);
-        formData.append("medPrice", medPrice);
-        formData.append("medGp", medGp);
-        formData.append("medDirection", medDirection);
-        formData.append("medSideFx", medSideFx);
+        formData.append("medicine", JSON.stringify(medicine));
         formData.append("admin", user.id);
 
         axiosClient.post('/create-medicine', formData)
@@ -75,7 +61,15 @@ export default function AdminAddMedicines() {
         }).catch(error => console.error(error));
     }
 
+    const handleInput = (e) => {
+        setMedicine({...medicine, [e.target.name]: e.target.value});
+    }
 
+
+
+    /**
+     * Render
+     */
     return(
         <div className="content1">
             {medicineGroups
@@ -90,65 +84,77 @@ export default function AdminAddMedicines() {
                         <div className="d-flex gap1 mar-bottom-2">
                             <div className="d-flex flex-direction-y w-100 gap4">
                                 <label htmlFor="medName" className="text-m1">Medicine Name</label>
-                                <input type="text" onInput={(e) => setMedName(e.target.value)} id="medName" className="input1" value={medName} />
+                                <Input
+                                size="large"
+                                id="medName" 
+                                name="medName"
+                                onInput={handleInput}
+                                value={medicine.medName} 
+                                />
                             </div>
 
                             <div className="d-flex flex-direction-y w-100 gap4">
                                 <label htmlFor="medPrice" className="text-m1">Medicine Price</label>
-                                <input type="number" min={0} onInput={(e) => setMedPrice(e.target.value)} id="medPrice" className="input1" value={medPrice} />
+                                <InputNumber
+                                size="large"
+                                id="medPrice"
+                                name="medPrice"
+                                style={{ width: "100%" }}
+                                min={0}
+                                value={medicine.medPrice}
+                                onChange={(value) => {
+                                    if (!isNaN(value)) {
+                                        handleInput({ target: { name: "medPrice", value } });
+                                    }
+                                }}
+                                />
                             </div>
                         </div>
 
 
                         <div className="d-flex gap1 mar-bottom-2">
                             <div className="d-flex flex-direction-y w-100 gap4">
-                                <label htmlFor="medGroup" className="text-m1">Medicine Group</label>
-                                <select name="medGroup" className="input1" onChange={(e) => setMedGp(e.target.value)} value={medGp}>
-                                    <option value="">Select Medicine Group</option>
-                                    {medicineGroups.map(medGp => (
-                                        <option key={medGp.id} value={medGp.id}>{medGp.group_name}</option>
-                                    ))}
-                                </select>
+                                <label htmlFor="medType" className="text-m1">Type</label>
+                                <Select
+                                size="large"
+                                name="medType"
+                                id="medType"
+                                onChange={(value) => handleInput({ target: { name: "medType", value } })} 
+                                value={medicine.medType}
+                                options={[
+                                    {label: "Select Medicine Type", value: ""},
+                                    {label: "Generic", value: "Generic"},
+                                    {label: "Branded", value: "Branded"}
+                                ]}
+                                />
                             </div>
 
-                            {/* <div className="d-flex flex-direction-y w-100 gap4">
-                                <label htmlFor="qty" className="text-m1">Quantity in Number</label>
-                                <input type="number" min={0} id="qty" className="input1" onChange={(e) => setMedQty(e.target.value)} value={medQty}/>
-                            </div>
                             <div className="d-flex flex-direction-y w-100 gap4">
-                                <label htmlFor="expiration" className="text-m1">Expiration Date</label>
-                                <input type="date" id="expiration" className="input1" onChange={(e) => setExpiration(e.target.value)} value={expiration}/>
-                            </div> */}
-                        </div>
-
-
-                        <div className="d-flex flex-direction-y w-100 gap4 mar-bottom-2">
-                            <label htmlFor="medGroup" className="text-m1">How to use</label>
-                            <div 
-                            className="input1 overflow-auto" 
-                            style={{height: "150px"}} contentEditable suppressContentEditableWarning 
-                            onInput={(e) => {setMedDirection(e.target.innerHTML); setMedDirectionForCheck(e.target.innerText)}}>
-                                
-                            </div>
-                        </div>
-
-
-                        <div className="d-flex flex-direction-y w-100 gap4 mar-bottom-2">
-                            <label htmlFor="medGroup" className="text-m1">Side Effects</label>
-                            <div 
-                            className="input1 overflow-auto" 
-                            style={{height: "150px"}} contentEditable suppressContentEditableWarning 
-                            onInput={(e) => {setMedSideFx(e.target.innerHTML); setMedSideFxForCheck(e.target.innerText)}}>
-                                
+                                <label htmlFor="medGroup" className="text-m1">Medicine Group</label>
+                                <Select
+                                size="large"
+                                name="medGroup"
+                                id="medGroup"
+                                onChange={(value) => handleInput({ target: { name: "medGroup", value } })} 
+                                value={medicine.medGroup}
+                                options={[
+                                    {label: "Select Medicine Group", value: ""},
+                                    ...medicineGroups.map(medGp => (
+                                        {label: medGp.group_name, value: medGp.id}
+                                    ))
+                                ]}
+                                />
                             </div>
                         </div>
 
                         
                         <div className="d-flex">
-                            <button 
-                            disabled={!addBtnActive} 
-                            className={`primary-btn-dark-blue1 ${addBtnActive ? '' : 'disabled'}`} 
-                            onClick={handleAddMedicinePost}>Add Medicine</button>
+                            <Button
+                            type="primary"
+                            disabled={isBtnDisabled()}
+                            size="large"
+                            onClick={handleAddMedicinePost}
+                            >Add Medicine</Button>
                         </div>
                     </div>
                 )

@@ -8,12 +8,11 @@ import { Space, Spin, Table, Tag } from 'antd';
 
 export default function AdminMedicines() {
     const [medicines, setMedicines] = useState(null);
-    const [medicineTemp, setMedicineTemp] = useState([]);
+    const [filteredMedicines, setFilteredMedicines] = useState(null);
 
     const [groups, setGroups] = useState(null);
     
     const [searchValue, setSearchValue] = useState("");
-    const [selectedGroup, setSelectedGroup] = useState("");
 
     const navigate = useNavigate();
 
@@ -30,6 +29,7 @@ export default function AdminMedicines() {
                     fetchAllMedGroups()
                 ]);
                 setMedicines(medicinesDb);
+                setFilteredMedicines(medicinesDb);
                 setGroups(groupsDb);
             } catch(error) {console.error(error)}
         };
@@ -46,27 +46,37 @@ export default function AdminMedicines() {
         {
             title: 'Medicine Name',
             dataIndex: 'name',
-            key: 'id',
             sorter: (a, b) => a.name.localeCompare(b.name)
         },
         {
             title: 'Group Name',
-            dataIndex: 'group',
-            key: 'group_name',
+            dataIndex: "group",
             render: (group) => group?.group_name || 'N/A',
-            sorter: (a, b) => (a.group?.group_name || '').localeCompare(b.group?.group_name || '')
+            filters: groups ? [
+                ...groups.map(group => 
+                    ({text: group.group_name, value: group.id})
+                )
+            ] : [],
+            onFilter: (value, record) => record.group.id === value,
+        },
+        {
+            title: 'Type',
+            dataIndex: "type",
+            filters: [
+                { text: 'Generic', value: 'Generic' },
+                { text: 'Branded', value: 'Branded' }
+            ],
+            onFilter: (value, record) => record.type === value,
         },
         {
             title: 'Price',
             dataIndex: 'price',
-            key: 'price',
             render: (price) => formatToPhilPeso(price),
             sorter: (a, b) => parseFloat(a.price) - parseFloat(b.price)
         },
         {
             title: 'Stock in Qty',
             dataIndex: 'qty',
-            key: 'qty',
             sorter: (a, b) => a.qty - b.qty
         },
     ]
@@ -77,75 +87,21 @@ export default function AdminMedicines() {
      * For Search
      */
     useEffect(() => {
-
-        if(medicines == null && medicineTemp.length < 1) {
+        if(medicines === null || filteredMedicines === null) {
             return
         }
-    
-        if (!isEmptyOrSpaces(searchValue)) {
-            if (medicineTemp.length === 0) {
-                // Save the original list and filter medicines
-                setMedicineTemp(medicines);
-                setMedicines(
-                    medicines.filter(med =>
-                        med.name.toLowerCase().includes(searchValue.toLowerCase()) &&
-                        (isEmptyOrSpaces(selectedGroup) ? true : String(med.group.id) == selectedGroup)
-                    )
-                );
-            } else {
-                // Use the temporary storage for filtering
-                setMedicines(
-                    medicineTemp.filter(med =>
-                        med.name.toLowerCase().includes(searchValue.toLowerCase()) &&
-                        (isEmptyOrSpaces(selectedGroup) ? true : String(med.group.id) == selectedGroup)
-                    )
-                );
-            }
-        } else {
-            if(!isEmptyOrSpaces(selectedGroup)) {
-                setMedicines(medicineTemp.filter(med => String(med.group.id) == selectedGroup));
-            }
-            else {
-                setMedicines(medicineTemp);
-                setMedicineTemp([]);
-            }            
+
+        if(isEmptyOrSpaces(searchValue)) {
+            setFilteredMedicines(medicines);
+            return
         }
+
+        setFilteredMedicines(
+            medicines.filter(med =>
+                med.name.toLowerCase().includes(searchValue.toLowerCase())
+            )
+        );
     }, [searchValue]);
-
-    useEffect(() => {
-        if(medicines == null && medicineTemp.length < 1) {
-            return
-        }
-    
-        if (!isEmptyOrSpaces(selectedGroup)) {
-            if (medicineTemp.length === 0) {
-                // Save the original list and filter medicines
-                setMedicineTemp(medicines);
-                setMedicines(
-                    medicines.filter(med =>
-                        String(med.group.id) == selectedGroup && 
-                        (isEmptyOrSpaces(searchValue) ? true : med.name.toLowerCase().includes(searchValue.toLowerCase()))
-                    )
-                );
-            } else {
-                // Use the temporary storage for filtering
-                setMedicines(
-                    medicineTemp.filter(med =>
-                        String(med.group.id) == selectedGroup && 
-                        (isEmptyOrSpaces(searchValue) ? true : med.name.toLowerCase().includes(searchValue.toLowerCase()))
-                    )
-                );
-            }
-        } else {
-            if(!isEmptyOrSpaces(searchValue)) {
-                setMedicines(medicineTemp.filter(med => med.name.toLowerCase().includes(searchValue.toLowerCase())));
-            }
-            else {
-                setMedicines(medicineTemp);
-                setMedicineTemp([]);
-            }  
-        }
-    }, [selectedGroup]);
     
 
 
@@ -175,72 +131,17 @@ export default function AdminMedicines() {
 
                     <div className="search-box1-icon"><Icon.Search className="text-l3"/></div>
                 </div>
-
-                <select 
-                className="input1"
-                onChange={(e) => setSelectedGroup(e.target.value)}
-                value={selectedGroup}>
-                    <option value="">- Select Group -</option>
-                    {groups?.map(group => (
-                        <option key={group.id} value={String(group.id)}>{group.group_name}</option>
-                    ))}
-                </select>
                 
             </div>
 
             
-            {/* <table className="table1">
-                <thead className="table1-thead">
-                    <tr>
-                        <th>Medicine Name</th>
-                        <th>Group Name</th>
-                        <th>Price</th>
-                        <th>Stock in Qty</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody className="table1-tbody">
-                    {medicines?.length > 0 && medicines.map((meds, index) => (
-                        <tr key={index} >
-                            <td>{meds.name}</td>
-                            <td>{meds.group.group_name}</td>
-                            <td>{formatToPhilPeso(meds.price)}</td>
-                            <td>{meds.qty}</td>
-                            <td>
-                                <div className="d-flex gap1 align-items-center">
-                                    <div className="text-m2">
-                                        View Full Details
-                                    </div>
-                                    <Icon.ChevronDoubleRight/>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
 
-                    {!medicines && (
-                        <tr>
-                            <td>
-                                <div className="text-l3">Loading</div>
-                            </td>
-                        </tr>
-                    )}
-
-                    {medicines?.length < 1 && (
-                        <tr>
-                            <td><div className="text-l3">No Data</div></td>
-                        </tr>
-                    )}
-                </tbody>
-            </table> */}
-
-            
-
-            {!medicines
+            {(!medicines || !filteredMedicines)
             ? (<Spin size="large"/>)
             : (
                 <Table
                 columns={medicinesColumn}
-                dataSource={medicines}
+                dataSource={filteredMedicines.map(item => ({...item, key: item.id}))}
                 pagination={{pageSize: 10}}
                 onRow={(record) => ({
                     onDoubleClick: () => navigate(`/OrtegaAdmin/ViewMedicines/${record.id}`)

@@ -331,12 +331,16 @@ export default function AdminViewMedicine() {
                         <div className="hr-line1-black3"></div>
                         <div className="view-medicine-box1-body d-flex gapl1">
                             <div className="d-flex flex-direction-y w-50">
-                                <div className="text-m1 fw-bold">{medicine.medicine_id}</div>
+                                <div className="text-m1 fw-bold">{medicine.id}</div>
                                 <div className="text-m3">Medicine ID</div>
                             </div>
                             <div className="d-flex flex-direction-y w-50">
                                 <div className="text-m1 fw-bold">{medicine.group.group_name}</div>
                                 <div className="text-m3">Medicine Goup</div>
+                            </div>
+                            <div className="d-flex flex-direction-y w-50">
+                                <div className="text-m1 fw-bold">{medicine.type}</div>
+                                <div className="text-m3">Medicine Type</div>
                             </div>
                         </div>
                     </div>
@@ -376,34 +380,6 @@ export default function AdminViewMedicine() {
                         </div>
                     </div>
 
-                </div>
-
-                {/* Directions */}
-                <div className="d-flex mar-bottom-1">
-                    <EditMedInfo1
-                    title={"How to use"}
-                    oldInfo={medicine.directions}
-                    setNewInfo={setNewDirections}
-                    setNewInfoChecking={setNewDirectionsForCheck}
-                    saveBtnEnabledAt={!isEmptyOrSpaces(newDirectionsForCheck) && newDirections !== medicine.directions}
-                    isEditInfo={isEditDirection}
-                    setEditInfo={setEditDirection}
-                    handleEditPost={() => handleEditPost('directions')}
-                    />
-                </div>
-
-                {/* Side Effects */}
-                <div className="d-flex mar-bottom-1">
-                    <EditMedInfo1
-                    title={"Side effects"}
-                    oldInfo={medicine.side_effects}
-                    setNewInfo={setNewSideFx}
-                    setNewInfoChecking={setNewSideFxForCheck}
-                    saveBtnEnabledAt={!isEmptyOrSpaces(newSideFxForCheck) && newSideFx !== medicine.side_effects}
-                    isEditInfo={isEditSideFx}
-                    setEditInfo={setEditSideFx}
-                    handleEditPost={() => handleEditPost('sidefx')}
-                    />
                 </div>
 
                 

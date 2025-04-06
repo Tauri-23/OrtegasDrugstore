@@ -2,6 +2,7 @@ import { useState } from "react";
 import * as Icon from "react-bootstrap-icons";
 import { Link, useLocation } from "react-router-dom";
 import { useStateContext } from "../../Context/ContextProvider";
+import { TbReceiptOff } from "react-icons/tb";
 
 const AdminSidenav = ({onLogout}) => {
     const location = useLocation();
@@ -128,6 +129,16 @@ const AdminSidenav = ({onLogout}) => {
                         <div>POS</div>
                     </div>
                 </Link> */}
+
+                <Link 
+                to={"ReturnManagement"} 
+                className={`admin-sidenav1-link ${location.pathname === '/OrtegaAdmin/ReturnManagement'? 'active' : ''}`}
+                >
+                    <div className="d-flex align-items-center" style={{gap: 15}}>
+                        <TbReceiptOff size={30} />
+                        <div>Return Management</div>
+                    </div>
+                </Link>
 
                 <Link 
                 to={"Configurations"}
