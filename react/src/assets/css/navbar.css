@@ -112,6 +112,10 @@
     gap: 20px;
     align-items: center;
     cursor: pointer;
+    background: none;
+    border: none;
+    text-decoration: none;
+    color: black;
 }
 
 

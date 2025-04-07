@@ -1,0 +1,6 @@
+.profile-container1 {
+    padding: 30px;
+    border-radius: 10px;
+    filter: drop-shadow(0 0 3px var(--grey1));
+    background: var(--white1);
+}

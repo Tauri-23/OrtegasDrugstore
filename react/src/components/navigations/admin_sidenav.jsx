@@ -35,15 +35,15 @@ const AdminSidenav = ({onLogout}) => {
                 <Icon.ThreeDotsVertical className="text-l2 color-white1 cursor-pointer" onClick={() => setOptionBoxOpen(!isOptionBoxOpen)}/>
 
                 <div className={`admin-sidenav1-action-box ${isOptionBoxOpen ? '' : 'd-none'}`}>
-                    <div className="admin-sidenav1-action-box-btn">
+                    <Link to={"/OrtegaAdmin/Profile"} className="admin-sidenav1-action-box-btn">
                         <Icon.PersonCircle/>
                         Profile
-                    </div>
+                    </Link>
                     <div className="hr-line1-black3"></div>
-                    <div className="admin-sidenav1-action-box-btn" onClick={onLogout}>
+                    <button className="admin-sidenav1-action-box-btn" onClick={onLogout}>
                         <Icon.BoxArrowLeft/>
                         Logout
-                    </div>
+                    </button>
                 </div>
             </div>
 
@@ -113,12 +113,6 @@ const AdminSidenav = ({onLogout}) => {
                 className={`admin-sidenav1-link2 ${reportsOpen ? "" : "disabled"} ${location.pathname === '/OrtegaAdmin/SalesReports'? 'active' : ''}`}
                 >
                     Sales Report
-                </Link>
-                <Link 
-                to={"PaymentReports"} 
-                className={`admin-sidenav1-link2 ${reportsOpen ? "" : "disabled"} ${location.pathname === '/OrtegaAdmin/PaymentReports'? 'active' : ''}`}
-                >
-                    Payments Report
                 </Link>
 
                 {/* <Link 

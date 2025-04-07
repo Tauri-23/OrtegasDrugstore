@@ -25,6 +25,7 @@ import AdminLogsSale from "./views/Admin/AdminLogs/admin_logs_Sale";
 import AdminReturnManagementDefault from "./views/Admin/ReturnManagement/admin_ret_management_default";
 import AdminReturnManagementIndex from "./views/Admin/ReturnManagement/admin_ret_management_index";
 import AdminReturnManagementHistory from "./views/Admin/ReturnManagement/admin_ret_management_history";
+import AdminProfile from "./views/Admin/Profile/admin_profile";
 
 const router = createBrowserRouter([
     /*
@@ -174,6 +175,12 @@ const router = createBrowserRouter([
                         element: <AdminConfigIndex/>
                     }
                 ]
+            },
+
+            // PROFILE
+            {
+                path: "Profile",
+                element: <AdminProfile/>
             }
         ]
     },
