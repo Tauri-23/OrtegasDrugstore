@@ -71,9 +71,12 @@ export default function AdminReturnManagementIndex() {
         showModal("ReturnItemsModal", {
             medicines,
             item,
-            handleReturnPost: (returnItem) => {
+            handleReturnPost: (returnItem, medicineId, qty) => {
                 const formData = new FormData();
                 formData.append("itemRet", JSON.stringify(returnItem));
+                formData.append("medicineId", medicineId);
+                formData.append("qty", qty);
+
         
                 axiosClient.post("/return-transaction-item", formData)
                 .then(({data}) => {

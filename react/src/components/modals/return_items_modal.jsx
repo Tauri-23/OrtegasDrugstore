@@ -22,14 +22,6 @@ export default function ReturnItemsModal({medicines, item, handleReturnPost, onC
     }
 
 
-    /**
-     * Debugging
-     */
-    useEffect(() => {
-        console.log(selectedReplacement);
-    }, [selectedReplacement]);
-
-
 
     /**
      * Render
@@ -110,8 +102,8 @@ export default function ReturnItemsModal({medicines, item, handleReturnPost, onC
                 type='primary'
                 size='large'
                 className='w-100'
-                disabled={isEmptyOrSpaces(returnItem.reason)}
-                onClick={() => {handleReturnPost(returnItem); onClose()}}>
+                disabled={isEmptyOrSpaces(returnItem.reason) || selectedReplacement.id === "" || qty < 1}
+                onClick={() => {handleReturnPost(returnItem, selectedReplacement.id, selectedQty); onClose()}}>
                     Return Item
                 </Button>
             </div>
