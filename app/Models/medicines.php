@@ -16,6 +16,6 @@ class medicines extends Model
 
     public function medicine_items()
     {
-        return $this->hasMany(medicine_items::class, "medicine", "id");
+        return $this->hasMany(medicine_items::class, "medicine", "id")->orderBy("expiration_date", "asc");
     }
 }

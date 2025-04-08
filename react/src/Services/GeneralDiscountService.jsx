@@ -9,3 +9,13 @@ export const fetchAllDiscounts = async() => {
         throw error;
     }
 }
+
+export const fetchAllEnabledDiscounts = async() => {
+    try {
+        const response = await axiosClient.get('/get-all-enabled-discount');
+        return response.data;
+    } catch (error) {
+        console.error('Failed fetching medicine groups : ', error);
+        throw error;
+    }
+}

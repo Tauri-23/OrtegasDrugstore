@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('id', 8)->primary();
             $table->string('medicine')->nullable();
             $table->date('expiration_date');
+            $table->integer("qty");
             $table->timestamps();
 
             $table->foreign('medicine')

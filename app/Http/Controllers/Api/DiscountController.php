@@ -16,6 +16,11 @@ class DiscountController extends Controller
         return response()->json(discounts::all());
     }
 
+    public function GetAllEnabledDiscount()
+    {
+        return response()->json(discounts::where("enabled", 1)->get());
+    }
+
 
 
     // POST
@@ -54,6 +59,42 @@ class DiscountController extends Controller
             return response()->json([
                 'status' => 500,
                 'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function EnableDisableDiscount(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+
+            $discount = discounts::find($request->discountId);
+
+            if(!$discount)
+            {
+                return response()->json([
+                    "status" => 404,
+                    "message" => "Discount not found"
+                ]);
+            }
+
+            $discount->enabled = !$discount->enabled;
+            $discount->save();
+
+            DB::commit();
+            return response()->json([
+                "status" => 200,
+                "message" => "Success",
+                "discounts" => discounts::all()
+            ]);     
+        }
+        catch(\Exception $e)
+        {
+            DB::rollBack();
+            return response()->json([
+                "status" => 500,
+                "message" => $e->getMessage()
             ], 500);
         }
     }

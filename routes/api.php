@@ -67,6 +67,7 @@ Route::post('/delete-medicine-group', [MedicineGroupController::class, 'DelMedGr
 |----------------------------------------
 */
 Route::get('/get-all-medicines-full', [MedicineController::class,'GetAllMedicineFull']);
+Route::get('/get-all-stocked-medicines-full', [MedicineController::class,'GetAllStockedMedicineFull']);
 Route::get('/get-medicine-info-full-by-id/{medId}', [MedicineController::class,'GetFullMedicineInfoById']);
 Route::get('/get-medicines-where-group/{groupId}', [MedicineController::class,'GetFullMedicines']);
 
@@ -96,8 +97,10 @@ Route::post('/add-medicine-item', [MedicineItemsController::class,'AddMedicineIt
 |----------------------------------------
 */
 Route::get('/get-all-discount', [DiscountController::class, 'GetAllDiscount']);
+Route::get('/get-all-enabled-discount', [DiscountController::class, 'GetAllEnabledDiscount']);
 
 Route::post('/add-discount', [DiscountController::class, 'AddDiscount']);
+Route::post('/enable-disable-discount', [DiscountController::class, 'EnableDisableDiscount']);
 
 
 

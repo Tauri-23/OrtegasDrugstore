@@ -1,9 +1,11 @@
-import { Button } from 'antd';
-import { useState } from 'react';
+import { Button, Select } from 'antd';
+import { useEffect, useState } from 'react';
 import * as Icon from 'react-bootstrap-icons';
 import { isEmptyOrSpaces, notify } from '../../assets/js/utils';
 
-export default function ReturnItemsModal({item, handleReturnPost, onClose}) {
+export default function ReturnItemsModal({medicines, item, handleReturnPost, onClose}) {
+    const [selectedReplacement, setSelectedReplacement] = useState({id: ""});
+    const [selectedQty, setSelectedQty] = useState(0);
     const [returnItem, setReturnItem] = useState({
         id: item.id,
         qty: item.qty,
@@ -18,6 +20,14 @@ export default function ReturnItemsModal({item, handleReturnPost, onClose}) {
     const handleInput = (e) => {
         setReturnItem({...returnItem, [e.target.name]: e.target.value});
     }
+
+
+    /**
+     * Debugging
+     */
+    useEffect(() => {
+        console.log(selectedReplacement);
+    }, [selectedReplacement]);
 
 
 
@@ -48,7 +58,7 @@ export default function ReturnItemsModal({item, handleReturnPost, onClose}) {
                 </div>
 
                 {/* Reason */}
-                <div className='mar-bottom-1'>
+                <div className='mar-bottom-3'>
                     <label htmlFor="reason">Reason</label>
                     <textarea
                     className='input1 w-100' 
@@ -59,6 +69,42 @@ export default function ReturnItemsModal({item, handleReturnPost, onClose}) {
 
                     </textarea>
                 </div>
+
+                {/* Change Medicine */}
+                <div className={`d-flex flex-direction-y ${selectedReplacement.id === "" ? "mar-bottom-1" : "mar-bottom-3"}`}>
+                    <label htmlFor="repMed">Replacement Medicine</label>
+                    <Select
+                    className='w-100'
+                    size='large'
+                    showSearch
+                    optionFilterProp="children"  // Filter based on the option text
+                    filterOption={(input, option) =>
+                        option.label.toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={[
+                        {label: "Select replacement", value: ""},
+                        ...medicines.map(medicine => ({label: `${medicine.name} (${medicine.qty - selectedQty} pcs)`, value: medicine.id}))
+                    ]}
+                    value={selectedReplacement.id}
+                    onChange={(e) => setSelectedReplacement(e === "" ? {id: ""} : medicines.filter(x => x.id === e)[0])}
+                    />
+                </div>
+
+                {/* QTY */}
+                {selectedReplacement.id !== "" && (
+                    <div className="d-flex flex-direction-y mar-bottom-1">
+                        <label htmlFor="qty">Quantity</label>
+                        <input 
+                        type="number" 
+                        id="qty" 
+                        min={1} 
+                        max={selectedReplacement.qty} 
+                        className="input1" 
+                        value={selectedQty}
+                        onChange={(e) => setSelectedQty(e.target.value)}/>
+                    </div>
+                )}
+
 
                 <Button
                 type='primary'

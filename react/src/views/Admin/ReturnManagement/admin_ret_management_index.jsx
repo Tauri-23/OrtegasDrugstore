@@ -10,7 +10,8 @@ export default function AdminReturnManagementIndex() {
     const {
         setActivePage,
         transactionItems, setTransactionItems, 
-        filteredTransactionItems, setFileteredTransactionItems
+        filteredTransactionItems, setFileteredTransactionItems,
+        medicines
     } = useOutletContext();
 
     const {Search} = Input;
@@ -68,6 +69,7 @@ export default function AdminReturnManagementIndex() {
 
     const handleTransactionItemClick = (item) => {
         showModal("ReturnItemsModal", {
+            medicines,
             item,
             handleReturnPost: (returnItem) => {
                 const formData = new FormData();

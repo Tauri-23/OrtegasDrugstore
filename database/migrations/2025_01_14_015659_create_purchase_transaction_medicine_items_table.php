@@ -16,16 +16,17 @@ return new class extends Migration
 
             $table->unsignedBigInteger('purchase_transaction_item')->nullable();
             
-            /**
-             * ORIGINAL medicine_items structure
-             */
-            $table->string('medicine_item_id', 8);
-            $table->string('medicine')->nullable();
-            $table->date('expiration_date');
-            $table->dateTime('medicine_item_created_at');     
-            $table->dateTime('medicine_item_updated_at');           
+            $table->string('medicine_item_id', 8)->nullable();
+            $table->integer("qty_purchased");
+            $table->string('medicine')->nullable();       
 
             $table->timestamps();
+
+            $table->foreign('medicine_item_id')
+            ->references('id')
+            ->on('medicine_items')
+            ->cascadeOnDelete()
+            ->cascadeOnUpdate();
 
             $table->foreign('medicine')
             ->references('id')

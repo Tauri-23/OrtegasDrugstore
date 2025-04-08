@@ -4,6 +4,7 @@ import { fetchAllDiscounts } from "../../../Services/GeneralDiscountService";
 import axiosClient from "../../../axios-client";
 import { formatToPhilPeso, notify } from "../../../assets/js/utils";
 import { useStateContext } from "../../../Context/ContextProvider";
+import DiscountSettings from "./components/discountSettings";
 
 export default function AdminConfigIndex() {
     const {user} = useStateContext();
@@ -38,25 +39,41 @@ export default function AdminConfigIndex() {
      * Handle Discounts
      */
     const handleAddDiscountClick = () => {
-        showModal('AdminAddDiscountModal1', {handeAddPost: handleAddDiscountPost});
+        showModal('AdminAddDiscountModal1', {
+            handeAddPost: (data) => {
+                const formData = new FormData();
+                formData.append('discount_name', data.discountName);
+                formData.append('discount_type', data.discountType);
+                formData.append('discount_value', data.discountValue);
+                formData.append('admin', user.id);
+        
+                axiosClient.post('/add-discount', formData)
+                .then(({data}) => {
+                    if(data.status === 200) {
+                        setDiscounts(prev => 
+                            [...prev, data.discount]
+                        )
+                    }
+                    notify(data.status === 200 ? 'success' : 'error', data.message, 'top-center', 3000);
+                }).catch(error => console.error(error));
+        }});
     }
-    
-    const handleAddDiscountPost = (data) => {
-        const formData = new FormData();
-        formData.append('discount_name', data.discountName);
-        formData.append('discount_type', data.discountType);
-        formData.append('discount_value', data.discountValue);
-        formData.append('admin', user.id);
 
-        axiosClient.post('/add-discount', formData)
+    const handleEnableDisableDiscount = (discountId) => {
+        const formData = new FormData();
+        formData.append("discountId", discountId);
+
+        axiosClient.post("/enable-disable-discount", formData)
         .then(({data}) => {
             if(data.status === 200) {
-                setDiscounts(prev => 
-                    [...prev, data.discount]
-                )
+                setDiscounts(data.discounts);
             }
-            notify(data.status === 200 ? 'success' : 'error', data.message, 'top-center', 3000);
-        }).catch(error => console.error(error));
+
+            notify(data.status === 200 ? "success" : "error", data.message, "top-center", 3000);
+        }).catch(error => {
+            notify("error", "Server Error", "top-center", 3000);
+            console.error(error);
+        })
     }
 
 
@@ -66,43 +83,10 @@ export default function AdminConfigIndex() {
      */
     return(
         <div className="content1">
-            <div className="text-l1 mar-bottom-2">Discounts</div>
-            {discounts?.length < 1 && (
-                <div className="mar-start-1 mar-bottom-2">
-                    No Discounts
-                </div>
-            )}
-
-            {!discounts && (
-                <div className="mar-start-1 mar-bottom-2">
-                    Loading...
-                </div>
-            )}
-
-            {discounts?.length > 0 && (
-                <div className="d-flex flex-direction-y gap3">
-                    {discounts.map(discount => (
-                        <div key={discount.id} className="mar-start-1 w-100 d-flex justify-content-between align-items-center">
-                            <div className="d-flex gap1 text-m1">
-                                <div>
-                                    {discount.discount_name}
-                                </div>
-                                <div>
-                                    {discount.discount_type === "Amount" ? formatToPhilPeso(discount.discount_value) : `${discount.discount_value} %`}
-                                </div>
-                            </div>
-                            <div className="mar-end-1 d-flex gap3 text-m3">
-                                <div className="secondary-btn-black1">Edit</div>
-                                <div className="primary-btn-red1">Delete</div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-            
-            <div className="d-flex justify-content-end mar-top-1">
-                <div className="primary-btn-dark-blue1 text-m3" onClick={handleAddDiscountClick}>Add Discount</div>
-            </div>
+            <DiscountSettings 
+            discounts={discounts} 
+            handleAddDiscountClick={handleAddDiscountClick}
+            handleEnableDisableDiscount={handleEnableDisableDiscount}/>
             <div className="hr-line1-black3 mar-top-1 mar-bottom-1"></div>
         </div>
     );

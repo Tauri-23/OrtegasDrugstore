@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchAllFullPurchaseTransactions, fetchAllReturnedItems } from "../../../Services/PurchaseTransactionServices";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "antd";
+import { fetchAllStockedMedicinesFull } from "../../../Services/GeneralMedicineService";
 
 export default function AdminReturnManagementDefault() {
     const navigate = useNavigate();
@@ -12,19 +13,23 @@ export default function AdminReturnManagementDefault() {
     const [returnedItems, setReturnedItems] = useState(null);
     const [filteredReturnedItems, setFilteredReturnedItems] = useState(null);
 
+    const [medicines, setMedicines] = useState(null);
+
 
     /**
      * Onmount
      */
     useEffect(() => {
         const getAll = async() => {
-            const [transactions, returnedItemsDb] = await Promise.all([
+            const [transactions, returnedItemsDb, medicinesDb] = await Promise.all([
                 fetchAllFullPurchaseTransactions(),
-                fetchAllReturnedItems()
+                fetchAllReturnedItems(),
+                fetchAllStockedMedicinesFull()
             ]);
             const transactionItemsExtracted = await transactions.flatMap(transaction => {return transaction.items});
             setTransactionItems(transactionItemsExtracted);
             setFileteredTransactionItems(transactionItemsExtracted);
+            setMedicines(medicinesDb);
 
             setReturnedItems(returnedItemsDb);
             setFilteredReturnedItems(returnedItemsDb);
@@ -63,7 +68,8 @@ export default function AdminReturnManagementDefault() {
                 transactionItems, setTransactionItems,
                 filteredTransactionItems, setFileteredTransactionItems,
                 returnedItems, setReturnedItems,
-                filteredReturnedItems, setFilteredReturnedItems
+                filteredReturnedItems, setFilteredReturnedItems,
+                medicines, setMedicines
             }}/>
         </div>
     )

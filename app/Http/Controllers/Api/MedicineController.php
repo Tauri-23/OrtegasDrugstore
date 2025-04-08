@@ -27,6 +27,11 @@ class MedicineController extends Controller
     {
         return response()->json(medicines::with(["group", "medicine_items"])->orderBy('name', 'asc')->get());
     }
+    
+    public function GetAllStockedMedicineFull()
+    {
+        return response()->json(medicines::where("qty", ">", "0")->with(["group", "medicine_items"])->orderBy('name', 'asc')->get());
+    }
 
     public function GetFullMedicineInfoById($medId)
     {

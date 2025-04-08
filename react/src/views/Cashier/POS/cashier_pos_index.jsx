@@ -4,7 +4,7 @@ import "../../../assets/css/pos.css";
 import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService";
 import { fetchAllMedicinesFull } from "../../../Services/GeneralMedicineService";
 import { formatToPhilPeso, isEmptyOrSpaces, notify } from "../../../assets/js/utils";
-import { fetchAllDiscounts } from "../../../Services/GeneralDiscountService";
+import { fetchAllDiscounts, fetchAllEnabledDiscounts } from "../../../Services/GeneralDiscountService";
 import { useModal } from "../../../Context/ModalContext";
 import axiosClient from "../../../axios-client";
 import { useStateContext } from "../../../Context/ContextProvider";
@@ -39,11 +39,12 @@ export default function CashierPOSIndex() {
             const [medGpDb, medsDb, discountsDb] = await Promise.all([
                 fetchAllMedGroups(),
                 fetchAllMedicinesFull(),
-                fetchAllDiscounts()
+                fetchAllEnabledDiscounts()
             ]);
             setMedGroups(medGpDb);
             setMedicines(medsDb);
             setDiscounts(discountsDb);
+            console.log(discountsDb);
         }
 
         getAll();

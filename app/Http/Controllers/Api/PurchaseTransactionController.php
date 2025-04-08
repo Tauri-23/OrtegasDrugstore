@@ -34,6 +34,7 @@ class PurchaseTransactionController extends Controller
         try
         {
             DB::beginTransaction();
+
             $customerId = null;
             if($request->hasCustomer == "true")
             {
@@ -70,38 +71,86 @@ class PurchaseTransactionController extends Controller
             }            
 
             /**
-             * Update the medicine
+             * Update the medicine_items
              */
             foreach($request->items as $key=>$item)
             {
-                $transactionItemToTransfers = medicine_items::where('medicine', $item)
-                ->orderBy('expiration_date', 'asc')
-                ->take($request->qty[$key])
-                ->get();
-
+                /**
+                 * For transaction Items record only
+                 */
                 $transactionItem = new purchase_transaction_items();
                 $transactionItem->purchase_transaction = $transactionId;
                 $transactionItem->medicine = $item;
                 $transactionItem->qty = $request->qty[$key];
-
-                $medicine = medicines::find($item);
-                $medicine->qty -= $request->qty[$key];
-                
                 $transactionItem->save();
-                $medicine->save();
 
                 /**
-                 * transfer the medicine_item to purchase_transaction_item
+                 * Get all the medItems of the medicine
+                 */
+                $medItems = medicine_items::where('medicine', $item)
+                ->orderBy('expiration_date', 'asc')
+                ->get();
+
+                $demandedQty = $request->qty[$key];
+                $medItemsUsed = []; // obj[]
+
+                /**
+                 * Loop through MedItems 
+                 * - decrement the quantity of medItem
+                 */
+                foreach($medItems as $medItem)
+                {
+                    if ($demandedQty <= 0) {
+                        break;
+                    }
+                    
+                    /**
+                     * If medItem's qty is enough for the demandedQty just decrement it
+                     */
+                    if ($medItem->qty >= $demandedQty) {
+                        $medItemsUsed[] = [
+                            "id" => $medItem->id,
+                            "qty_purchased" => $demandedQty,
+                            "medicine" => $medItem->medicine
+                        ];
+                        
+                        $medItem->qty -= $demandedQty;
+                        $medItem->save();
+                        break;
+                    } 
+                    /**
+                     * medItem's qty is not enought for the demandedQty 
+                     * use all of its qty and proceed to the next medItem
+                     */
+                    else {
+                        $medItemsUsed[] = [
+                            "id" => $medItem->id,
+                            "qty_purchased" => $medItem->qty, // because it uses all of its qty
+                            "medicine" => $medItem->medicine
+                        ];
+
+                        $demandedQty -= $medItem->qty;
+                        $medItem->qty = 0;
+                        $medItem->save();
+                    }
+                }
+
+                // Decrement the medicine
+                $medicine = medicines::find($item);
+                $medicine->qty -= $request->qty[$key];
+                $medicine->save();
+
+
+                /**
+                 * Make a record of the deducted medItem for future purposes
                  */
                 $transferData = [];
-                foreach ($transactionItemToTransfers as $itemToTransfer) {
+                foreach ($medItemsUsed as $medItemUsed) {
                     $transferData[] = [
                         'purchase_transaction_item' => $transactionItem->id,
-                        'medicine_item_id' => $itemToTransfer->id,
-                        'medicine' => $itemToTransfer->medicine,
-                        'expiration_date' => $itemToTransfer->expiration_date,
-                        'medicine_item_created_at' => $itemToTransfer->created_at,
-                        'medicine_item_updated_at' => $itemToTransfer->updated_at,
+                        'medicine_item_id' => $medItemUsed["id"],
+                        'qty_purchased' => $medItemUsed["qty_purchased"],
+                        'medicine' => $medItemUsed["medicine"],
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
@@ -109,9 +158,6 @@ class PurchaseTransactionController extends Controller
 
                 // Insert data in bulk
                 purchase_transaction_medicine_items::insert($transferData);
-
-                // Delete transferred medicine items
-                medicine_items::whereIn('id', $transactionItemToTransfers->pluck('id'))->delete();
             }
 
             // LOG IT

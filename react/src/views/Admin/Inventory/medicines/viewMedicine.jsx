@@ -5,11 +5,12 @@ import { fetchMedicineFullInfoById } from "../../../../Services/GeneralMedicineS
 import '../../../../assets/css/medicines.css';
 import { useModal } from "../../../../Context/ModalContext";
 import axiosClient from "../../../../axios-client";
-import { formatDateTime, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
+import { formatDate, formatDateTime, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { EditMedInfo1 } from "../../../../components/admin/edit_med_info1";
 import { fetchAllForecastWhereMedicine } from "../../../../Services/ForecastServices";
 import LineChart1 from "../../../../components/charts/LineChart1";
 import { useStateContext } from "../../../../Context/ContextProvider";
+import { Table } from "antd";
 
 export default function AdminViewMedicine() {
     const {user} = useStateContext();
@@ -134,6 +135,30 @@ export default function AdminViewMedicine() {
 
 
     /**
+     * Setup Table Columns
+     */
+    const inventoryColumns = [
+        {
+            title: "Batch Number",
+            dataIndex: "id"
+        },
+        {
+            title: "Expiration Date",
+            render: (_, item) => formatDate(item.expiration_date)
+        },
+        {
+            title: "Quantity",
+            dataIndex: "qty"
+        },
+        {
+            title: "Added Date",
+            render: (_, item) => formatDateTime(item.created_at)
+        },
+    ]
+
+
+
+    /**
      * Handle Edit Med Pic
      */
     const handleUploadClick = () => {
@@ -232,25 +257,23 @@ export default function AdminViewMedicine() {
      * Handle Edit Med Info
      */
     const handleAddMedicineItem = () => {
-        showModal('AdminAddMedItemModal1', {handleAddPost: (expiration, sku) => {
-            /**
-             * TODO::Cheker if id(SKU) is already exist
-             */
+        showModal('AdminAddMedItemModal1', {
+            handleAddPost: (expiration, qty) => {
+                const formData = new FormData();
+                formData.append('medicine', medicine.id);
+                formData.append('expiration', expiration);
+                formData.append('qty', qty);
+                formData.append('admin', user.id);
 
-            const formData = new FormData();
-            formData.append('sku', sku);
-            formData.append('medicine', medicine.id);
-            formData.append('expiration', expiration);
-            formData.append('admin', user.id);
-
-            axiosClient.post('/add-medicine-item', formData)
-            .then(({data}) => {
-                notify(data.status === 200 ? 'success' : 'error', data.message, 'top-center', 3000);
-                if(data.status === 200) {                    
-                    setMedicine(data.medicine);
-                }
-            }).catch(error => console.error(error));
-        }});
+                axiosClient.post('/add-medicine-item', formData)
+                .then(({data}) => {
+                    notify(data.status === 200 ? 'success' : 'error', data.message, 'top-center', 3000);
+                    if(data.status === 200) {                    
+                        setMedicine(data.medicine);
+                    }
+                }).catch(error => console.error(error));
+            }
+        });
     }
     
 
@@ -322,64 +345,45 @@ export default function AdminViewMedicine() {
                     </div>                    
                 </div>
 
-                <div className="d-flex gap1 mar-bottom-1">
-
-                    <div className="view-medicine-box1 w-50">
-                        <div className="view-medicine-box1-head">
-                            <div className="text-l3">Medicine</div>
+                <div className="view-medicine-box1 w-100 mar-bottom-1">
+                    <div className="view-medicine-box1-head">
+                        <div className="text-l3">Medicine</div>
+                    </div>
+                    <div className="hr-line1-black3"></div>
+                    <div className="view-medicine-box1-body d-flex gapl1">
+                        <div className="d-flex flex-direction-y w-50">
+                            <div className="text-m1 fw-bold">{medicine.id}</div>
+                            <div className="text-m3">Medicine ID</div>
                         </div>
-                        <div className="hr-line1-black3"></div>
-                        <div className="view-medicine-box1-body d-flex gapl1">
-                            <div className="d-flex flex-direction-y w-50">
-                                <div className="text-m1 fw-bold">{medicine.id}</div>
-                                <div className="text-m3">Medicine ID</div>
-                            </div>
-                            <div className="d-flex flex-direction-y w-50">
-                                <div className="text-m1 fw-bold">{medicine.group.group_name}</div>
-                                <div className="text-m3">Medicine Goup</div>
-                            </div>
-                            <div className="d-flex flex-direction-y w-50">
-                                <div className="text-m1 fw-bold">{medicine.type}</div>
-                                <div className="text-m3">Medicine Type</div>
-                            </div>
+                        <div className="d-flex flex-direction-y w-50">
+                            <div className="text-m1 fw-bold">{medicine.group.group_name}</div>
+                            <div className="text-m3">Medicine Goup</div>
+                        </div>
+                        <div className="d-flex flex-direction-y w-50">
+                            <div className="text-m1 fw-bold">{medicine.type}</div>
+                            <div className="text-m3">Medicine Type</div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Inventory */}
-                    <div className="view-medicine-box1 w-50" style={{height: '300px', overflow: 'auto'}}>
-                        <div 
-                        className="view-medicine-box1-head d-flex align-items-center justify-content-between"
-                        style={{position: 'sticky', top: 0, background: 'white', filter: 'drop-shadow(0 0 1px #555555)'}}>
-                            <div className="text-l3">Inventory</div>
-                            <button 
-                            className={`primary-btn-dark-blue1 d-flex gap3 align-items-center text-m2`}
-                            onClick={handleAddMedicineItem}
-                            >
-                                <Icon.Capsule/> Add Item
-                            </button>
-                        </div>
-                        <div className="view-medicine-box1-body d-flex gapl1">
-                            <div className="d-flex flex-direction-y w-100">
-                                <div className="d-flex justify-content-between w-100 fw-bold">
-                                    <p>SKU</p>
-                                    <p>Expiration Date</p>
-                                    <p>Added Date</p>
-                                </div>
-                                {medicine.medicine_items.length > 0
-                                ? medicine.medicine_items.map(item => (
-                                    <div key={item.id} className="d-flex justify-content-between w-100">
-                                        <p>{item.id}</p>
-                                        <p>{item.expiration_date}</p>
-                                        <p>{formatDateTime(item.created_at)}</p>
-                                    </div>
-                                ))
-                                : (
-                                    <>No Items</>
-                                )}              
-                            </div>
-                        </div>
+                {/* Inventory */}
+                <div className="mar-bottom-1">
+                    <div className="d-flex align-items-center justify-content-between mar-bottom-2">
+                        <div className="text-l3">Inventory</div>
+
+                        <button 
+                        className={`primary-btn-dark-blue1 d-flex gap3 align-items-center text-m2`}
+                        onClick={handleAddMedicineItem}
+                        >
+                            <Icon.Capsule/> Add Item
+                        </button>
                     </div>
 
+                    <Table
+                    columns={inventoryColumns}
+                    dataSource={medicine.medicine_items}
+                    bordered
+                    pagination={{pageSize: 10}}/>
                 </div>
 
                 

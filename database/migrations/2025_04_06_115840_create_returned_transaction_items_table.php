@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string("medicine", 12)->nullable(); // Foreign
             $table->integer('qty');
             $table->string("reason");
+            $table->string("replacement_medicine", 12)->nullable(); // Foreign
+            $table->integer('replacement_qty');
             $table->timestamps();
 
             $table->foreign('purchase_transaction')
@@ -26,6 +28,12 @@ return new class extends Migration
             ->cascadeOnUpdate();
 
             $table->foreign('medicine')
+            ->references('id')
+            ->on('medicines')
+            ->nullOnDelete()
+            ->cascadeOnUpdate();
+
+            $table->foreign('replacement_medicine')
             ->references('id')
             ->on('medicines')
             ->nullOnDelete()

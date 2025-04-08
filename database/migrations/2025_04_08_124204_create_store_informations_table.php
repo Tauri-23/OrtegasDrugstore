@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('discounts', function (Blueprint $table) {
+        Schema::create('store_informations', function (Blueprint $table) {
             $table->id();
-            $table->string('discount_name');
-            $table->string('discount_type');
-            $table->float('discount_value');
-            $table->boolean('enabled')->default(true);
+            $table->string("store_name");
+            $table->string("address");
+            $table->string("contact_number");
+            $table->string("contact_email");
+            $table->string("store_logo")->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('discounts');
+        Schema::dropIfExists('store_informations');
     }
 };
