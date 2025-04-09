@@ -6,7 +6,7 @@ import QRCodeGenerator from '../../Services/QrcodeGenerator';
 import { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-const AdminViewReceiptModal1 = ({ data, handleDoneTransaction, handleVoid, onClose}) => {
+const AdminViewReceiptModal1 = ({ data, handleDoneTransaction, handleVoid = null, onClose}) => {
     const receiptRef = useRef(null);
 
     // const UseReactToPrintFn = useReactToPrint({
@@ -109,12 +109,15 @@ const AdminViewReceiptModal1 = ({ data, handleDoneTransaction, handleVoid, onClo
                 </div>
 
                 <div className="d-flex gap3">
-                    <button 
-                    className={`primary-btn-red1 text-center flex-grow-1`} 
-                    onClick={() => {handleVoid(data.id)}}
-                    >
-                        Void
-                    </button>
+                    {handleVoid && (
+                        <button 
+                        className={`primary-btn-red1 text-center flex-grow-1`} 
+                        onClick={() => {handleVoid(data.id)}}
+                        >
+                            Void
+                        </button>
+                    )}
+                    
                     <button 
                     className={`primary-btn-dark-blue1 text-center flex-grow-1`} 
                     onClick={() => {handleDoneTransaction(); onClose();}}

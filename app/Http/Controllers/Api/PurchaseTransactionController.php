@@ -274,74 +274,157 @@ class PurchaseTransactionController extends Controller
         {
             DB::beginTransaction();
 
-            $retItem = json_decode($request->itemRet);
-            $transactionItem = purchase_transaction_items::with("medicine")->find($retItem->id);
-            $purchaseTransaction = purchase_transactions::with("items")->find($transactionItem->purchase_transaction);
-            $purchaseMedItems = purchase_transaction_medicine_items::where("purchase_transaction_item", $transactionItem->id)
+            $retItem = json_decode($request->itemRet); // FROM REQUEST
+            $tobeReplacedTransactionItem = purchase_transaction_items::with("medicine")->find($retItem->id);
+            $purchaseTransaction = purchase_transactions::with("items")->find($tobeReplacedTransactionItem->purchase_transaction);
+            $purchaseMedItems = purchase_transaction_medicine_items::where("purchase_transaction_item", $tobeReplacedTransactionItem->id)
             ->orderBy("created_at", "asc")
-            ->take($retItem->qty)
             ->get();
 
-            // FIRST EDIT THE PURCHASE TRANSACTION
+            $replacementMedicine = medicines::find($request->replacementmedId);
+            
+
+            /**
+             * FIRST EDIT THE PURCHASE TRANSACTION
+             */
             $percentOfDiscount = ($purchaseTransaction->discount_deduction / $purchaseTransaction->subtotal ) * 100;
-            $updatedSubtotal = $purchaseTransaction->subtotal - $transactionItem->medicine()->first()->price * $retItem->qty;
+
+            $deductedSubtotal = $tobeReplacedTransactionItem->medicine()->first()->price * $tobeReplacedTransactionItem->qty;
+            $addedSubtotal = $replacementMedicine->price * $request->replacementQty; //Replacement Medicine Price and its quantity
+
+            $updatedSubtotal = $purchaseTransaction->subtotal - $deductedSubtotal + $addedSubtotal;
             $updatedDiscountDeduction = $updatedSubtotal * ($percentOfDiscount / 100);
             $updatedTotal = $updatedSubtotal - $updatedDiscountDeduction;
-            $updatedChange = $purchaseTransaction->cash - $updatedTotal;
 
             $purchaseTransaction->subtotal = $updatedSubtotal;
             $purchaseTransaction->discount_deduction = $updatedDiscountDeduction;
             $purchaseTransaction->total = $updatedTotal;
-            $purchaseTransaction->change = $updatedChange;
+            $purchaseTransaction->cash = $updatedTotal;
+            $purchaseTransaction->change = 0;
             $purchaseTransaction->save();
 
 
-            // MOVE THE ITEM TO RETURNS
+            /**
+             * MOVE THE ITEM TO RETURNS
+             */
             $returnedItems = new returned_transaction_items();
             $returnedItems->purchase_transaction = $purchaseTransaction->id;
-            $returnedItems->medicine = $transactionItem->medicine()->first()->id;
+            $returnedItems->medicine = $tobeReplacedTransactionItem->medicine()->first()->id;
             $returnedItems->qty = $retItem->qty;
             $returnedItems->reason = $retItem->reason;
+            $returnedItems->replacement_medicine = $replacementMedicine->id;
+            $returnedItems->replacement_qty = $request->replacementQty;
             $returnedItems->save();
 
-            // RETURN MEDICINE ITEM TO THE INVENTORY
-            foreach($purchaseMedItems as $medItem)
-            {
-                // MOVE THE MEDICINE ITEM TO THE INVENTORY
-                $medicineItem = new medicine_items();
-                $medicineItem->id = $medItem->medicine_item_id;
-                $medicineItem->medicine = $medItem->medicine;
-                $medicineItem->expiration_date = $medItem->expiration_date;
-                $medicineItem->created_at = $medItem->medicine_item_created_at;
-                $medicineItem->updated_at = $medItem->medicine_item_updated_at;
-                $medicineItem->save();
+            /**
+             * Add the replacement to the purchase_transaction_med_items
+             */
+            $newPurchaseTransactionItem = new purchase_transaction_items();
+            $newPurchaseTransactionItem->purchase_transaction = $purchaseTransaction->id;
+            $newPurchaseTransactionItem->medicine = $replacementMedicine->id;
+            $newPurchaseTransactionItem->qty = $request->replacementQty;
+            $newPurchaseTransactionItem->save();
 
-                // Increment MEDICINE
-                $medicine = medicines::find($medItem->medicine);
-                $medicine->qty ++;
+            // decrement the replacement medicine
+            $replacementMedicine->qty -= $request->replacementQty;
+            $replacementMedicine->save();
+
+            /**
+             * Get all the medItems of the medicine
+             */
+            $medItems = medicine_items::where('medicine', $replacementMedicine->id)
+            ->orderBy('expiration_date', 'asc')
+            ->get();
+
+            $demandedQty = $request->replacementQty;
+            $medItemsUsed = [];
+
+            /**
+             * Loop through MedItems 
+             * - decrement the quantity of medItem
+             */
+            foreach($medItems as $medItem)
+            {
+                if ($demandedQty <= 0) {
+                    break;
+                }
+                
+                /**
+                 * If medItem's qty is enough for the demandedQty just decrement it
+                 */
+                if ($medItem->qty >= $demandedQty) {
+                    $medItemsUsed[] = [
+                        "id" => $medItem->id,
+                        "qty_purchased" => $demandedQty,
+                        "medicine" => $medItem->medicine
+                    ];
+                    
+                    $medItem->qty -= $demandedQty;
+                    $medItem->save();
+                    break;
+                } 
+                /**
+                 * medItem's qty is not enought for the demandedQty 
+                 * use all of its qty and proceed to the next medItem
+                 */
+                else {
+                    $medItemsUsed[] = [
+                        "id" => $medItem->id,
+                        "qty_purchased" => $medItem->qty, // because it uses all of its qty
+                        "medicine" => $medItem->medicine
+                    ];
+
+                    $demandedQty -= $medItem->qty;
+                    $medItem->qty = 0;
+                    $medItem->save();
+                }
+            }
+
+            /**
+             * Make a record of the deducted medItem for future purposes
+             */
+            $transferData = [];
+            foreach ($medItemsUsed as $medItemUsed) {
+                $transferData[] = [
+                    'purchase_transaction_item' => $newPurchaseTransactionItem->id,
+                    'medicine_item_id' => $medItemUsed["id"],
+                    'qty_purchased' => $medItemUsed["qty_purchased"],
+                    'medicine' => $medItemUsed["medicine"],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            purchase_transaction_medicine_items::insert($transferData);
+
+
+            /**
+             * Return All of the Items from the purchase_transaction_med_items
+             * back to medicine_items
+             */
+            foreach($purchaseMedItems as $purchaseMedItem)
+            {
+                $medItem = medicine_items::find($purchaseMedItem->medicine_item_id);
+                $medItem->qty += $purchaseMedItem->qty_purchased; //Increment Back
+                $medItem->save();
+
+                // Increment medicine back
+                $medicine = medicines::find($purchaseMedItem->medicine);
+                $medicine->qty += $purchaseMedItem->qty_purchased; // Increment Back
                 $medicine->save();
-
-                // NOW DELETE THE MEDICINE ITEM FROM THE PURCHASE TRANSACTION MEDICINE ITEMS
-                $medItem->delete();
             }
 
-
-            // UPDATE THE PURCHASE TRANSACTION ITEMS
-            if($transactionItem->qty == $retItem->qty)
-            {
-                $transactionItem->delete();
-            } 
-            else 
-            {
-                $transactionItem->qty -= $retItem->qty;
-                $transactionItem->save();
-            }
+            /**
+             * Next Remove the replaced Purchase Transction Item
+             */
+            $tobeReplacedTransactionItem->delete();
 
             DB::commit();
 
             return response()->json([
                 "status" => 200,
                 "message" => "success",
+                "transaction" => purchase_transactions::with(['items', 'discounts', 'customer'])->find($tobeReplacedTransactionItem->purchase_transaction),
                 "transactions" => purchase_transactions::with(["items", "discounts", "customer"])->orderBy("created_at", "desc")->get()
             ]);
             
@@ -414,6 +497,6 @@ class PurchaseTransactionController extends Controller
 
     public function GetAllReturnHistory()
     {
-        return response()->json(returned_transaction_items::with("medicine")->orderByDesc("created_at")->get());
+        return response()->json(returned_transaction_items::with(["medicine", "replacement_medicine"])->orderByDesc("created_at")->get());
     }
 }

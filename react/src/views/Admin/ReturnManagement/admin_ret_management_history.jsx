@@ -1,16 +1,16 @@
 import { Input, Spin, Table } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { formatDateTime, isEmptyOrSpaces } from "../../../assets/js/utils";
 import { useOutletContext } from "react-router-dom";
+import { fetchAllReturnedItems } from "../../../Services/PurchaseTransactionServices";
 
 export default function AdminReturnManagementHistory() {
-    const {
-        setActivePage,
-        returnedItems,
-        filteredReturnedItems, setFilteredReturnedItems
-    } = useOutletContext();
+    const { setActivePage } = useOutletContext();
 
     const {Search} = Input;
+
+    const [returnedItems, setReturnedItems] = useState(null);
+    const [filteredReturnedItems, setFilteredReturnedItems] = useState(null);
 
 
     /**
@@ -19,9 +19,13 @@ export default function AdminReturnManagementHistory() {
     useEffect(() => {
         setActivePage("History");
 
-        if(filteredReturnedItems) {
-            console.log(filteredReturnedItems);
+        const getAll = async() => {
+            const data = await fetchAllReturnedItems();
+            setReturnedItems(data);
+            setFilteredReturnedItems(data);
         }
+
+        getAll();
     }, []);
 
 
@@ -45,6 +49,14 @@ export default function AdminReturnManagementHistory() {
         {
             title: "Reason",
             dataIndex: 'reason',
+        },
+        {
+            title: "Replacement Item",
+            render: (_, row) =>  row.replacement_medicine ? row.replacement_medicine.name : "N/A",
+        },
+        {
+            title: "Replacement Quantity",
+            dataIndex: 'replacement_qty',
         },
         {
             title: "Return Date",

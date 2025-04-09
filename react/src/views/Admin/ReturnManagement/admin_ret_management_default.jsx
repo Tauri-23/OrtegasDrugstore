@@ -1,42 +1,10 @@
-import { useEffect, useState } from "react";
-import { fetchAllFullPurchaseTransactions, fetchAllReturnedItems } from "../../../Services/PurchaseTransactionServices";
+import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { Button } from "antd";
-import { fetchAllStockedMedicinesFull } from "../../../Services/GeneralMedicineService";
 
 export default function AdminReturnManagementDefault() {
     const navigate = useNavigate();
     const [activePage, setActivePage] = useState("Index");
-    const [transactionItems, setTransactionItems] = useState(null);
-    const [filteredTransactionItems, setFileteredTransactionItems] = useState(null);
-
-    const [returnedItems, setReturnedItems] = useState(null);
-    const [filteredReturnedItems, setFilteredReturnedItems] = useState(null);
-
-    const [medicines, setMedicines] = useState(null);
-
-
-    /**
-     * Onmount
-     */
-    useEffect(() => {
-        const getAll = async() => {
-            const [transactions, returnedItemsDb, medicinesDb] = await Promise.all([
-                fetchAllFullPurchaseTransactions(),
-                fetchAllReturnedItems(),
-                fetchAllStockedMedicinesFull()
-            ]);
-            const transactionItemsExtracted = await transactions.flatMap(transaction => {return transaction.items});
-            setTransactionItems(transactionItemsExtracted);
-            setFileteredTransactionItems(transactionItemsExtracted);
-            setMedicines(medicinesDb);
-
-            setReturnedItems(returnedItemsDb);
-            setFilteredReturnedItems(returnedItemsDb);
-        }
-
-        getAll();
-    }, []);
 
 
 
@@ -63,14 +31,7 @@ export default function AdminReturnManagementDefault() {
                 </Button>
             </div>
             
-            <Outlet context={{
-                setActivePage,
-                transactionItems, setTransactionItems,
-                filteredTransactionItems, setFileteredTransactionItems,
-                returnedItems, setReturnedItems,
-                filteredReturnedItems, setFilteredReturnedItems,
-                medicines, setMedicines
-            }}/>
+            <Outlet context={{ setActivePage, }}/>
         </div>
     )
 }

@@ -170,6 +170,12 @@ body {background: var(--white2);}
 .color-blue2 {
     color: var(--blue2);
 }
+.color-green1 {
+    color: var(--green1);
+}
+.color-red1 {
+    color: var(--red1);
+}
 
 
 

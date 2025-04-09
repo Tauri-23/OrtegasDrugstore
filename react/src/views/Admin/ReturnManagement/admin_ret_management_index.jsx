@@ -1,20 +1,23 @@
 import { Input, Spin, Table } from "antd";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { formatDateTime, isEmptyOrSpaces, notify } from "../../../assets/js/utils";
 import { useModal } from "../../../Context/ModalContext";
 import axiosClient from "../../../axios-client";
 import { useOutletContext } from "react-router-dom";
+import { fetchAllFullPurchaseTransactions } from "../../../Services/PurchaseTransactionServices";
+import { fetchAllStockedMedicinesFull } from "../../../Services/GeneralMedicineService";
 
 export default function AdminReturnManagementIndex() {
     const {showModal} = useModal();
-    const {
-        setActivePage,
-        transactionItems, setTransactionItems, 
-        filteredTransactionItems, setFileteredTransactionItems,
-        medicines
-    } = useOutletContext();
+    const { setActivePage } = useOutletContext();
 
     const {Search} = Input;
+
+    const [transactions, setTransactions] = useState(null);
+    const [transactionItems, setTransactionItems] = useState(null);
+    const [filteredTransactionItems, setFileteredTransactionItems] = useState(null);
+
+    const [medicines, setMedicines] = useState(null);
 
 
     /**
@@ -22,6 +25,20 @@ export default function AdminReturnManagementIndex() {
      */
     useEffect(() => {
         setActivePage("Index");
+
+        const getAll = async() => {
+            const [transactions, medicinesDb] = await Promise.all([
+                fetchAllFullPurchaseTransactions(),
+                fetchAllStockedMedicinesFull()
+            ]);
+            const transactionItemsExtracted = await transactions.flatMap(transaction => {return transaction.items});
+            setTransactions(transactions);
+            setTransactionItems(transactionItemsExtracted);
+            setFileteredTransactionItems(transactionItemsExtracted);
+            setMedicines(medicinesDb);
+        }
+
+        getAll();
     }, []);
 
 
@@ -71,19 +88,25 @@ export default function AdminReturnManagementIndex() {
         showModal("ReturnItemsModal", {
             medicines,
             item,
-            handleReturnPost: (returnItem, medicineId, qty) => {
+            purchaseTransaction: transactions.filter(x => String(x.id) === item.purchase_transaction)[0],
+            handleReturnPost: (returnItem, medicineId, replacementQty) => {
                 const formData = new FormData();
                 formData.append("itemRet", JSON.stringify(returnItem));
-                formData.append("medicineId", medicineId);
-                formData.append("qty", qty);
+                formData.append("replacementmedId", medicineId);
+                formData.append("replacementQty", replacementQty);
 
         
                 axiosClient.post("/return-transaction-item", formData)
                 .then(({data}) => {
                     if(data.status === 200) {
-                        const transactionItemsExtracted = data.transactions.flatMap(transaction => {return transaction.items});
-                        setTransactionItems(transactionItemsExtracted);
-                        setFileteredTransactionItems(transactionItemsExtracted);
+                        showModal('AdminViewReceiptModal1', {
+                            data: data.transaction, 
+                            handleDoneTransaction: () => {
+                                const transactionItemsExtracted = data.transactions.flatMap(transaction => {return transaction.items});
+                                setTransactionItems(transactionItemsExtracted);
+                                setFileteredTransactionItems(transactionItemsExtracted);
+                            },
+                        });
                     }
                     notify(data.status === 200 ? "success" : "error", data.message, "top-center", 3000);
                 }).catch(error => {
