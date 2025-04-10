@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import "../../assets/css/dashboard.css";
-import { formatToPhilPeso } from "../../assets/js/utils";
+import { formatDate, formatToPhilPeso } from "../../assets/js/utils";
 import LineChart1 from "../../components/charts/LineChart1";
 import { fetchAllForecast } from "../../Services/ForecastServices";
 import { fetchAllMedicineCount, fetchAllMedicineShortage, fetchAllRevenue } from "../../Services/DashboardService";
 import { fetchAllMedicinesFull } from "../../Services/GeneralMedicineService";
 import { useNavigate } from "react-router-dom";
+import { useModal } from "../../Context/ModalContext";
 
 const AdminIndex = () => {
     const navigate = useNavigate();
+    const {showModal} = useModal();
 
     const [forecastWeek, setForecastWeek] = useState(null);
     const [forecastMonth, setForecastMonth] = useState(null);
@@ -50,6 +52,12 @@ const AdminIndex = () => {
                 setMedCount(medCountDb);
                 setMedShortage(medShortageDb);
                 setMedicines(medicinesDb);
+
+                if(medShortageDb.length > 0) {
+                    showModal("AdminMedShortageModal1", {
+                        medShortage: medShortageDb
+                    });
+                }
             } catch(error) {
                 console.error(error);
             }
@@ -62,23 +70,6 @@ const AdminIndex = () => {
     /**
      * Prep Data for Charts
      */
-    useEffect(() => {
-        if(forecastWeek) {
-            setWeekChartData({
-                labels: forecastWeek.map((entry) => entry.ds),
-                datasets: [
-                    {
-                        label: 'Weekly Forecast',
-                        data: forecastWeek.map((entry) => entry.yhat),
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        fill: true,
-                    },
-                ],
-            })
-        }
-    }, [forecastWeek]);
-
     useEffect(() => {
         if(forecastWeek) {
             setWeekChartData({
@@ -130,10 +121,27 @@ const AdminIndex = () => {
 
 
     /**
+     * Interpretations
+     */
+    const getInterpretation = (forecastValue) => {
+        return forecastValue?.map((item, index, arr) => {
+            if (index === 0) return `Forecast starts on ${formatDate(item.ds)} with a predicted value of ${item.yhat.toFixed(2)}. `;
+    
+            const diff = item.yhat - arr[index - 1].yhat;
+            const trend = diff > 0 ? "increase" : (diff < 0 ? "decrease" : "no change");
+            const direction = diff > 0 ? "↑" : diff < 0 ? "↓" : "→";
+            const strength = Math.abs(diff) > 0.05 ? "notable" : "slight";
+    
+            return `${formatDate(item.ds)}: ${direction} ${strength} ${trend} to ${item.yhat.toFixed(2)} from ${arr[index - 1].yhat.toFixed(2)}. `;
+        });
+    };    
+
+
+
+    /**
      * Functions
      */
     const getStatus = (qty) => {
-        console.log(qty);
         if(qty > (medicines.length * .3)) {
             return "Bad"
         }
@@ -163,6 +171,7 @@ const AdminIndex = () => {
                         <button className="secondary-btn-black1">Download Report</button>
                     </div>
 
+                    {/* KPIS */}
                     <div className="dashboard-content-1">
                         <div className={`dashboard-content-1-box ${getStatus(medShortage.length) === "Good" ? "green" : (getStatus(medShortage.length) === "Low Stock" ? "yellow" : "red")}`}>
                             <div className="dashboard-content-1-box-upper">
@@ -172,7 +181,7 @@ const AdminIndex = () => {
                             </div>
 
                             <div className="dashboard-content-1-box-lower">
-                                View Detailed Report
+                                View
                             </div>
                         </div>
 
@@ -184,7 +193,7 @@ const AdminIndex = () => {
                             </div>
 
                             <div className="dashboard-content-1-box-lower">
-                                View Detailed Report
+                                View
                             </div>
                         </div>
 
@@ -196,7 +205,7 @@ const AdminIndex = () => {
                             </div>
 
                             <div className="dashboard-content-1-box-lower">
-                                View Detailed Report
+                                View
                             </div>
                         </div>
 
@@ -208,7 +217,7 @@ const AdminIndex = () => {
                             </div>
 
                             <div className="dashboard-content-1-box-lower">
-                                View Detailed Report
+                                View
                             </div>
                         </div>
                     </div>
@@ -227,6 +236,9 @@ const AdminIndex = () => {
                                 data={weekChartData}
                                 options={chartOptions}
                             />
+                            <div className="mar-top-1 text-align-justify">
+                                {getInterpretation(forecastWeek)?.join(" ")}
+                            </div>
                         </div>
                         <div className="dashboard-content-1-box-2 w-100">
                             <LineChart1
@@ -234,6 +246,9 @@ const AdminIndex = () => {
                                 data={monthChartData}
                                 options={chartOptions}
                             />
+                            <div className="mar-top-1 text-align-justify">
+                                {getInterpretation(forecastMonth)?.join(" ")}
+                            </div>
                         </div>
                     </div>
                 </>

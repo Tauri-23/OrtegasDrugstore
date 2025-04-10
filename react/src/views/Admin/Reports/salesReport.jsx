@@ -4,8 +4,11 @@ import { calculatePercentageDifference, formatDateTime, formatToPhilPeso, isEmpt
 import '../../../assets/css/sales.css'
 import {jsPDF} from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Spin, Table } from "antd";
+import { useModal } from "../../../Context/ModalContext";
 
 export default function AdminSalesReports() {
+    const {showModal} = useModal();
     const [sales, setSales] = useState(null);
     const [filteredSales, setFilteredSales] = useState(null);
 
@@ -101,11 +104,33 @@ export default function AdminSalesReports() {
 
 
     /**
+     * Setup Table Columns
+     */
+    const transactionsColumns = [
+        {
+            title: "Reference Id",
+            dataIndex: "id"
+        },
+        {
+            title: "Total",
+            render: (_, row) => formatToPhilPeso(row.total)
+        },
+        {
+            title: "Transaction Date",
+            render: (_, row) => formatDateTime(row.created_at)
+        }
+    ]
+
+
+
+    /**
      * Render
      */
     return(
         <div className="content1">
-            {!reportData && (
+            {!filteredSales
+            ? (<Spin size="large"/>)
+            : (
                 <>
                     <div className="d-flex align-items-center justify-content-between mar-bottom-l1 w-100">
                         <div className="text-l1 fw-bolder">Sales Reports</div>
@@ -150,155 +175,14 @@ export default function AdminSalesReports() {
                         </div>
                     </div>
 
-                    <div className="d-flex gap1 w-100">
-
-                        <div className="cont-box1 w-100">
-                            <div className="cont-box1-head d-flex w-100">
-                                <div className="text-l3 w-50 text-center">Order Id</div>
-                                <div className="text-l3 w-50 text-center">Date & Time</div>
-                            </div>
-                            <div className="hr-line1-black3"></div>
-                            <div className="cont-box1-body" style={{height: "400px"}}>
-                                
-                                {!sales && (
-                                    <div className="text-m1">Loading...</div>
-                                )}
-
-                                {sales?.length < 1 && (
-                                    <div className="text-m1">No records.</div>
-                                )}
-
-                                {sales?.length > 0 && sales.map(sale => (
-                                    <div key={sale.id} className="sales-row">
-                                        <div className="w-50 text-center">
-                                            {sale.id}
-                                        </div>
-
-                                        <div className="w-50 text-center">
-                                            {formatDateTime(sale.created_at)}
-                                        </div>
-                                    </div>
-                                ))}
-
-
-                            </div>
-                        </div>
-                    </div>
+                    <Table
+                    columns={transactionsColumns}
+                    dataSource={filteredSales.map((item) => ({...item, key: item.id}))}
+                    pagination={{pageSize: 10}}
+                    bordered
+                    onRow={(row) => ({onDoubleClick: () => showModal("AdminViewReceiptModal1", {data: row, })})}/>
                 </>
-            )}
-
-
-
-            {/* Report */}
-            {reportData && (
-                <div className="report-paper m-auto">
-                    <div id="printable-report">
-                        <div className="text-center text-l1 fw-bold">Ortega's Drugstore</div>
-                        <div className="text-center text-m1 mar-bottom-l1">Makati City</div>
-                        
-                        <div className="text-center text-l2 fw-bold mar-bottom-l3">Sales Report</div>
-                        <div className="text-m2">{getMonthName()} {selectedReportYear}</div>
-
-                        <div className="hr-line1-black3 mar-y-3"></div>
-
-                        <div className="d-flex justify-content-between w-100 text-m2">
-                            <div>Total Sales:</div>
-                            <div>
-                                {formatToPhilPeso(reportData.data.total_sales_now)} 
-                                ({reportData.data.total_sales_now > reportData.data.total_sales_last_month ? '+' : '-'} 
-                                {`${calculatePercentageDifference(reportData.data.total_sales_now, reportData.data.total_sales_last_month)}%`})
-                            </div>
-                        </div>
-
-                        <div className="d-flex justify-content-between w-100 text-m2">
-                            <div>Item Sold:</div>
-                            <div>
-                            {reportData.totalQtyNow}
-                            ({reportData.totalQtyNow > reportData.totalQtyLastMonth ? '+' : '-'} 
-                            {`${calculatePercentageDifference(reportData.totalQtyNow, reportData.totalQtyLastMonth)}%`})</div>
-                        </div>
-
-                        <div className="hr-line1-black3 mar-y-3"></div>
-
-                        <div className="text-m1 mar-y-2 fw-bold">Top 3 most item sold:</div>
-
-                        <table className="report-paper-table">
-                            <thead className="report-paper-table-thead">
-                                <tr>
-                                    <th>Item ID</th>
-                                    <th>Item Name</th>
-                                    <th>Quantity Sold</th>
-                                    <th>Sales</th>
-                                </tr>
-                            </thead>
-                            <tbody className="report-paper-table-tbody">
-                                {reportData.sortedMedicineAndQty.slice(0, 3).map(med => (
-                                    <tr key={med.id}>
-                                        <td>{med.id}</td>
-                                        <td>{med.name}</td>
-                                        <td>{med.qty}</td>
-                                        <td>{formatToPhilPeso(med.qty * med.price)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        <div className="text-m1 mar-y-2 fw-bold">New Items ({reportData.data.new_items.length}):</div>
-
-                        <table className="report-paper-table">
-                            <thead className="report-paper-table-thead">
-                                <tr>
-                                    <th>Item ID</th>
-                                    <th>Item Name</th>
-                                    <th>Group</th>
-                                    <th>Price</th>
-                                    <th>QTY (Stock)</th>
-                                </tr>
-                            </thead>
-                            <tbody className="report-paper-table-tbody">
-                                {reportData.data.new_items.map((med) => (
-                                    <tr key={med.id}>
-                                        <td>{med.id}</td>
-                                        <td>{med.name}</td>
-                                        <td>{med.group.group_name}</td>
-                                        <td>{formatToPhilPeso(med.price)}</td>
-                                        <td>{med.qty}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        <div className="hr-line1-black3 mar-y-1"></div>
-
-                        <div className="text-m1 mar-y-2 fw-bold">All Item Sales ({reportData.sortedMedicineAndQty.length}):</div>
-
-                        <table className="report-paper-table">
-                            <thead className="report-paper-table-thead">
-                                <tr>
-                                    <th>Item ID</th>
-                                    <th>Item Name</th>
-                                    <th>Group</th>
-                                    <th>Price</th>
-                                    <th>QTY (Sold)</th>
-                                </tr>
-                            </thead>
-                            <tbody className="report-paper-table-tbody">
-                                {reportData.sortedMedicineAndQty.map(med => (
-                                    <tr key={med.id}>
-                                        <td>{med.id}</td>
-                                        <td>{med.name}</td>
-                                        <td>{med.group}</td>
-                                        <td>{formatToPhilPeso(med.price)}</td>
-                                        <td>{med.qty}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>   
-                </div>
-                             
-            )}
-            
+            )}       
 
         </div>
     );

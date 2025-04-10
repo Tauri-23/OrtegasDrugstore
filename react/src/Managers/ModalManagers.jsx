@@ -6,6 +6,7 @@ import AdminApplyDiscountModal1 from "../components/modals/admin_apply_discount_
 import AdminDelMedConfirmationModal1 from "../components/modals/admin_del_med_confirmation_modal1";
 import AdminDelMedGroupConfirmationModal1 from "../components/modals/admin_del_med_group_confirmation_modal1";
 import AdminEditMedPicPreviewModal1 from "../components/modals/admin_edit_med_pic_preview_modal1";
+import AdminMedShortageModal1 from "../components/modals/admin_med_shortage_modal1";
 import AdminPayCashModal1 from "../components/modals/admin_pay_cash_modal1";
 import AdminViewReceiptModal1 from "../components/modals/admin_view_receipt_modal1";
 import GeneralConfirmationModal1 from "../components/modals/general_confirmation_modal1";
@@ -17,6 +18,16 @@ const ModalManager = () => {
 
     const renderModal = () => {
         switch(modalState.type) {
+            /**
+             * Dashboard
+             */
+            case 'AdminMedShortageModal1':
+                return <AdminMedShortageModal1 {...modalState.props} onClose={hideModal}/>;
+
+
+
+
+
             /**
              * Inventory
              */

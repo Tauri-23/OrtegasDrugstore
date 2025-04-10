@@ -21,6 +21,6 @@ class DashboardController extends Controller
 
     public function GetAllMedicineShortage()
     {
-        return response()->json(medicines::where('qty', "<", 20)->get());
+        return response()->json(medicines::with(["group"])->where('qty', "<", 20)->orderBy("qty", "desc")->get());
     }
 }
