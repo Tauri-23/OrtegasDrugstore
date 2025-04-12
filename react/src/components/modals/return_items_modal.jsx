@@ -5,7 +5,7 @@ import { formatToPhilPeso, isEmptyOrSpaces, notify } from '../../assets/js/utils
 
 export default function ReturnItemsModal({medicines, item, purchaseTransaction, handleReturnPost, onClose}) {
     console.log(purchaseTransaction);
-    const [selectedReplacement, setSelectedReplacement] = useState({id: ""});
+    const [selectedReplacement, setSelectedReplacement] = useState({id: "", qty: 0});
     const [selectedQty, setSelectedQty] = useState(0);
     const [returnItem, setReturnItem] = useState({
         id: item.id,
@@ -88,10 +88,11 @@ export default function ReturnItemsModal({medicines, item, purchaseTransaction, 
                     }
                     options={[
                         {label: "Select replacement", value: ""},
-                        ...medicines.map(medicine => ({label: `${medicine.name} (${medicine.qty - selectedQty} pcs)`, value: medicine.id}))
+                        ...medicines.map(medicine => ({label: `${medicine.name} (${medicine.qty} pcs)`, value: medicine.id}))
                     ]}
                     value={selectedReplacement.id}
-                    onChange={(e) => setSelectedReplacement(e === "" ? {id: ""} : medicines.filter(x => x.id === e)[0])}
+                    onChange={(e) => 
+                        setSelectedReplacement(e === "" ? {id: "", qty: 0} : medicines.filter(x => x.id === e)[0])}
                     />
                 </div>
 
@@ -144,6 +145,8 @@ export default function ReturnItemsModal({medicines, item, purchaseTransaction, 
                                 <div className="text-m2 fw-bold">Difference ({differenceText})</div>
                                 {formatToPhilPeso(newTotal - purchaseTransaction.total)}
                             </div>
+
+                            {selectedReplacement.qty < selectedQty ? "selectedReplacement.qty < selectedQty" : "selectedReplacement.qty > selectedQty"}
                         </div>
                     </>
                 )}
@@ -153,7 +156,7 @@ export default function ReturnItemsModal({medicines, item, purchaseTransaction, 
                 type='primary'
                 size='large'
                 className='w-100'
-                disabled={isEmptyOrSpaces(returnItem.reason) || selectedReplacement.id === "" || selectedQty < 1}
+                disabled={isEmptyOrSpaces(returnItem.reason) || (selectedReplacement.id === "") || (selectedQty < 1) || (selectedQty > selectedReplacement.qty)}
                 onClick={() => {
                     handleReturnPost(returnItem, selectedReplacement.id, selectedQty); 
                     onClose();
