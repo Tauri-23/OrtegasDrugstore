@@ -173,7 +173,7 @@ class MedicineController extends Controller
             $pic = $request->file('pic');
             $medicine = medicines::where('id', $request->medicine_id)->with('group')->first();
 
-            $targetDirectory = base_path("react/src/assets/media/medicines");
+            $targetDirectory = base_path("react/public/media/medicines");
             $newFilename = $this->generateFilename->generate($pic, $targetDirectory);
 
             $pic->move($targetDirectory, $newFilename);

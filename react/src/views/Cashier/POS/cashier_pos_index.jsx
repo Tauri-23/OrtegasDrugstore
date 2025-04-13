@@ -397,7 +397,7 @@ export default function CashierPOSIndex() {
                                 onClick={() => handleSelectMed(med)}>
                                     <div className="pos-medicine-pic">
                                         {med.pic
-                                        ? (<img src={`/src/assets/media/medicines/${med.pic}`}/>)
+                                        ? (<img src={`/media/medicines/${med.pic}`}/>)
                                         : (<>{med.name[0]}</>)}
                                     </div>
                                     <div className="text-m1">{med.name}</div>

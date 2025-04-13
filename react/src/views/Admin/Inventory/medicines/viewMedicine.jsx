@@ -295,7 +295,7 @@ export default function AdminViewMedicine() {
                 {/* Photo */}
                 <div className="view-medicine-photo-box mar-bottom-1">
                     {medicine.pic
-                    ? (<img src={`/src/assets/media/medicines/${medicine.pic}`}/>)
+                    ? (<img src={`/media/medicines/${medicine.pic}`}/>)
                     : (<>{medicine.name[0]}</>)}
 
                     <div className="view-medicine-photo-box-overlay">
