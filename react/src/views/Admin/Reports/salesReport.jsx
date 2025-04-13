@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchAllFullPurchaseTransactions, fetchAllPurchasTransactionsWhereDateRange, fetchNecessaryForReport } from "../../../Services/PurchaseTransactionServices";
-import { calculatePercentageDifference, formatDateTime, formatToPhilPeso, isEmptyOrSpaces } from "../../../assets/js/utils";
+import { fetchAllFullPurchaseTransactions } from "../../../Services/PurchaseTransactionServices";
+import { formatDateTime, formatToPhilPeso } from "../../../assets/js/utils";
 import '../../../assets/css/sales.css'
-import {jsPDF} from 'jspdf';
-import html2canvas from 'html2canvas';
-import { Spin, Table } from "antd";
+import { Button, DatePicker, Spin, Table } from "antd";
 import { useModal } from "../../../Context/ModalContext";
+import * as XLSX from "xlsx";
 
 export default function AdminSalesReports() {
     const {showModal} = useModal();
@@ -19,8 +18,9 @@ export default function AdminSalesReports() {
 
     const [selectedReportMonth, setSelectedReportMonth] = useState('');
     const [selectedReportYear, setSelectedReportYear] = useState('');
-    const [isShowReport, setShowReport] = useState(false);
     const [reportData, setReportData] = useState(null);
+
+    const { RangePicker } = DatePicker;
 
 
 
@@ -50,55 +50,56 @@ export default function AdminSalesReports() {
     /**
      * Handlers
      */
-    const getMonthName = () => {
-        const month = selectedReportMonth ? selectedReportMonth - 1 : dateToday.getMonth();
-        return new Date(0, month).toLocaleString('default', { month: 'long' });
-    };
-
-    const handleFilter = async() => {
-        const data = await fetchAllPurchasTransactionsWhereDateRange(fromDate, toDate);
-        setSales(data);
-    }
-
-    const downloadReport = async () => {
-        if(isEmptyOrSpaces(selectedReportMonth) || isEmptyOrSpaces(selectedReportYear)) {
+    const handleDateRangeChange = (e) => {
+        if(!e) {
+            setFilteredSales(sales);
             return;
         }
-        try {
-            const data = await fetchNecessaryForReport(selectedReportMonth, selectedReportYear);
-            let medicineAndQtyNow = [];
+        const startDate = e[0].startOf("month").toDate();
+        const endDate = e[1].endOf("month").toDate();
 
-            await data.extracted_items_now.forEach(element => {
-                const medicineId = element.medicine.id;
-                // Check if the medicine already exists in the medicineAndQty array
-                const existingMedicine = medicineAndQtyNow.find(med => med.id === medicineId);
-                if(existingMedicine) {
-                    existingMedicine.qty += element.qty;
-                }
-                else {
-                    medicineAndQtyNow.push({
-                        id: medicineId,
-                        name: element.medicine.name,
-                        price: element.medicine.price,
-                        group: element.medicine.group.group_name,
-                        qty: element.qty
-                    });
-                }
-            });
+        const filteredResult = sales.filter(sale => {
+            const salesDate = new Date(sale.created_at);
+            return salesDate >= startDate && salesDate <= endDate;
+        });
+        setFilteredSales(filteredResult);
+    }
 
-            const sortedMedicineAndQty = medicineAndQtyNow.sort((a, b) => b.qty - a.qty);
-            const totalQtyNow = data.extracted_items_now.reduce((total, item) => total + item.qty, 0);
-            const totalQtyLastMonth = data.extracted_items_last_month.reduce((total, item) => total + item.qty, 0);
-            setReportData({
-                data,
-                sortedMedicineAndQty,
-                totalQtyNow,
-                totalQtyLastMonth
-            });
-            //setShowReport(true);
-        } catch (error) {
-            console.error(error);
-        }
+    const handleDownloadReport = () => {
+        if (!filteredSales || filteredSales.length === 0) return;
+
+        const total = filteredSales.reduce((acc, x) => acc + x.total, 0);
+
+        // Convert data to Excel format
+        const summaryData = [
+            ["Total Sales", formatToPhilPeso(total)],
+            ["Total Transactions", filteredSales.length],
+            [], //Empty Row
+        ];
+
+        const headers = [
+            "Reference ID",
+            "Total",
+            "Transaction Date"
+        ];
+
+        const tableData = filteredSales.map((sale) => [
+            String(sale.id),
+            formatToPhilPeso(sale.total),
+            formatDateTime(sale.created_at)
+        ]);
+
+        const worksheet = XLSX.utils.aoa_to_sheet([
+            ...summaryData,
+            headers,
+            ...tableData
+        ]);
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Reports");
+
+        // Download the file
+        XLSX.writeFile(workbook, "SalesReport.xlsx");
     }
 
 
@@ -134,44 +135,23 @@ export default function AdminSalesReports() {
                 <>
                     <div className="d-flex align-items-center justify-content-between mar-bottom-l1 w-100">
                         <div className="text-l1 fw-bolder">Sales Reports</div>
-                        <div className="d-flex align-items-center gap3">
-                            <select name="" id="" className="input1" value={selectedReportMonth} onChange={(e) => setSelectedReportMonth(e.target.value)}>
-                                <option value="">Select Month Period</option>
-                                {dateToday.getMonth() + 1 >= 1 && (<option value="1">January</option>)}
-                                {dateToday.getMonth() + 1 >= 2 && (<option value="2">February</option>)}
-                                {dateToday.getMonth() + 1 >= 3 && (<option value="3">March</option>)}
-                                {dateToday.getMonth() + 1 >= 4 && (<option value="4">April</option>)}
-                                {dateToday.getMonth() + 1 >= 5 && (<option value="5">May</option>)}
-                                {dateToday.getMonth() + 1 >= 6 && (<option value="6">June</option>)}
-                                {dateToday.getMonth() + 1 >= 7 && (<option value="7">July</option>)}
-                                {dateToday.getMonth() + 1 >= 8 && (<option value="8">August</option>)}
-                                {dateToday.getMonth() + 1 >= 9 && (<option value="9">September</option>)}
-                                {dateToday.getMonth() + 1 >= 10 && (<option value="10">October</option>)}
-                                {dateToday.getMonth() + 1 >= 11 && (<option value="11">November</option>)}
-                                {dateToday.getMonth() + 1 >= 12 && (<option value="12">December</option>)}
-                            </select>
-                            <select name="" id="" className="input1" value={selectedReportYear} onChange={(e) => setSelectedReportYear(e.target.value)}>
-                                <option value="">Select Year Period</option>
-                                <option value="2024">2024</option>
-                                {/* <option value="2025">2025</option>
-                                <option value="2026">2026</option> */}
-                            </select>
-                            <div className="primary-btn-dark-blue1" onClick={downloadReport}>Download Report</div>
-                        </div>
                     </div>
                     
                     <div className="d-flex gap1 w-100 mar-bottom-l1">
                         <div className="w-50">
                             <div className="text-m1">Date Range</div>
                             <div className="d-flex gap3">
-                                <input type="date" id="from" className="input1 w-50" value={fromDate} onChange={(e) => setFromDate(e.target.value)}/>
-                                
-                                <input type="date" id="to" className="input1 w-50" value={toDate} onChange={(e) => setToDate(e.target.value)}/>
-                            </div>
-                        </div>
+                                <RangePicker
+                                onChange={handleDateRangeChange}
+                                picker="month"
+                                />
 
-                        <div className="d-flex align-items-end">
-                            <div className="primary-btn-dark-blue1" onClick={handleFilter}>Apply</div>
+                                <Button
+                                type="primary"
+                                onClick={handleDownloadReport}>
+                                    Download Report
+                                </Button>
+                            </div>
                         </div>
                     </div>
 

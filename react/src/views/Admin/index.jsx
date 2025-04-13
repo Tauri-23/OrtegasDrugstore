@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import "../../assets/css/dashboard.css";
-import { formatDate, formatToPhilPeso } from "../../assets/js/utils";
+import { formatDate, formatToPhilPeso, getInterpretation } from "../../assets/js/utils";
 import LineChart1 from "../../components/charts/LineChart1";
 import { fetchAllForecast } from "../../Services/ForecastServices";
-import { fetchAllMedicineCount, fetchAllMedicineShortage, fetchAllRevenue } from "../../Services/DashboardService";
+import { fetchAllExpiringMedicine, fetchAllMedicineCount, fetchAllMedicineShortage, fetchAllRevenue } from "../../Services/DashboardService";
 import { fetchAllMedicinesFull } from "../../Services/GeneralMedicineService";
 import { useNavigate } from "react-router-dom";
 import { useModal } from "../../Context/ModalContext";
@@ -24,6 +24,8 @@ const AdminIndex = () => {
 
     const [medicines, setMedicines] = useState(0);
 
+    const [expiringMeds, setExpiringMeds] = useState(null);
+
     const [metrics, setMetrics] = useState();
 
 
@@ -34,11 +36,12 @@ const AdminIndex = () => {
     useEffect(() => {
         const getAll = async() => {
             try {
-                const [forecastDb, revenueDb, medCountDb, medShortageDb, medicinesDb] = await Promise.all([
+                const [forecastDb, revenueDb, medCountDb, medShortageDb, expiringMedsDb, medicinesDb] = await Promise.all([
                     fetchAllForecast(),
                     fetchAllRevenue(),
                     fetchAllMedicineCount(),
                     fetchAllMedicineShortage(),
+                    fetchAllExpiringMedicine(),
                     fetchAllMedicinesFull()
                 ]);
                 setForecastWeek(forecastDb.forecast.forecast_week);
@@ -51,11 +54,13 @@ const AdminIndex = () => {
                 setRevenue(revenueDb);
                 setMedCount(medCountDb);
                 setMedShortage(medShortageDb);
+                setExpiringMeds(expiringMedsDb);
                 setMedicines(medicinesDb);
 
-                if(medShortageDb.length > 0) {
+                if(medShortageDb.length > 0 || expiringMedsDb.length > 0) {
                     showModal("AdminMedShortageModal1", {
-                        medShortage: medShortageDb
+                        medShortage: medShortageDb,
+                        expiringMeds: expiringMedsDb
                     });
                 }
             } catch(error) {
@@ -116,25 +121,7 @@ const AdminIndex = () => {
             },
         },
         tension: .2
-    };
-
-
-
-    /**
-     * Interpretations
-     */
-    const getInterpretation = (forecastValue) => {
-        return forecastValue?.map((item, index, arr) => {
-            if (index === 0) return `Forecast starts on ${formatDate(item.ds)} with a predicted value of ${item.yhat.toFixed(2)}. `;
-    
-            const diff = item.yhat - arr[index - 1].yhat;
-            const trend = diff > 0 ? "increase" : (diff < 0 ? "decrease" : "no change");
-            const direction = diff > 0 ? "↑" : diff < 0 ? "↓" : "→";
-            const strength = Math.abs(diff) > 0.05 ? "notable" : "slight";
-    
-            return `${formatDate(item.ds)}: ${direction} ${strength} ${trend} to ${item.yhat.toFixed(2)} from ${arr[index - 1].yhat.toFixed(2)}. `;
-        });
-    };    
+    };  
 
 
 
@@ -173,7 +160,7 @@ const AdminIndex = () => {
 
                     {/* KPIS */}
                     <div className="dashboard-content-1">
-                        <div className={`dashboard-content-1-box ${getStatus(medShortage.length) === "Good" ? "green" : (getStatus(medShortage.length) === "Low Stock" ? "yellow" : "red")}`}>
+                        {/* <div className={`dashboard-content-1-box ${getStatus(medShortage.length) === "Good" ? "green" : (getStatus(medShortage.length) === "Low Stock" ? "yellow" : "red")}`}>
                             <div className="dashboard-content-1-box-upper">
                                 <img src="/media/icons/sheild-green1.svg" className="dashboard-content-1-icon"/>
                                 <div className="text-l2 fw-bold">{getStatus(medShortage.length)}</div>
@@ -183,7 +170,7 @@ const AdminIndex = () => {
                             <div className="dashboard-content-1-box-lower">
                                 View
                             </div>
-                        </div>
+                        </div> */}
 
                         <div className="dashboard-content-1-box yellow">
                             <div className="dashboard-content-1-box-upper">
@@ -209,11 +196,23 @@ const AdminIndex = () => {
                             </div>
                         </div>
 
-                        <div className="dashboard-content-1-box red" onClick={() => navigate('/OrtegaAdmin/MedicineShortage')}>
+                        <div className="dashboard-content-1-box red" onClick={() => navigate('/OrtegaAdmin/MedicineShortageExpiring')}>
                             <div className="dashboard-content-1-box-upper">
                                 <img src="/media/icons/danger-red1.svg" className="dashboard-content-1-icon"/>
                                 <div className="text-l2 fw-bold">{medShortage.length}</div>
                                 <div className="text-l3">Medicine Shortage</div>
+                            </div>
+
+                            <div className="dashboard-content-1-box-lower">
+                                View
+                            </div>
+                        </div>
+
+                        <div className="dashboard-content-1-box red" onClick={() => navigate('/OrtegaAdmin/MedicineShortageExpiring/Expiring')}>
+                            <div className="dashboard-content-1-box-upper">
+                                <img src="/media/icons/danger-red1.svg" className="dashboard-content-1-icon"/>
+                                <div className="text-l2 fw-bold">{expiringMeds.reduce((acc, x) => acc + x.qty, 0)}</div>
+                                <div className="text-l3">Expiring Medicine</div>
                             </div>
 
                             <div className="dashboard-content-1-box-lower">

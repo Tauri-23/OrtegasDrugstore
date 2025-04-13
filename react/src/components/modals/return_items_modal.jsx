@@ -145,8 +145,6 @@ export default function ReturnItemsModal({medicines, item, purchaseTransaction, 
                                 <div className="text-m2 fw-bold">Difference ({differenceText})</div>
                                 {formatToPhilPeso(newTotal - purchaseTransaction.total)}
                             </div>
-
-                            {selectedReplacement.qty < selectedQty ? "selectedReplacement.qty < selectedQty" : "selectedReplacement.qty > selectedQty"}
                         </div>
                     </>
                 )}

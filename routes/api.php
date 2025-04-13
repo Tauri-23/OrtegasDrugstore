@@ -135,6 +135,7 @@ Route::post('/return-transaction-item', [PurchaseTransactionController::class, "
 Route::get('/get-all-revenues', [DashboardController::class, 'GetAllRevenues']);
 Route::get('/get-all-medicine-count', [DashboardController::class, 'GetAllMedicineCount']);
 Route::get('/get-all-medicine-shortage', [DashboardController::class, 'GetAllMedicineShortage']);
+Route::get('/get-all-expiring-medicine', [DashboardController::class, 'GetAllExpiringMedicine']);
 
 
 

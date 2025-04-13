@@ -40,11 +40,10 @@ class PurchaseTransactionController extends Controller
             {
                 $customer = new purchase_transaction_customer();
                 $customer->name = $request->name;
-                $customer->phone = $request->phone;
-                $customer->address = $request->address;
-                $customer->note = $request->note;
+                $customer->id_number = $request->id_number;
                 $customer->save();
                 $customerId = $customer->id;
+                
             }
 
             $transactionId = $this->generateId->generate(purchase_transactions::class, 12);

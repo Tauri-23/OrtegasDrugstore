@@ -29,3 +29,13 @@ export const fetchAllMedicineShortage = async() => {
         throw error;
     }
 }
+
+export const fetchAllExpiringMedicine = async() => {
+    try {
+        const response = await axiosClient.get('/get-all-expiring-medicine');
+        return response.data;
+    } catch (error) {
+        console.error('Failed fetching medicine groups : ', error);
+        throw error;
+    }
+}

@@ -5,7 +5,7 @@ import { fetchMedicineFullInfoById } from "../../../../Services/GeneralMedicineS
 import '../../../../assets/css/medicines.css';
 import { useModal } from "../../../../Context/ModalContext";
 import axiosClient from "../../../../axios-client";
-import { formatDate, formatDateTime, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
+import { formatDate, formatDateTime, getInterpretation, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { EditMedInfo1 } from "../../../../components/admin/edit_med_info1";
 import { fetchAllForecastWhereMedicine } from "../../../../Services/ForecastServices";
 import LineChart1 from "../../../../components/charts/LineChart1";
@@ -321,6 +321,9 @@ export default function AdminViewMedicine() {
                                     data={weekChartData}
                                     options={chartOptions}
                                 />
+                                <div className="mar-top-1 text-align-justify">
+                                    {getInterpretation(forecastWeek)?.join(" ")}
+                                </div>
                             </div>
                         )
                         : (
@@ -337,6 +340,9 @@ export default function AdminViewMedicine() {
                                     data={monthChartData}
                                     options={chartOptions}
                                 />
+                                <div className="mar-top-1 text-align-justify">
+                                    {getInterpretation(forecastMonth)?.join(" ")}
+                                </div>
                             </div>
                         )
                         : (

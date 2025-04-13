@@ -155,3 +155,23 @@ export const getTimeAgo = (timestamp) => {
         return `${days}d`;
     }
 }
+
+
+
+
+
+/**
+ * Interpretations
+ */
+export const getInterpretation = (forecastValue) => {
+    return forecastValue?.map((item, index, arr) => {
+        if (index === 0) return `Forecast starts on ${formatDate(item.ds)} with a predicted value of ${item.yhat.toFixed(2)}. `;
+
+        const diff = item.yhat - arr[index - 1].yhat;
+        const trend = diff > 0 ? "increase" : (diff < 0 ? "decrease" : "no change");
+        const direction = diff > 0 ? "↑" : diff < 0 ? "↓" : "→";
+        const strength = Math.abs(diff) > 0.05 ? "notable" : "slight";
+
+        return `${formatDate(item.ds)}: ${direction} ${strength} ${trend} to ${item.yhat.toFixed(2)} from ${arr[index - 1].yhat.toFixed(2)}. `;
+    });
+};

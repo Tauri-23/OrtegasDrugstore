@@ -44,7 +44,6 @@ export default function CashierPOSIndex() {
             setMedGroups(medGpDb);
             setMedicines(medsDb);
             setDiscounts(discountsDb);
-            console.log(discountsDb);
         }
 
         getAll();
@@ -166,7 +165,12 @@ export default function CashierPOSIndex() {
      * Discounts Handler
      */
     const handleAddDiscountClick = () => {
-        showModal('AdminApplyDiscountModal1', {discounts, selectedDiscounts, setSelectedDiscounts});
+        showModal('AdminApplyDiscountModal1', {
+            discounts, 
+            selectedDiscounts, 
+            setSelectedDiscounts,
+            customer, setCustomer,
+        });
     }
 
 
@@ -195,10 +199,8 @@ export default function CashierPOSIndex() {
         // for customer
         formData.append('hasCustomer', customer ? true : false)
         if(customer) {
+            formData.append('id_number', customer.id_number);
             formData.append('name', customer.name);
-            formData.append('phone', customer.phone);
-            formData.append('address', customer.address);
-            formData.append('note', customer.note);
         }
 
         // For Transaction
@@ -448,6 +450,14 @@ export default function CashierPOSIndex() {
 
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
 
+                        {customer !== null && (
+                            <div>
+                                <div className="text-m1">Customer Information</div>
+                                <div className="text-m3">name: {customer.name}</div>
+                                <div className="text-m3">ID: {customer.id_number}</div>
+                            </div>
+                        )}
+
                         {selectedDiscounts.length > 0 && (
                             <div className="d-flex justify-content-between text-m1">
                                 <div className="color-black2">Sub-total</div>
@@ -476,10 +486,10 @@ export default function CashierPOSIndex() {
                             </div>
                         </div>
 
-                        <div className="secondary-btn-black1 text-center" onClick={handleAddDiscountClick}>Add Discount {selectedDiscounts.length > 0 && selectedDiscounts.length}</div>
-                        <div className="secondary-btn-black1 text-center" onClick={handleAddCustomerInfoClick}>
+                        <button className="secondary-btn-black1 text-center" onClick={handleAddDiscountClick}>Add Discount {selectedDiscounts.length > 0 && selectedDiscounts.length}</button>
+                        {/* <div className="secondary-btn-black1 text-center" onClick={handleAddCustomerInfoClick}>
                             {customer ? 'Edit Customer Information' : 'Add Customer Information'}
-                        </div>
+                        </div> */}
                         <button 
                         className="primary-btn-dark-blue1 text-center" onClick={handleCheckout}>
                             Check out

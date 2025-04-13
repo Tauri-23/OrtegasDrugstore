@@ -50,6 +50,14 @@ const AdminViewReceiptModal1 = ({ data, handleDoneTransaction = null, handleVoid
 
                         <div className="text-m3">Receipt ID: {data.id}</div>
 
+                        {data.customer && (
+                            <>
+                                <div className="text-m3">Customer Information</div>
+                                <div className="text-m3">ID Number: {data.customer.id_number}</div>
+                                <div className="text-m3">Name: {data.customer.name}</div>
+                            </>
+                        )}
+
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
 
                         {data.items.map(med => (

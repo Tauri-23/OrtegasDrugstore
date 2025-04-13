@@ -15,7 +15,7 @@ import AdminPOSIndex from "./views/Admin/POS/admin_pos_index";
 import AdminConfigDefault from "./views/Admin/ConfigPages/config_default";
 import AdminConfigIndex from "./views/Admin/ConfigPages/config_index";
 import Prophet from "./views/AlgoModels/prophet";
-import ViewShortage from "./views/Admin/viewShortage";
+import ViewShortage from "./views/Admin/ExpiringAndShortages/admin_view_shortages";
 import CashierDefault from "./views/Cashier/default";
 import CashierPOSIndex from "./views/Cashier/POS/cashier_pos_index";
 import AdminLogsDefault from "./views/Admin/AdminLogs/admin_logs_default";
@@ -26,6 +26,9 @@ import AdminReturnManagementDefault from "./views/Admin/ReturnManagement/admin_r
 import AdminReturnManagementIndex from "./views/Admin/ReturnManagement/admin_ret_management_index";
 import AdminReturnManagementHistory from "./views/Admin/ReturnManagement/admin_ret_management_history";
 import AdminProfile from "./views/Admin/Profile/admin_profile";
+import AdminShortagesExpiringDefault from "./views/Admin/ExpiringAndShortages/admin_shortages_expiring_default";
+import AdminViewShortage from "./views/Admin/ExpiringAndShortages/admin_view_shortages";
+import AdminViewExpiring from "./views/Admin/ExpiringAndShortages/admin_view_expiring";
 
 const router = createBrowserRouter([
     /*
@@ -74,9 +77,23 @@ const router = createBrowserRouter([
                 index: true,
                 element: <AdminIndex/>
             },
+
+            /**
+             * Med Shortage and Expiring
+             */
             {
-                path: 'MedicineShortage',
-                element: <ViewShortage/>
+                path: 'MedicineShortageExpiring',
+                element: <AdminShortagesExpiringDefault/>,
+                children: [
+                    {
+                        index: true,
+                        element: <AdminViewShortage/>
+                    },
+                    {
+                        path: "Expiring",
+                        element: <AdminViewExpiring/>
+                    }
+                ]
             },
 
             /**

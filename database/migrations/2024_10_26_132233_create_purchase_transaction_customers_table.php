@@ -13,10 +13,8 @@ return new class extends Migration
     {
         Schema::create('purchase_transaction_customers', function (Blueprint $table) {
             $table->id();
+            $table->string('id_number');
             $table->string('name');
-            $table->string('phone');
-            $table->string('address');
-            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

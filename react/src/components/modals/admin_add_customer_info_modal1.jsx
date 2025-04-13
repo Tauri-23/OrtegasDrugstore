@@ -16,10 +16,8 @@ const AdminAddCustomerInfoModal1 = ({
 
     const handleAdd = () => {
         setCustomer({
+            id_number: "asd",
             name: _customerName,
-            number: _customerNumber,
-            address: _customerAddress,
-            note: _customerNote
         });
     }
 
