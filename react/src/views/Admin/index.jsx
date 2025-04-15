@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "../../assets/css/dashboard.css";
-import { formatDate, formatToPhilPeso, getInterpretation } from "../../assets/js/utils";
+import { formatDate, formatToPhilPeso, getInterpretationSummary } from "../../assets/js/utils";
 import LineChart1 from "../../components/charts/LineChart1";
 import { fetchAllForecast } from "../../Services/ForecastServices";
 import { fetchAllExpiringMedicine, fetchAllMedicineCount, fetchAllMedicineShortage, fetchAllRevenue } from "../../Services/DashboardService";
@@ -89,6 +89,8 @@ const AdminIndex = () => {
                     },
                 ],
             })
+
+            console.log(forecastWeek);
         }
     }, [forecastWeek]);
 
@@ -235,9 +237,11 @@ const AdminIndex = () => {
                                 data={weekChartData}
                                 options={chartOptions}
                             />
-                            <div className="mar-top-1 text-align-justify">
-                                {getInterpretation(forecastWeek)?.join(" ")}
-                            </div>
+                            <div 
+                            className="mar-top-1 text-align-justify" 
+                            style={{ whiteSpace: "pre-line" }} 
+                            dangerouslySetInnerHTML={{__html: getInterpretationSummary(forecastWeek, "Weekly")}}/>
+
                         </div>
                         <div className="dashboard-content-1-box-2 w-100">
                             <LineChart1
@@ -245,9 +249,10 @@ const AdminIndex = () => {
                                 data={monthChartData}
                                 options={chartOptions}
                             />
-                            <div className="mar-top-1 text-align-justify">
-                                {getInterpretation(forecastMonth)?.join(" ")}
-                            </div>
+                            <div 
+                            className="mar-top-1 text-align-justify" 
+                            style={{ whiteSpace: "pre-line" }} 
+                            dangerouslySetInnerHTML={{__html: getInterpretationSummary(forecastMonth, "Monthly")}}/>
                         </div>
                     </div>
                 </>

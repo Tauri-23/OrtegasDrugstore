@@ -119,48 +119,40 @@ class MedicineController extends Controller
 
     public function UpdateMedicine(Request $request)
     {
-        $medicine = medicines::where('id', $request->medId)->with('group')->first();
-
-        if(!$medicine)
+        try
         {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Medicine does not exist.'
-            ]);
-        }
+            DB::beginTransaction();
+            $medicine = medicines::with(["group", "medicine_items"])->find($request->medId);
+            $editMed = json_decode($request->editMed);
 
-        switch($request->editType)
-        {
-            case "directions":
-                $medicine->directions = $request->directions;
-                break;
-            case "sidefx":
-                $medicine->side_effects = $request->sideFx;
-                break;
-            case "qty":
-                $medicine->qty = $request->qty;
-                break;
-            default:
+            if(!$medicine)
+            {
                 return response()->json([
-                    'status' => 401,
-                    'message' => 'Invalid edit type.'
+                    'status' => 404,
+                    'message' => 'Medicine does not exist.'
                 ]);
-        }
+            }
 
-        if($medicine->save())
-        {
+            $medicine->name = $editMed->name;
+            $medicine->group = $editMed->group;
+            $medicine->type = $editMed->type;
+            $medicine->save();
+
+            DB::commit();
+
             return response()->json([
-                'status' => 200,
-                'message' => 'Medicine updated.',
-                'medicine' => $medicine
+                "status" => 200,
+                "message" => "Success",
+                "medicine" => medicines::with(["group", "medicine_items"])->find($request->medId)
             ]);
         }
-        else 
+        catch(\Exception $e)
         {
+            DB::rollBack();
             return response()->json([
-                'status' => 401,
-                'message' => 'Something went wrong please try again later.'
-            ]);
+                "status" => 500,
+                "message" => $e->getMessage()
+            ], 500);
         }
     }
 

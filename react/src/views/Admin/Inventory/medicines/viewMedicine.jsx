@@ -5,12 +5,13 @@ import { fetchMedicineFullInfoById } from "../../../../Services/GeneralMedicineS
 import '../../../../assets/css/medicines.css';
 import { useModal } from "../../../../Context/ModalContext";
 import axiosClient from "../../../../axios-client";
-import { formatDate, formatDateTime, getInterpretation, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
+import { formatDate, formatDateTime, getInterpretationSummary, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { EditMedInfo1 } from "../../../../components/admin/edit_med_info1";
 import { fetchAllForecastWhereMedicine } from "../../../../Services/ForecastServices";
 import LineChart1 from "../../../../components/charts/LineChart1";
 import { useStateContext } from "../../../../Context/ContextProvider";
-import { Table } from "antd";
+import { Button, Input, Select, Spin, Table } from "antd";
+import { fetchAllMedGroups } from "../../../../Services/GeneralMedicineGroupService";
 
 export default function AdminViewMedicine() {
     const {user} = useStateContext();
@@ -20,15 +21,7 @@ export default function AdminViewMedicine() {
 
 
     const [medicine, setMedicine] = useState(null);
-    const [newDirections, setNewDirections] = useState('');
-    const [newDirectionsForCheck, setNewDirectionsForCheck] = useState('');
-    const [newSideFx, setNewSideFx] = useState('');
-    const [newSideFxForCheck, setNewSideFxForCheck] = useState('');
-    const [newQty, setNewQty] = useState(0);
-
-    const [isEditDirection, setEditDirection] = useState(false);
-    const [isEditSideFx, setEditSideFx] = useState(false);
-    const [isEditQty, setEditQty] = useState(false);
+    const [groups, setGroups] = useState(null);
 
     const [newMedPic, setNewMedPic] = useState(null);
 
@@ -38,22 +31,39 @@ export default function AdminViewMedicine() {
     const [weekChartData, setWeekChartData] = useState(null);
     const [monthChartData, setMonthChartData] = useState(null);
 
-    const [metrics, setMetrics] = useState();
+    /**
+     * For Edit Medicine
+     */
+    const [isEditMedicine, setIsEditMedicine] = useState(false);
+    const [editMedicine, setEditMedicine] = useState({
+        name: "",
+        group: "",
+        type: ""
+    });
 
 
 
+    /**
+     * Onmount
+     */
     useEffect(() => {
 
         const getAll = async() => {
             try {
-                const [medicineDb, forecastDb] = await Promise.all([
+                const [medicineDb, forecastDb, groupsDb] = await Promise.all([
                     fetchMedicineFullInfoById(medId),
-                    fetchAllForecastWhereMedicine(medId)
+                    fetchAllForecastWhereMedicine(medId),
+                    fetchAllMedGroups()
                 ]);
                 setMedicine(medicineDb);
-                setNewQty(medicineDb.qty);
                 setForecastWeek(forecastDb.forecast.forecast_week);
                 setForecastMonth(forecastDb.forecast.forecast_month);
+                setGroups(groupsDb);
+                setEditMedicine({
+                    name: medicineDb.name,
+                    group: medicineDb.group.id,
+                    type: medicineDb.type
+                });
             } catch (error) {
                 console.error(error);
             }
@@ -195,7 +205,7 @@ export default function AdminViewMedicine() {
 
     
     /**
-     * Handle Edit Med Info
+     * Handle Delete Medicine
      */
     const handleDelPost = (id) => {
         const formData = new FormData();
@@ -216,45 +226,49 @@ export default function AdminViewMedicine() {
         showModal('AdminDelMedConfirmationModal1', {medicine,handleDelPost})
     }
 
-    const handleEditPost = (editType) => {
-        const formData = new FormData();
-        formData.append('medId', medicine.id);
-        formData.append('editType', editType);
 
-        switch(editType) {
-            case 'directions':
-                formData.append('directions', newDirections);
-                break;
-            case 'sidefx':
-                formData.append('sideFx', newSideFx);
-                break;
-            case 'qty':
-                formData.append('qty', newQty);
-                break;
-            default:
-                notify('error', 'Invalid Edit Type', 'top-center', 3000);
-                return;
+
+    /**
+     * Handle Edit Medicine
+     */
+    const handleEditMedClick = () => {
+        if (!isEditMedicine) {
+            // We're entering edit mode – prefill the state
+            setEditMedicine({
+                name: medicine.name,
+                group: medicine.group.id,
+                type: medicine.type
+            });
         }
+        setIsEditMedicine(prev => !prev);
+    };
 
-        axiosClient.post('/update-medicine', formData)
+    const handleEditMedInput = (e) => {
+        setEditMedicine(prev => ({...prev, [e.target.name]: e.target.value}));
+    }
+
+    const handleEditMedSave = () => {
+        const formData = new FormData();
+        formData.append("medId", medicine.id);
+        formData.append("editMed", JSON.stringify(editMedicine));
+
+        axiosClient.post("/update-medicine", formData)
         .then(({data}) => {
             if(data.status === 200) {
-                notify('success', data.message, 'top-center', 3000);
                 setMedicine(data.medicine);
-
-                setEditDirection(false);
-                setEditSideFx(false);
-                setEditQty(false);
-            } else {
-                notify('error', data.message, 'top-center', 3000);
+                setIsEditMedicine(false);
             }
-        }).catch(error => console.error(error));
-        
+            notify(data.status === 200 ? "success" : "error", data.message, "top-center", 3000);
+        })
+        .catch((error) => {
+            notify("error", "Server error (Check Console)", "top-center", 3000);
+            console.error(error);
+        })
     }
 
 
     /**
-     * Handle Edit Med Info
+     * Handle Add Medicine Item
      */
     const handleAddMedicineItem = () => {
         showModal('AdminAddMedItemModal1', {
@@ -281,130 +295,206 @@ export default function AdminViewMedicine() {
     /**
      * Render
      */
-    if(medicine) {
-        return(
-            <div className="content1">
-                <div className="d-flex justify-content-start mar-bottom-3">
-                    <Link to={'/OrtegaAdmin/Medicines'} className="d-flex gap4 align-items-center color-black1"><Icon.ArrowLeft className="text-m1"/> Back</Link>
-                </div>
-
-                <div className="d-flex mar-bottom-l1 align-items-center justify-content-between">
-                    <div className="text-l1 fw-bolder">{medicine.name}</div>
-                </div>
-
-                {/* Photo */}
-                <div className="view-medicine-photo-box mar-bottom-1">
-                    {medicine.pic
-                    ? (<img src={`/media/medicines/${medicine.pic}`}/>)
-                    : (<>{medicine.name[0]}</>)}
-
-                    <div className="view-medicine-photo-box-overlay">
-                        <Icon.PenFill onClick={handleUploadClick}/>
-                        <input 
-                            type="file" 
-                            id="fileInput"
-                            className='d-none'
-                            multiple 
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
+    return(
+        <div className="content1">
+            {medicine && groups
+            ? (
+                <>
+                    <div className="d-flex justify-content-start mar-bottom-3">
+                        <Link to={'/OrtegaAdmin/Medicines'} className="d-flex gap4 align-items-center color-black1"><Icon.ArrowLeft className="text-m1"/> Back</Link>
                     </div>
-                </div>
 
-                <div className="d-flex gap1 mar-bottom-1">
-                    <div className="view-medicine-box1 w-50">
-                        {(weekChartData)
-                        ? (
-                            <div className="view-medicine-box1-body">
-                                <LineChart1
-                                    title="Weekly Forecast"
-                                    data={weekChartData}
-                                    options={chartOptions}
+                    <div className="d-flex mar-bottom-l1 align-items-center justify-content-between">
+                        <div className="text-l1 fw-bolder">{medicine.name}</div>
+                    </div>
+
+                    {/* Photo */}
+                    <div className="view-medicine-photo-box mar-bottom-1">
+                            {medicine.pic
+                            ? (<img src={`/media/medicines/${medicine.pic}`}/>)
+                            : (<>{medicine.name[0]}</>)}
+
+                            <div className="view-medicine-photo-box-overlay">
+                                <Icon.PenFill onClick={handleUploadClick}/>
+                                <input 
+                                    type="file" 
+                                    id="fileInput"
+                                    className='d-none'
+                                    multiple 
+                                    accept="image/*"
+                                    onChange={handleFileChange}
                                 />
-                                <div className="mar-top-1 text-align-justify">
-                                    {getInterpretation(forecastWeek)?.join(" ")}
+                            </div>
+                    </div>
+
+                    <div className="d-flex gap1 mar-bottom-1">
+                            <div className="view-medicine-box1 w-50">
+                                {(weekChartData)
+                                ? (
+                                    <div className="view-medicine-box1-body">
+                                        <LineChart1
+                                            title="Weekly Forecast"
+                                            data={weekChartData}
+                                            options={chartOptions}
+                                        />
+                                        <div 
+                                        className="mar-top-1 text-align-justify" 
+                                        style={{ whiteSpace: "pre-line" }} 
+                                        dangerouslySetInnerHTML={{__html: getInterpretationSummary(forecastWeek, "Weekly")}}/>
+                                    </div>
+                                )
+                                : (
+                                    <>Loading Weekly Forecast</>
+                                )}
+                            </div>
+
+                            <div className="view-medicine-box1 w-50">
+                                {(monthChartData)
+                                ? (
+                                    <div className="view-medicine-box1-body">
+                                        <LineChart1
+                                            title="Monthly Forecast"
+                                            data={monthChartData}
+                                            options={chartOptions}
+                                        />
+                                        <div 
+                                        className="mar-top-1 text-align-justify" 
+                                        style={{ whiteSpace: "pre-line" }} 
+                                        dangerouslySetInnerHTML={{__html: getInterpretationSummary(forecastMonth, "Monthly")}}/>
+                                    </div>
+                                )
+                                : (
+                                    <>Loading Monthly Forecast</>
+                                )}                        
+                            </div>                    
+                    </div>
+
+                    {/**
+                     * Medicine Information
+                     */}
+                    <div className="view-medicine-box1 w-100 mar-bottom-1">
+                        <div className="view-medicine-box1-head d-flex justify-content-between align-items-center">
+                            <div className="text-l3">Medicine</div>
+                            {!isEditMedicine && (
+                                <Button
+                                type="primary"
+                                onClick={handleEditMedClick}>Edit Medicine</Button>
+                            )}
+                        </div>
+                        <div className="hr-line1-black3"></div>
+                        <div className="view-medicine-box1-body">
+                            <div className="d-flex gapl1 mar-bottom-2">
+                                {/* Name */}
+                                <div className="d-flex flex-direction-y w-50">
+                                    {isEditMedicine
+                                    ? (
+                                        <Input
+                                        name="name"
+                                        size="large"
+                                        value={editMedicine.name}
+                                        onChange={handleEditMedInput}/>
+                                    )
+                                    : (
+                                        <div className="text-m1 fw-bold">{medicine.name}</div>
+                                    )}
+                                    <div className="text-m3">Medicine Name</div>
+                                </div>
+
+                                {/* Group */}
+                                <div className="d-flex flex-direction-y w-50">
+                                    {isEditMedicine
+                                    ? (
+                                        <Select
+                                        name="group"
+                                        size="large"
+                                        style={{width: 300}}
+                                        value={editMedicine.group}
+                                        options={[
+                                            {label: "Select Medicine Groups", value: ""},
+                                            ...groups.map((group) => ({label: group.group_name, value: group.id}))
+                                        ]}
+                                        onChange={(value) => handleEditMedInput({target: {name: "group", value: value}})}/>
+                                    )
+                                    : (
+                                        <div className="text-m1 fw-bold">{medicine.group.group_name}</div>
+                                    )}
+                                    <div className="text-m3">Medicine Goup</div>
+                                </div>
+                                
+                                {/* Type */}
+                                <div className="d-flex flex-direction-y w-50">
+                                    {isEditMedicine
+                                    ? (
+                                        <Select
+                                        name="type"
+                                        size="large"
+                                        value={editMedicine.type}
+                                        options={[
+                                            {label: "Select Types", value: ""},
+                                            {label: "Generic", value: "Generic"},
+                                            {label: "Branded", value: "Branded"},
+                                        ]}
+                                        onChange={(value) => handleEditMedInput({target: {name: "type", value}})}/>
+                                    )
+                                    : (
+                                        <div className="text-m1 fw-bold">{medicine.type}</div>
+                                    )}
+                                    <div className="text-m3">Medicine Type</div>
                                 </div>
                             </div>
-                        )
-                        : (
-                            <>Loading Weekly Forecast</>
-                        )}
-                    </div>
+                            
+                            {/* Buttons */}
+                            {isEditMedicine && (
+                                <div className="d-flex justify-content-end gap3">
+                                    <Button
+                                    onClick={handleEditMedClick}
+                                    >
+                                        Cancel
+                                    </Button>
 
-                    <div className="view-medicine-box1 w-50">
-                        {(monthChartData)
-                        ? (
-                            <div className="view-medicine-box1-body">
-                                <LineChart1
-                                    title="Monthly Forecast"
-                                    data={monthChartData}
-                                    options={chartOptions}
-                                />
-                                <div className="mar-top-1 text-align-justify">
-                                    {getInterpretation(forecastMonth)?.join(" ")}
+                                    <Button
+                                    type="primary"
+                                    disabled={isEmptyOrSpaces(editMedicine.name) || editMedicine.group === "" || editMedicine.type === ""}
+                                    onClick={handleEditMedSave}
+                                    >
+                                        Save
+                                    </Button>
                                 </div>
-                            </div>
-                        )
-                        : (
-                            <>Loading Monthly Forecast</>
-                        )}                        
-                    </div>                    
-                </div>
-
-                <div className="view-medicine-box1 w-100 mar-bottom-1">
-                    <div className="view-medicine-box1-head">
-                        <div className="text-l3">Medicine</div>
-                    </div>
-                    <div className="hr-line1-black3"></div>
-                    <div className="view-medicine-box1-body d-flex gapl1">
-                        <div className="d-flex flex-direction-y w-50">
-                            <div className="text-m1 fw-bold">{medicine.id}</div>
-                            <div className="text-m3">Medicine ID</div>
-                        </div>
-                        <div className="d-flex flex-direction-y w-50">
-                            <div className="text-m1 fw-bold">{medicine.group.group_name}</div>
-                            <div className="text-m3">Medicine Goup</div>
-                        </div>
-                        <div className="d-flex flex-direction-y w-50">
-                            <div className="text-m1 fw-bold">{medicine.type}</div>
-                            <div className="text-m3">Medicine Type</div>
+                            )}
                         </div>
                     </div>
-                </div>
 
-                {/* Inventory */}
-                <div className="mar-bottom-1">
-                    <div className="d-flex align-items-center justify-content-between mar-bottom-2">
-                        <div className="text-l3">Inventory</div>
+                    {/* Inventory */}
+                    <div className="mar-bottom-1">
+                        <div className="d-flex align-items-center justify-content-between mar-bottom-2">
+                            <div className="text-l3">Inventory</div>
 
-                        <button 
-                        className={`primary-btn-dark-blue1 d-flex gap3 align-items-center text-m2`}
-                        onClick={handleAddMedicineItem}
-                        >
-                            <Icon.Capsule/> Add Item
-                        </button>
+                            <button 
+                            className={`primary-btn-dark-blue1 d-flex gap3 align-items-center text-m2`}
+                            onClick={handleAddMedicineItem}
+                            >
+                                <Icon.Capsule/> Add Item
+                            </button>
+                        </div>
+
+                        <Table
+                        columns={inventoryColumns}
+                        dataSource={medicine.medicine_items}
+                        bordered
+                        pagination={{pageSize: 10}}/>
                     </div>
 
-                    <Table
-                    columns={inventoryColumns}
-                    dataSource={medicine.medicine_items}
-                    bordered
-                    pagination={{pageSize: 10}}/>
-                </div>
+                    
 
-                
-
-                <div className="d-flex justify-content-start">
-                    <div onClick={handleDelBtn} className="primary-btn-red1 text-m1 d-flex align-items-center gap3"><Icon.Trash/>Delete Medicine</div>
-                </div>
-            </div>
-        )
-    }
-    else {
-        return(
-            <div className="content1">
-                Loading...
-            </div>
-        );
-    }
+                    <div className="d-flex justify-content-start">
+                        <div onClick={handleDelBtn} className="primary-btn-red1 text-m1 d-flex align-items-center gap3"><Icon.Trash/>Delete Medicine</div>
+                    </div>        
+                </>
+            )
+            : (
+                <Spin size="large"/>
+            )}
+            
+        </div>
+    )
 }

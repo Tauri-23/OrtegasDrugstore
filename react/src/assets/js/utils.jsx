@@ -4,6 +4,7 @@
 |----------------------------------------
 */
 
+import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
 /**
@@ -162,16 +163,50 @@ export const getTimeAgo = (timestamp) => {
 
 /**
  * Interpretations
+ * @param {*} forecast 
+ * @param {string} mode - Monthly | Weekly
+ * @returns 
  */
-export const getInterpretation = (forecastValue) => {
-    return forecastValue?.map((item, index, arr) => {
-        if (index === 0) return `Forecast starts on ${formatDate(item.ds)} with a predicted value of ${item.yhat.toFixed(2)}. `;
+export const getInterpretationSummary = (forecast, mode) => {
+    if (!forecast || forecast.length === 0) return "<p>No forecast data available.</p>";
 
-        const diff = item.yhat - arr[index - 1].yhat;
-        const trend = diff > 0 ? "increase" : (diff < 0 ? "decrease" : "no change");
-        const direction = diff > 0 ? "↑" : diff < 0 ? "↓" : "→";
-        const strength = Math.abs(diff) > 0.05 ? "notable" : "slight";
+    const startDate = dayjs(forecast[0].ds).format("MMMM D, YYYY");
+    const changes = [];
 
-        return `${formatDate(item.ds)}: ${direction} ${strength} ${trend} to ${item.yhat.toFixed(2)} from ${arr[index - 1].yhat.toFixed(2)}. `;
-    });
+    let upCount = 0;
+    let downCount = 0;
+
+    for (let i = 1; i < forecast.length; i++) {
+        const prev = forecast[i - 1];
+        const current = forecast[i];
+        const diff = current.yhat - prev.yhat;
+
+        if (diff < 0) {
+            downCount++;
+            changes.push(`<li class="color-red1">On ${formatDate(current.ds)}, it may drop from ${prev.yhat.toFixed(2)} to ${current.yhat.toFixed(2)} ⬇️</li>`);
+        } else if (diff > 0) {
+            upCount++;
+            changes.push(`<li class="color-green1">On ${formatDate(current.ds)}, it may rise from ${prev.yhat.toFixed(2)} to ${current.yhat.toFixed(2)} ⬆️</li>`);
+        } else {
+            changes.push(`<li>On ${formatDate(current.ds)}, no change is expected (still at ${current.yhat.toFixed(2)}) ➡️</li>`);
+        }
+    }
+
+    let overallTrend = "remain stable";
+    if (upCount > downCount) {
+        overallTrend = "slowly go up";
+    } else if (downCount > upCount) {
+        overallTrend = "slowly go down";
+    }
+
+    const summary = `<p>📅 <strong>${mode} Forecast Summary</strong><br>Starting <strong>${startDate}</strong>, values are expected to <strong>${overallTrend}</strong>.</p>`;
+
+    const warning =
+        downCount >= 5
+            ? "<p>⚠️ This shows a steady decrease in demand for the week.</p>"
+            : upCount >= 5
+            ? "<p>📈 This indicates a consistent upward trend.</p>"
+            : "";
+
+    return summary + "<ul>" + changes.join("") + "</ul>" + warning;
 };

@@ -1,4 +1,5 @@
 import { Checkbox } from 'antd';
+import { formatToPhilPeso } from '../../../../assets/js/utils';
 
 export default function DiscountSettings({discounts, handleAddDiscountClick, handleEnableDisableDiscount}) {
     return(

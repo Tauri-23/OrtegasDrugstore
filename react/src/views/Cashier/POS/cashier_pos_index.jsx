@@ -422,7 +422,7 @@ export default function CashierPOSIndex() {
                                     <div className="pos-order-box-x" onClick={() => removeFromSelectedMed(selectedMed.id, selectedMed.qty)}><Icon.XLg/></div>
                                     <div className="pos-order-box-pic">
                                         {selectedMed.pic
-                                            ? (<img src={`/src/assets/media/medicines/${selectedMed.pic}`}/>)
+                                            ? (<img src={`/media/medicines/${selectedMed.pic}`}/>)
                                             : (<>{selectedMed.name[0]}</>)}
                                     </div>
                                     <div className="pos-order-box-content">
