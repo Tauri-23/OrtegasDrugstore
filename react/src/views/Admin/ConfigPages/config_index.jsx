@@ -85,6 +85,7 @@ export default function AdminConfigIndex() {
         <div className="content1">
             <DiscountSettings 
             discounts={discounts} 
+            setDiscounts={setDiscounts}
             handleAddDiscountClick={handleAddDiscountClick}
             handleEnableDisableDiscount={handleEnableDisableDiscount}/>
             <div className="hr-line1-black3 mar-top-1 mar-bottom-1"></div>

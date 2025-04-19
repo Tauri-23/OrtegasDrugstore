@@ -100,6 +100,7 @@ Route::get('/get-all-discount', [DiscountController::class, 'GetAllDiscount']);
 Route::get('/get-all-enabled-discount', [DiscountController::class, 'GetAllEnabledDiscount']);
 
 Route::post('/add-discount', [DiscountController::class, 'AddDiscount']);
+Route::post('/delete-discount', [DiscountController::class, 'DeleteDiscount']);
 Route::post('/enable-disable-discount', [DiscountController::class, 'EnableDisableDiscount']);
 
 

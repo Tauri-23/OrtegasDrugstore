@@ -82,7 +82,7 @@ const AdminIndex = () => {
                 datasets: [
                     {
                         label: 'Weekly Forecast',
-                        data: forecastWeek.map((entry) => entry.yhat),
+                        data: forecastWeek.map((entry) => Math.round(entry.yhat)),
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         fill: true,
@@ -101,7 +101,7 @@ const AdminIndex = () => {
                 datasets: [
                     {
                         label: 'Monthly Forecast',
-                        data: forecastMonth.map((entry) => entry.yhat),
+                        data: forecastMonth.map((entry) => Math.round(entry.yhat)),
                         borderColor: 'rgba(153, 102, 255, 1)',
                         backgroundColor: 'rgba(153, 102, 255, 0.2)',
                         fill: true,

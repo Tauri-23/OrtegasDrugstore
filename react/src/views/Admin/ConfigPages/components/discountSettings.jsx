@@ -1,7 +1,45 @@
 import { Checkbox } from 'antd';
-import { formatToPhilPeso } from '../../../../assets/js/utils';
+import { formatToPhilPeso, notify } from '../../../../assets/js/utils';
+import { useModal } from '../../../../Context/ModalContext';
+import axiosClient from '../../../../axios-client';
 
-export default function DiscountSettings({discounts, handleAddDiscountClick, handleEnableDisableDiscount}) {
+export default function DiscountSettings({discounts, setDiscounts, handleAddDiscountClick, handleEnableDisableDiscount}) {
+    const {showModal} = useModal();
+
+
+    /**
+     * Handlers
+     */
+    const handleDeleteDiscount = (discount) => {
+        showModal("GeneralConfirmationModal1", {
+            title: "Delete Discount", 
+            text: `Do you want to delete discount: ${discount.discount_name}`, 
+            btnTitle: "Delete Discount", 
+            handleBtnClick: () => {
+                const formData = new FormData();
+                formData.append("discountId", discount.id);
+
+                axiosClient.post("/delete-discount", formData)
+                .then(({data}) => {
+                    console.log(data);
+                    if(data.status === 200) {
+                        setDiscounts(prev => prev.filter(x => x.id !== discount.id));
+                    }
+                    notify(data.status === 200 ? "success" : "error", data.message, "top-center", 3000);
+                })
+                .catch((e) => {
+                    console.error(e);
+                    notify("error", "Server Error", "top-center", 3000);
+                })
+            },
+        })
+    }
+
+
+
+    /**
+     * Render
+     */
     return(
         <>
             <h3 className="fw-bold mar-bottom-2">Discounts Settings</h3>
@@ -32,7 +70,7 @@ export default function DiscountSettings({discounts, handleAddDiscountClick, han
                             <div className="mar-end-1 d-flex gap3 text-m3 align-items-center">
                                 <Checkbox onClick={() => handleEnableDisableDiscount(discount.id)} checked={discount.enabled}>Enabled</Checkbox>
                                 <button className="secondary-btn-black1">Edit</button>
-                                <button className="primary-btn-red1">Delete</button>
+                                <button className="primary-btn-red1" onClick={() => handleDeleteDiscount(discount)}>Delete</button>
                             </div>
                         </div>
                     ))}

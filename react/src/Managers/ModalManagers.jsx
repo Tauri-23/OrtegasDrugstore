@@ -10,6 +10,7 @@ import AdminMedShortageModal1 from "../components/modals/admin_med_shortage_moda
 import AdminPayCashModal1 from "../components/modals/admin_pay_cash_modal1";
 import AdminViewReceiptModal1 from "../components/modals/admin_view_receipt_modal1";
 import GeneralConfirmationModal1 from "../components/modals/general_confirmation_modal1";
+import GeneralInformationModal1 from "../components/modals/general_information_modal1";
 import ReturnItemsModal from "../components/modals/return_items_modal";
 import { useModal } from "../Context/ModalContext"
 
@@ -78,6 +79,8 @@ const ModalManager = () => {
              */
             case 'GeneralConfirmationModal1':
                 return <GeneralConfirmationModal1 {...modalState.props} onClose={hideModal}/>;
+            case 'GeneralInformationModal1':
+                return <GeneralInformationModal1 {...modalState.props} onClose={hideModal}/>;
             
 
             default:

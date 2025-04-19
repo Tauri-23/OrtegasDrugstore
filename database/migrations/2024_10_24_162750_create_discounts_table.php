@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('discount_type');
             $table->float('discount_value');
             $table->boolean('enabled')->default(true);
+            $table->enum("status", ["active", "deleted"])->default("active");
             $table->timestamps();
         });
     }

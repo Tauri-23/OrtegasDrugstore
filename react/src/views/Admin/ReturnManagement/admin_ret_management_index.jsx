@@ -85,6 +85,15 @@ export default function AdminReturnManagementIndex() {
     }
 
     const handleTransactionItemClick = (item) => {
+        
+        if(item.medicine.prescription) {
+            showModal("GeneralInformationModal1", {
+                title: "Not Allowed",
+                text: "Prescription Medications are non-returnable once dispensed, even if unopened."
+            })
+            return;
+        }
+
         showModal("ReturnItemsModal", {
             medicines,
             item,

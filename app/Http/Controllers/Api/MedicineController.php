@@ -136,6 +136,7 @@ class MedicineController extends Controller
             $medicine->name = $editMed->name;
             $medicine->group = $editMed->group;
             $medicine->type = $editMed->type;
+            $medicine->prescription = $editMed->prescription;
             $medicine->save();
 
             DB::commit();

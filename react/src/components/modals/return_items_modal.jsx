@@ -4,7 +4,6 @@ import * as Icon from 'react-bootstrap-icons';
 import { formatToPhilPeso, isEmptyOrSpaces, notify } from '../../assets/js/utils';
 
 export default function ReturnItemsModal({medicines, item, purchaseTransaction, handleReturnPost, onClose}) {
-    console.log(purchaseTransaction);
     const [selectedReplacement, setSelectedReplacement] = useState({id: "", qty: 0});
     const [selectedQty, setSelectedQty] = useState(0);
     const [returnItem, setReturnItem] = useState({
@@ -31,15 +30,6 @@ export default function ReturnItemsModal({medicines, item, purchaseTransaction, 
     const handleInput = (e) => {
         setReturnItem({...returnItem, [e.target.name]: e.target.value});
     }
-
-
-
-    /**
-     * Debugging
-     */
-    useEffect(() => {
-        console.log(selectedReplacement);
-    }, [selectedReplacement]);
 
 
 

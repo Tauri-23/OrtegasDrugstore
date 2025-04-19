@@ -183,12 +183,12 @@ export const getInterpretationSummary = (forecast, mode) => {
 
         if (diff < 0) {
             downCount++;
-            changes.push(`<li class="color-red1">On ${formatDate(current.ds)}, it may drop from ${prev.yhat.toFixed(2)} to ${current.yhat.toFixed(2)} ⬇️</li>`);
+            changes.push(`<li class="color-red1">On ${formatDate(current.ds)}, it may drop from ${Math.round(prev.yhat.toFixed(2))} to ${Math.round(current.yhat.toFixed(2))} ⬇️</li>`);
         } else if (diff > 0) {
             upCount++;
-            changes.push(`<li class="color-green1">On ${formatDate(current.ds)}, it may rise from ${prev.yhat.toFixed(2)} to ${current.yhat.toFixed(2)} ⬆️</li>`);
+            changes.push(`<li class="color-green1">On ${formatDate(current.ds)}, it may rise from ${Math.round(prev.yhat.toFixed(2))} to ${Math.round(current.yhat.toFixed(2))} ⬆️</li>`);
         } else {
-            changes.push(`<li>On ${formatDate(current.ds)}, no change is expected (still at ${current.yhat.toFixed(2)}) ➡️</li>`);
+            changes.push(`<li>On ${formatDate(current.ds)}, no change is expected (still at ${Math.round(current.yhat.toFixed(2))}) ➡️</li>`);
         }
     }
 

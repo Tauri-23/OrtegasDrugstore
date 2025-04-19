@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum("type", ["Generic", "Branded"])->default("Generic");
             $table->integer("qty")->default(0);
             $table->float('price')->default(0);
+            $table->boolean('prescription')->default(false);
             $table->float('competitor_price')->default(0);
             $table->timestamps();
 

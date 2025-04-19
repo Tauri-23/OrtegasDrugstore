@@ -38,7 +38,8 @@ export default function AdminViewMedicine() {
     const [editMedicine, setEditMedicine] = useState({
         name: "",
         group: "",
-        type: ""
+        type: "",
+        prescription: false
     });
 
 
@@ -62,7 +63,8 @@ export default function AdminViewMedicine() {
                 setEditMedicine({
                     name: medicineDb.name,
                     group: medicineDb.group.id,
-                    type: medicineDb.type
+                    type: medicineDb.type,
+                    prescription: medicineDb.prescription ? true : false
                 });
             } catch (error) {
                 console.error(error);
@@ -84,24 +86,7 @@ export default function AdminViewMedicine() {
                 datasets: [
                     {
                         label: 'Weekly Forecast',
-                        data: forecastWeek.map((entry) => entry.yhat),
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        fill: true,
-                    },
-                ],
-            })
-        }
-    }, [forecastWeek]);
-
-    useEffect(() => {
-        if(forecastWeek) {
-            setWeekChartData({
-                labels: forecastWeek.map((entry) => entry.ds),
-                datasets: [
-                    {
-                        label: 'Weekly Forecast',
-                        data: forecastWeek.map((entry) => entry.yhat),
+                        data: forecastWeek.map((entry) => Math.round(Number(entry.yhat))),
                         borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         fill: true,
@@ -118,7 +103,7 @@ export default function AdminViewMedicine() {
                 datasets: [
                     {
                         label: 'Monthly Forecast',
-                        data: forecastMonth.map((entry) => entry.yhat),
+                        data: forecastMonth.map((entry) => Math.round(Number(entry.yhat))),
                         borderColor: 'rgba(153, 102, 255, 1)',
                         backgroundColor: 'rgba(153, 102, 255, 0.2)',
                         fill: true,
@@ -237,7 +222,8 @@ export default function AdminViewMedicine() {
             setEditMedicine({
                 name: medicine.name,
                 group: medicine.group.id,
-                type: medicine.type
+                type: medicine.type,
+                prescription: medicine.prescription ? true : false
             });
         }
         setIsEditMedicine(prev => !prev);
@@ -440,6 +426,27 @@ export default function AdminViewMedicine() {
                                         <div className="text-m1 fw-bold">{medicine.type}</div>
                                     )}
                                     <div className="text-m3">Medicine Type</div>
+                                </div>
+
+                                {/* Type */}
+                                <div className="d-flex flex-direction-y w-50">
+                                    {isEditMedicine
+                                    ? (
+                                        <Select
+                                        name="prescription"
+                                        size="large"
+                                        value={editMedicine.prescription}
+                                        options={[
+                                            {label: "Does prescription needed", value: ""},
+                                            {label: "Yes", value: true},
+                                            {label: "No", value: false},
+                                        ]}
+                                        onChange={(value) => handleEditMedInput({target: {name: "prescription", value}})}/>
+                                    )
+                                    : (
+                                        <div className="text-m1 fw-bold">{medicine.prescription ? "Yes" : "No"}</div>
+                                    )}
+                                    <div className="text-m3">Prescription Needed</div>
                                 </div>
                             </div>
                             
