@@ -389,7 +389,7 @@ export default function CashierPOSIndex() {
                                         ? (<img src={`/media/medicines/${med.pic}`}/>)
                                         : (<>{med.name[0]}</>)}
                                     </div>
-                                    {med.discountable && (
+                                    {(med.discountable === 1) && (
                                         <div className="position-absolute bg-green1 color-white1" style={{padding: 5, top: 5, right: 5, borderRadius: 5}}>
                                             Discountable
                                         </div>

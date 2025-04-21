@@ -25,7 +25,7 @@ const AdminApplyDiscountModal1 = ({
      */
     const handleSelectDiscount = (discount) => {
         _setSelectedDiscount(prev =>
-            prev.id === discount.id
+            prev?.id === discount.id
                 ? null
                 : discount
         );
