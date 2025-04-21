@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer("qty")->default(0);
             $table->float('price')->default(0);
             $table->boolean('prescription')->default(false);
+            $table->boolean('discountable')->default(true);
             $table->float('competitor_price')->default(0);
             $table->timestamps();
 

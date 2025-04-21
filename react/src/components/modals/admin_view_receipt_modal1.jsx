@@ -74,18 +74,16 @@ const AdminViewReceiptModal1 = ({ data, handleDoneTransaction = null, handleVoid
                             <div>{formatToPhilPeso(data.subtotal)}</div>
                         </div>
 
-                        {data.discounts?.length > 0 && (
+                        {data.discount_name !== null && (
                             <div>
                                 <div className='text-m2'>Discount(s)</div>
                                 <div className="mar-start-3 d-flex justify-content-between">
-                                    {data.discounts.map(seldis => (
-                                        <div key={seldis.id} className="d-flex justify-content-between text-m3 w-100">
-                                            <div>{seldis.discount.discount_name}</div>
-                                            <div>
-                                                {seldis.discount.discount_type === "Amount" ? ` - ${formatToPhilPeso(seldis.discount.discount_value)}` : `- ${seldis.discount.discount_value}%`}
-                                            </div>
+                                    <div className="d-flex justify-content-between text-m3 w-100">
+                                        <div>{data.discount_name}</div>
+                                        <div>
+                                            {data.discount_type === "Amount" ? ` - ${formatToPhilPeso(data.discount_value)}` : `- ${data.discount_value}%`}
                                         </div>
-                                    ))}
+                                    </div>
                                 </div>
                             </div>
                         )}

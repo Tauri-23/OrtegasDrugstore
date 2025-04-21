@@ -60,6 +60,7 @@ class MedicineGroupController extends Controller
             $log = new audit_logs();
             $log->inventory_activity = "Added a new medicine group";
             $log->inventory_item_id = $medGroupId;
+            $log->inventory_name = $request->name;
             $log->admin = $request->admin;
             $log->save();
 

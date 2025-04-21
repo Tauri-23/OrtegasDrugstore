@@ -25,7 +25,7 @@ export default function CashierPOSIndex() {
     const [searchValue, setSearchValue] = useState("");
 
     const [selectedMeds, setSelectedMeds] = useState([]);
-    const [selectedDiscounts, setSelectedDiscounts] = useState([]);
+    const [selectedDiscounts, setSelectedDiscounts] = useState(null);
 
     const [customer, setCustomer] = useState(null);
 
@@ -63,7 +63,7 @@ export default function CashierPOSIndex() {
                             ? { ...selmed, qty: selmed.qty + 1 }  // Increment QTY
                             : selmed
                       )
-                    : [...prev, { id: medicine.id, pic: medicine.pic, name: medicine.name, qty: 1, price: medicine.price }] // Add new medicine with qty 1
+                    : [...prev, { id: medicine.id, pic: medicine.pic, name: medicine.name, qty: 1, price: medicine.price, discountable: medicine.discountable ? true : false }] // Add new medicine with qty 1
             );
             setMedicines(prev => 
                 prev.map(med => 
@@ -140,21 +140,23 @@ export default function CashierPOSIndex() {
         return selectedMeds.reduce((acc, med) => acc + med.price * med.qty, 0);
     }, [selectedMeds]);
 
+    const calculateSubTotalDiscountable = useCallback(() => {
+        return selectedMeds.filter(x => x.discountable === true).reduce((acc, med) => acc + med.price * med.qty, 0);
+    }, [selectedMeds]);
+
     const calculateGrandTotal = useCallback(() => {
-        let total = calculateSubTotal();
-        selectedDiscounts.forEach(seldis => {
-            seldis.discount_type === "Amount"
-                ? total = total - seldis.discount_value
-                : total = (total - (seldis.discount_value * total / 100))
-        });
-        return total;
+        let subtotal = calculateSubTotal();
+        let totalDiscountVal = calculateDiscountDeduction();
+        return subtotal - totalDiscountVal;
     }, [selectedMeds, selectedDiscounts]);
 
     const calculateDiscountDeduction = useCallback(() => {
-        let totalDiscount = 0;
-        selectedDiscounts.forEach(discount => {
-            totalDiscount += discount.discount_type === "Amount" ? discount.discount_value : calculateSubTotal() * discount.discount_value / 100;
-        });
+        let totalDiscount
+        if(selectedDiscounts !== null) {
+            totalDiscount = selectedDiscounts?.discount_type === "Amount" ? selectedDiscounts?.discount_value : calculateSubTotalDiscountable() * selectedDiscounts?.discount_value / 100;
+        } else {
+            totalDiscount = 0;
+        }
 
         return totalDiscount;
     }, [selectedMeds, selectedDiscounts]);
@@ -170,17 +172,6 @@ export default function CashierPOSIndex() {
             selectedDiscounts, 
             setSelectedDiscounts,
             customer, setCustomer,
-        });
-    }
-
-
-
-    /**
-     * Customer Info Handler
-     */
-    const handleAddCustomerInfoClick = () => {
-        showModal('AdminAddCustomerInfoModal1', {
-            customer, setCustomer
         });
     }
 
@@ -206,18 +197,16 @@ export default function CashierPOSIndex() {
         // For Transaction
         formData.append('subtotal', calculateSubTotal());
         formData.append('discount_deduction', calculateDiscountDeduction());
+        formData.append('discount_name', selectedDiscounts?.discount_name);
+        formData.append('discount_type', selectedDiscounts?.discount_type);
+        formData.append('discount_value', selectedDiscounts?.discount_value);
         formData.append('total', calculateGrandTotal());
         formData.append('cash', cash);
         formData.append('change', cash - calculateGrandTotal());
         formData.append('cashier', user.id);
 
         // For Discounts
-        formData.append('hasDiscount', selectedDiscounts.length > 0 ? true : false)
-        if(selectedDiscounts.length > 0) {
-            selectedDiscounts.forEach((discount, index) => {
-                formData.append('discounts[]', discount.id);
-            });
-        }
+        formData.append('hasDiscount', selectedDiscounts !== null ? true : false)
 
         // For Discounts
         selectedMeds.forEach((med, index) => {
@@ -393,13 +382,18 @@ export default function CashierPOSIndex() {
                             {medicines.length > 0 && medicines.map(med => (
                                 <div 
                                 key={med.id} 
-                                className={`pos-medicine ${selectedMeds.some(selmed => selmed.id === med.id) ? 'active' : ''} ${med.qty < 1 ? 'disabled' : ''}`}
+                                className={`position-relative pos-medicine ${selectedMeds.some(selmed => selmed.id === med.id) ? 'active' : ''} ${med.qty < 1 ? 'disabled' : ''}`}
                                 onClick={() => handleSelectMed(med)}>
                                     <div className="pos-medicine-pic">
                                         {med.pic
                                         ? (<img src={`/media/medicines/${med.pic}`}/>)
                                         : (<>{med.name[0]}</>)}
                                     </div>
+                                    {med.discountable && (
+                                        <div className="position-absolute bg-green1 color-white1" style={{padding: 5, top: 5, right: 5, borderRadius: 5}}>
+                                            Discountable
+                                        </div>
+                                    )}
                                     <div className="text-m1">{med.name}</div>
                                     <div className="text-m3">{med.group.group_name}</div>
                                     <div className="text-m3">Qty: {med.qty}</div>
@@ -458,24 +452,20 @@ export default function CashierPOSIndex() {
                             </div>
                         )}
 
-                        {selectedDiscounts.length > 0 && (
-                            <div className="d-flex justify-content-between text-m1">
-                                <div className="color-black2">Sub-total</div>
-                                <div className="color-blue2">{formatToPhilPeso(calculateSubTotal())}</div>
-                            </div>
-                        )}
+                        <div className="d-flex justify-content-between text-m1">
+                            <div className="color-black2">Sub-total</div>
+                            <div className="color-blue2">{formatToPhilPeso(calculateSubTotal())}</div>
+                        </div>
 
-                        {selectedDiscounts.length > 0 && (
+                        {selectedDiscounts !== null && (
                             <div>
                                 <div className="color-black2 text-m1">Discounts</div>
-                                {selectedDiscounts.map(seldis => (
-                                    <div key={seldis.id} className="d-flex justify-content-between text-m3 mar-start-3">
-                                        <div className="color-black2">{seldis.discount_name}</div>
-                                        <div className="color-blue2">
-                                            {seldis.discount_type === "Amount" ? ` - ${formatToPhilPeso(seldis.discount_value)}` : `- ${seldis.discount_value}%`}
-                                        </div>
+                                <div className="d-flex justify-content-between text-m3 mar-start-3">
+                                    <div className="color-black2">{selectedDiscounts.discount_name}</div>
+                                    <div className="color-blue2">
+                                        {selectedDiscounts.discount_type === "Amount" ? ` - ${formatToPhilPeso(selectedDiscounts.discount_value)}` : `- ${selectedDiscounts.discount_value}%`}
                                     </div>
-                                ))}
+                                </div>
                             </div>
                         )}
 
@@ -486,7 +476,7 @@ export default function CashierPOSIndex() {
                             </div>
                         </div>
 
-                        <button className="secondary-btn-black1 text-center" onClick={handleAddDiscountClick}>Add Discount {selectedDiscounts.length > 0 && selectedDiscounts.length}</button>
+                        <button className="secondary-btn-black1 text-center" onClick={handleAddDiscountClick}>Add Discount {selectedDiscounts !== null ? 1 : ""}</button>
                         {/* <div className="secondary-btn-black1 text-center" onClick={handleAddCustomerInfoClick}>
                             {customer ? 'Edit Customer Information' : 'Add Customer Information'}
                         </div> */}

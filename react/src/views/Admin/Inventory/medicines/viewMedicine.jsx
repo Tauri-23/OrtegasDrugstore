@@ -39,7 +39,8 @@ export default function AdminViewMedicine() {
         name: "",
         group: "",
         type: "",
-        prescription: false
+        prescription: false,
+        discountable: false
     });
 
 
@@ -64,7 +65,8 @@ export default function AdminViewMedicine() {
                     name: medicineDb.name,
                     group: medicineDb.group.id,
                     type: medicineDb.type,
-                    prescription: medicineDb.prescription ? true : false
+                    prescription: medicineDb.prescription ? true : false,
+                    discountable: medicineDb.discountable ? true : false
                 });
             } catch (error) {
                 console.error(error);
@@ -223,7 +225,8 @@ export default function AdminViewMedicine() {
                 name: medicine.name,
                 group: medicine.group.id,
                 type: medicine.type,
-                prescription: medicine.prescription ? true : false
+                prescription: medicine.prescription ? true : false,
+                discountable: medicine.discountable ? true : false
             });
         }
         setIsEditMedicine(prev => !prev);
@@ -369,7 +372,7 @@ export default function AdminViewMedicine() {
                         </div>
                         <div className="hr-line1-black3"></div>
                         <div className="view-medicine-box1-body">
-                            <div className="d-flex gapl1 mar-bottom-2">
+                            <div className="d-flex gapl1 mar-bottom-3">
                                 {/* Name */}
                                 <div className="d-flex flex-direction-y w-50">
                                     {isEditMedicine
@@ -406,7 +409,9 @@ export default function AdminViewMedicine() {
                                     )}
                                     <div className="text-m3">Medicine Goup</div>
                                 </div>
-                                
+                            </div>
+
+                            <div className="d-flex gapl1 mar-bottom-3">
                                 {/* Type */}
                                 <div className="d-flex flex-direction-y w-50">
                                     {isEditMedicine
@@ -428,7 +433,7 @@ export default function AdminViewMedicine() {
                                     <div className="text-m3">Medicine Type</div>
                                 </div>
 
-                                {/* Type */}
+                                {/* Prescription */}
                                 <div className="d-flex flex-direction-y w-50">
                                     {isEditMedicine
                                     ? (
@@ -449,6 +454,29 @@ export default function AdminViewMedicine() {
                                     <div className="text-m3">Prescription Needed</div>
                                 </div>
                             </div>
+
+                            <div className="d-flex gapl1 mar-bottom-2">
+                                {/* Discountable */}
+                                <div className="d-flex flex-direction-y w-50">
+                                    {isEditMedicine
+                                    ? (
+                                        <Select
+                                        name="discountable"
+                                        size="large"
+                                        value={editMedicine.discountable}
+                                        options={[
+                                            {label: "Discountable", value: ""},
+                                            {label: "Yes", value: true},
+                                            {label: "No", value: false},
+                                        ]}
+                                        onChange={(value) => handleEditMedInput({target: {name: "discountable", value}})}/>
+                                    )
+                                    : (
+                                        <div className="text-m1 fw-bold">{medicine.discountable ? "Yes" : "No"}</div>
+                                    )}
+                                    <div className="text-m3">Discountable</div>
+                                </div>
+                            </div>
                             
                             {/* Buttons */}
                             {isEditMedicine && (
@@ -461,7 +489,7 @@ export default function AdminViewMedicine() {
 
                                     <Button
                                     type="primary"
-                                    disabled={isEmptyOrSpaces(editMedicine.name) || editMedicine.group === "" || editMedicine.type === ""}
+                                    disabled={isEmptyOrSpaces(editMedicine.name) || editMedicine.group === "" || editMedicine.type === "" || editMedicine.prescription === "" || editMedicine.discountable === ""}
                                     onClick={handleEditMedSave}
                                     >
                                         Save

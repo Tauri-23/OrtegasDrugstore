@@ -98,11 +98,14 @@ export default function AdminReturnManagementIndex() {
             medicines,
             item,
             purchaseTransaction: transactions.filter(x => String(x.id) === item.purchase_transaction)[0],
-            handleReturnPost: (returnItem, medicineId, replacementQty) => {
+            handleReturnPost: (returnItem, medicineId, updatedSubtotal, updatedDiscountDeduction, updatedTotal, replacementQty) => {
                 const formData = new FormData();
                 formData.append("itemRet", JSON.stringify(returnItem));
                 formData.append("replacementmedId", medicineId);
                 formData.append("replacementQty", replacementQty);
+                formData.append("updatedSubtotal", updatedSubtotal);
+                formData.append("updatedDiscountDeduction", updatedDiscountDeduction);
+                formData.append("updatedTotal", updatedTotal);
 
         
                 axiosClient.post("/return-transaction-item", formData)

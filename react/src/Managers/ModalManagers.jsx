@@ -5,6 +5,7 @@ import AdminAddMedItemModal1 from "../components/modals/admin_add_med_item_moda1
 import AdminApplyDiscountModal1 from "../components/modals/admin_apply_discount_modal1";
 import AdminDelMedConfirmationModal1 from "../components/modals/admin_del_med_confirmation_modal1";
 import AdminDelMedGroupConfirmationModal1 from "../components/modals/admin_del_med_group_confirmation_modal1";
+import AdminEditDiscountModal1 from "../components/modals/admin_edit_discount_modal1";
 import AdminEditMedPicPreviewModal1 from "../components/modals/admin_edit_med_pic_preview_modal1";
 import AdminMedShortageModal1 from "../components/modals/admin_med_shortage_modal1";
 import AdminPayCashModal1 from "../components/modals/admin_pay_cash_modal1";
@@ -71,6 +72,8 @@ const ModalManager = () => {
              */
             case 'AdminAddDiscountModal1':
                 return <AdminAddDiscountModal1 {...modalState.props} onClose={hideModal}/>;
+            case 'AdminEditDiscountModal1':
+                return <AdminEditDiscountModal1 {...modalState.props} onClose={hideModal}/>;
 
 
 

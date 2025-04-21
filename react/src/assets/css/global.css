@@ -177,6 +177,10 @@ body {background: var(--white2);}
     color: var(--red1);
 }
 
+.bg-green1 {
+    background: var(--green1);
+}
+
 
 
 

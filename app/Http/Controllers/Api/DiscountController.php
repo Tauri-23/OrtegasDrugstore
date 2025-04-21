@@ -80,6 +80,15 @@ class DiscountController extends Controller
 
             $discount->status = "deleted";
             $discount->save();
+
+            // LOG IT
+            $log = new audit_logs();
+            $log->settings_activity = "Deleted a discount";
+            $log->discount = $discount->id;
+            $log->admin = $request->admin;
+            $log->type = "Settings";
+            $log->save();
+
             DB::commit();
 
             return response()->json([
@@ -97,6 +106,51 @@ class DiscountController extends Controller
         }
     }
 
+    public function EditDiscount(Request $request)
+    {
+        try
+        {
+            DB::beginTransaction();
+            $discount = discounts::find($request->discountId);
+
+            if(!$discount)
+            {
+                return response()->json([
+                    "status" => 404,
+                    "message" => "Discount not found."
+                ]);
+            }
+
+            // LOG IT
+            $log = new audit_logs();
+            $log->settings_activity = "Configured a discount";
+            $log->discount = $discount->id;
+            $log->old_discount_info = $discount->discount_name;
+            $log->new_discount_info = $request->newName;
+            $log->admin = $request->admin;
+            $log->type = "Settings";
+            $log->save();
+
+            $discount->discount_name = $request->newName;
+            $discount->save();
+
+            DB::commit();
+
+            return response()->json([
+                "status" => 200,
+                "message" => "success",
+                "discounts" => discounts::all()
+            ]);
+        }
+        catch(\Exception $e)
+        {
+            DB::rollBack();
+            return response()->json([
+                "status" => 500,
+                "message" => $e->getMessage()
+            ], 500);
+        }
+    }
     public function EnableDisableDiscount(Request $request)
     {
         try

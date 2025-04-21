@@ -48,6 +48,16 @@ export default function AdminLogsSettings() {
             key: 'id',
         },
         {
+            title: "Old Value",
+            render: (_, row) =>  row.old_discount_info ? row.old_discount_info : "N/A",
+            key: 'id',
+        },
+        {
+            title: "New Value",
+            render: (_, row) =>  row.new_discount_info ? row.new_discount_info : "N/A",
+            key: 'id',
+        },
+        {
             title: "Timestamp",
             render: (_, row) => formatDateTime(row.created_at),
             key: 'id',

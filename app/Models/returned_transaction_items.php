@@ -16,6 +16,6 @@ class returned_transaction_items extends Model
 
     public function replacement_medicine()
     {
-        return $this->belongsTo(medicines::class, 'medicine', 'id')->with('group');
+        return $this->belongsTo(medicines::class, 'replacement_medicine', 'id')->with('group');
     }
 }

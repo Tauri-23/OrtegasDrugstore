@@ -51,23 +51,15 @@ class PurchaseTransactionController extends Controller
             $transaction->id = $transactionId;
             $transaction->subtotal = $request->subtotal;
             $transaction->discount_deduction = $request->discount_deduction;
+            $transaction->discount_name = $request->hasDiscount == "true" ? $request->discount_name : null;
+            $transaction->discount_type = $request->hasDiscount == "true" ? $request->discount_type : null;
+            $transaction->discount_value = $request->hasDiscount == "true" ? $request->discount_value : 0;
             $transaction->total = $request->total;
             $transaction->cash = $request->cash;
             $transaction->change = $request->change;
             $transaction->customer = $customerId;
 
-            $transaction->save();
-
-            if($request->hasDiscount == "true")
-            {
-                foreach($request->discounts as $discount)
-                {
-                    $transactionDiscount = new purchase_transaction_discounts();
-                    $transactionDiscount->purchase_transaction = $transactionId;
-                    $transactionDiscount->discount = $discount;
-                    $transactionDiscount->save();
-                }
-            }            
+            $transaction->save();          
 
             /**
              * Update the medicine_items
@@ -286,19 +278,10 @@ class PurchaseTransactionController extends Controller
             /**
              * FIRST EDIT THE PURCHASE TRANSACTION
              */
-            $percentOfDiscount = ($purchaseTransaction->discount_deduction / $purchaseTransaction->subtotal ) * 100;
-
-            $deductedSubtotal = $tobeReplacedTransactionItem->medicine()->first()->price * $tobeReplacedTransactionItem->qty;
-            $addedSubtotal = $replacementMedicine->price * $request->replacementQty; //Replacement Medicine Price and its quantity
-
-            $updatedSubtotal = $purchaseTransaction->subtotal - $deductedSubtotal + $addedSubtotal;
-            $updatedDiscountDeduction = $updatedSubtotal * ($percentOfDiscount / 100);
-            $updatedTotal = $updatedSubtotal - $updatedDiscountDeduction;
-
-            $purchaseTransaction->subtotal = $updatedSubtotal;
-            $purchaseTransaction->discount_deduction = $updatedDiscountDeduction;
-            $purchaseTransaction->total = $updatedTotal;
-            $purchaseTransaction->cash = $updatedTotal;
+            $purchaseTransaction->subtotal = $request->updatedSubtotal;
+            $purchaseTransaction->discount_deduction = $request->updatedDiscountDeduction;
+            $purchaseTransaction->total = $request->updatedTotal;
+            $purchaseTransaction->cash = $request->updatedTotal;
             $purchaseTransaction->change = 0;
             $purchaseTransaction->save();
 

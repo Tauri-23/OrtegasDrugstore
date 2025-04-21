@@ -15,8 +15,12 @@ export default function ReturnItemsModal({medicines, item, purchaseTransaction, 
     const deductedSubtotal = item.qty * item.medicine.price;
     const addedSubtotal = selectedReplacement.id !== "" ? selectedReplacement.price * selectedQty : 0;
     const newSubtotal = purchaseTransaction.subtotal - deductedSubtotal + addedSubtotal;
-    const percentOfDiscount = (purchaseTransaction.discount_deduction / purchaseTransaction.subtotal) * 100;
-    const newDiscountDeduction = newSubtotal * (percentOfDiscount / 100);
+    const discountRecord = purchaseTransaction.discount_value;
+    const oldDiscountable = purchaseTransaction.items.filter(x => x.medicine.discountable).reduce((acc, med) => acc + med.medicine.price * med.qty, 0);
+    const newDiscountable = oldDiscountable + (selectedReplacement.discountable ? selectedReplacement.price * selectedQty : 0);
+
+    const oldDiscountDeduction = purchaseTransaction.discount_type === "Amount" ? oldDiscountable - discountRecord : oldDiscountable * (discountRecord / 100);
+    const newDiscountDeduction = purchaseTransaction.discount_type === "Amount" ? newDiscountable - discountRecord : newDiscountable * (discountRecord / 100);
     const newTotal = newSubtotal - newDiscountDeduction;
 
     const differenceColor = newTotal - purchaseTransaction.total > -1 ? "color-green1" : "color-red1";
@@ -119,7 +123,11 @@ export default function ReturnItemsModal({medicines, item, purchaseTransaction, 
                                 {formatToPhilPeso(newSubtotal)}
                             </div>
                             <div className="d-flex align-items-center justify-content-between w-100">
-                                <div className="text-m2">Discount ({percentOfDiscount}%)</div>
+                                <div className="text-m2">Discount Old ({discountRecord}%)</div>
+                                -{formatToPhilPeso(oldDiscountDeduction)}
+                            </div>
+                            <div className="d-flex align-items-center justify-content-between w-100">
+                                <div className="text-m2">Discount New ({discountRecord}%)</div>
                                 -{formatToPhilPeso(newDiscountDeduction)}
                             </div>
                             <div className="d-flex align-items-center justify-content-between w-100 fw-bold">
@@ -146,7 +154,14 @@ export default function ReturnItemsModal({medicines, item, purchaseTransaction, 
                 className='w-100'
                 disabled={isEmptyOrSpaces(returnItem.reason) || (selectedReplacement.id === "") || (selectedQty < 1) || (selectedQty > selectedReplacement.qty)}
                 onClick={() => {
-                    handleReturnPost(returnItem, selectedReplacement.id, selectedQty); 
+                    handleReturnPost(
+                        returnItem, 
+                        selectedReplacement.id, 
+                        newSubtotal,
+                        newDiscountDeduction,
+                        newTotal,
+                        selectedQty
+                    ); 
                     onClose();
                 }}>
                     Return Item

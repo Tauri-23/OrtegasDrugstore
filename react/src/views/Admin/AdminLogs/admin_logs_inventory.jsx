@@ -49,6 +49,12 @@ export default function AdminLogsInventory() {
             key: 'id',
         },
         {
+            title: "Item Name",
+            dataIndex: 'inventory_name',
+            render: (item) => item || "N/A",
+            key: 'id',
+        },
+        {
             title: "Timestamp",
             render: (_, row) => formatDateTime(row.created_at),
             key: 'id',

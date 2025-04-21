@@ -2,8 +2,10 @@ import { Checkbox } from 'antd';
 import { formatToPhilPeso, notify } from '../../../../assets/js/utils';
 import { useModal } from '../../../../Context/ModalContext';
 import axiosClient from '../../../../axios-client';
+import { useStateContext } from '../../../../Context/ContextProvider';
 
 export default function DiscountSettings({discounts, setDiscounts, handleAddDiscountClick, handleEnableDisableDiscount}) {
+    const {user} = useStateContext();
     const {showModal} = useModal();
 
 
@@ -18,6 +20,7 @@ export default function DiscountSettings({discounts, setDiscounts, handleAddDisc
             handleBtnClick: () => {
                 const formData = new FormData();
                 formData.append("discountId", discount.id);
+                formData.append("admin", user.id);
 
                 axiosClient.post("/delete-discount", formData)
                 .then(({data}) => {
@@ -32,6 +35,29 @@ export default function DiscountSettings({discounts, setDiscounts, handleAddDisc
                     notify("error", "Server Error", "top-center", 3000);
                 })
             },
+        })
+    }
+
+    const handleEditDiscount = (discount) => {
+        showModal("AdminEditDiscountModal1", {
+            discount,
+            handleEditDiscountPost: (discountName) => {
+                const formData = new FormData();
+                formData.append("discountId", discount.id);
+                formData.append("newName", discountName);
+                formData.append("admin", user.id);
+        
+                axiosClient.post('/edit-discount', formData)
+                .then(({data}) => {
+                    if(data.status === 200) {
+                        setDiscounts(data.discounts);
+                    }
+                    notify(data.status === 200 ? "success" : "error", data.message, "top-center", 3000);
+                }).catch(error => {
+                    console.error(error);
+                    notify("error", "Server Error", "top-center", 3000);
+                })
+            }
         })
     }
 
@@ -69,7 +95,12 @@ export default function DiscountSettings({discounts, setDiscounts, handleAddDisc
                             </div>
                             <div className="mar-end-1 d-flex gap3 text-m3 align-items-center">
                                 <Checkbox onClick={() => handleEnableDisableDiscount(discount.id)} checked={discount.enabled}>Enabled</Checkbox>
-                                <button className="secondary-btn-black1">Edit</button>
+                                <button 
+                                className="secondary-btn-black1" 
+                                onClick={() => handleEditDiscount(discount)}
+                                >
+                                    Edit
+                                </button>
                                 <button className="primary-btn-red1" onClick={() => handleDeleteDiscount(discount)}>Delete</button>
                             </div>
                         </div>

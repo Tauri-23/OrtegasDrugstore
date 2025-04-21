@@ -23,6 +23,8 @@ export default function AdminReturnManagementHistory() {
             const data = await fetchAllReturnedItems();
             setReturnedItems(data);
             setFilteredReturnedItems(data);
+
+            console.log(data);
         }
 
         getAll();

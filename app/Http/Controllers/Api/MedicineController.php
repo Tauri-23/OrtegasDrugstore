@@ -68,6 +68,7 @@ class MedicineController extends Controller
             $log = new audit_logs();
             $log->inventory_activity = "Added a new medicine";
             $log->inventory_item_id = $medicineId;
+            $log->inventory_name = $medicineParsed->medName;
             $log->admin = $request->admin;
             $log->save();
 
@@ -137,6 +138,7 @@ class MedicineController extends Controller
             $medicine->group = $editMed->group;
             $medicine->type = $editMed->type;
             $medicine->prescription = $editMed->prescription;
+            $medicine->discountable = $editMed->discountable;
             $medicine->save();
 
             DB::commit();
@@ -178,6 +180,7 @@ class MedicineController extends Controller
             $log = new audit_logs();
             $log->inventory_activity = "Configured a medicine photo";
             $log->inventory_item_id = $request->medicine_id;
+            $log->inventory_name = $medicine->name;
             $log->admin = $request->admin;
             $log->save();
 

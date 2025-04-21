@@ -16,7 +16,7 @@ const AdminApplyDiscountModal1 = ({
         name: customer?.name || ""
     });
 
-    const isAddButtonDisabled = _selectedDiscount.length > 0 ? (isEmptyOrSpaces(_customer.name) || isEmptyOrSpaces(_customer.id_number)) : false;
+    const isAddButtonDisabled = _selectedDiscount !== null ? (isEmptyOrSpaces(_customer.name) || isEmptyOrSpaces(_customer.id_number)) : false;
 
 
 
@@ -25,9 +25,9 @@ const AdminApplyDiscountModal1 = ({
      */
     const handleSelectDiscount = (discount) => {
         _setSelectedDiscount(prev =>
-            prev.find(seldis => seldis.id === discount.id)
-                ? prev.filter(selmed => selmed.id !== discount.id)
-                : [...prev, discount]
+            prev.id === discount.id
+                ? null
+                : discount
         );
     };
 
@@ -42,7 +42,7 @@ const AdminApplyDiscountModal1 = ({
 
     const handleApplyDiscount = () => {
         setSelectedDiscounts(_selectedDiscount);
-        if(_selectedDiscount.length > 0) {
+        if(_selectedDiscount !== null) {
             setCustomer(_customer);
         } else {
             setCustomer(null);
@@ -68,7 +68,7 @@ const AdminApplyDiscountModal1 = ({
                     {discounts.map(discount => (
                         <div 
                         key={discount.id} 
-                        className={`apply-discount-box ${_selectedDiscount.some(seldis => seldis.id == discount.id) ? 'active' : ''}`}
+                        className={`apply-discount-box ${_selectedDiscount?.id == discount.id ? 'active' : ''}`}
                         onClick={() => handleSelectDiscount(discount)}>
                             <div>{discount.discount_name}</div>
                             <div>{discount.discount_type === "Amount" ? formatToPhilPeso(discount.discount_value) : `${discount.discount_value} %`}</div>
@@ -76,7 +76,7 @@ const AdminApplyDiscountModal1 = ({
                     ))}
                 </div>
 
-                {_selectedDiscount?.length > 0 && (
+                {_selectedDiscount !== null && (
                     <>
                         <Input
                         size='large'
