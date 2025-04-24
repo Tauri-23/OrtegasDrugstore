@@ -29,6 +29,7 @@ import AdminProfile from "./views/Admin/Profile/admin_profile";
 import AdminShortagesExpiringDefault from "./views/Admin/ExpiringAndShortages/admin_shortages_expiring_default";
 import AdminViewShortage from "./views/Admin/ExpiringAndShortages/admin_view_shortages";
 import AdminViewExpiring from "./views/Admin/ExpiringAndShortages/admin_view_expiring";
+import AdminViewPurchaseRequest from "./views/Admin/ExpiringAndShortages/admin_view_purchase_request";
 
 const router = createBrowserRouter([
     /*
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
                     {
                         path: "Expiring",
                         element: <AdminViewExpiring/>
+                    },
+                    {
+                        path: "PurchaseRequests",
+                        element: <AdminViewPurchaseRequest/>
                     }
                 ]
             },

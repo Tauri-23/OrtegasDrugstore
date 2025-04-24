@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { formatToPhilPeso } from "../../../assets/js/utils";
 import { fetchAllMedicineShortage } from "../../../Services/DashboardService";
-import { Badge, Spin, Table } from "antd";
+import { Badge, Button, Spin, Table } from "antd";
 import { fetchAllMedGroups } from "../../../Services/GeneralMedicineGroupService";
+import { useModal } from "../../../Context/ModalContext";
 
 export default function AdminViewShortage() {
+    const {showModal} = useModal();
     const { setPage } = useOutletContext();
     const [medicines, setMedicines] = useState(null);
     const [filteredMedicines, setFilteredMedicines] = useState(null);
@@ -93,8 +95,23 @@ export default function AdminViewShortage() {
                 { text: 'Out of Stock', value: 'Out of Stock' }
             ],
             onFilter: (value, record) => record.status === value,
+        },
+        {
+            title: "Actions",
+            render: (_, row) => (
+                <Button type="primary" onClick={() => handleAddPurchaseRequest(row)}>Request Order</Button>
+            )
         }
-    ]
+    ];
+
+
+
+    /**
+     * Handlers
+     */
+    const handleAddPurchaseRequest = (med) => {
+        showModal("AdminAddPurchaseRequestModal", {med})
+    }
 
 
 

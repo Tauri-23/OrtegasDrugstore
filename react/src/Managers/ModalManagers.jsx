@@ -2,6 +2,7 @@ import AdminAddCustomerInfoModal1 from "../components/modals/admin_add_customer_
 import AdminAddDiscountModal1 from "../components/modals/admin_add_discount_modal1";
 import AdminAddMedGroupModal1 from "../components/modals/admin_add_med_group_modal1";
 import AdminAddMedItemModal1 from "../components/modals/admin_add_med_item_moda1";
+import AdminAddPurchaseRequestModal from "../components/modals/admin_add_purchase_request_modal";
 import AdminApplyDiscountModal1 from "../components/modals/admin_apply_discount_modal1";
 import AdminDelMedConfirmationModal1 from "../components/modals/admin_del_med_confirmation_modal1";
 import AdminDelMedGroupConfirmationModal1 from "../components/modals/admin_del_med_group_confirmation_modal1";
@@ -9,6 +10,7 @@ import AdminEditDiscountModal1 from "../components/modals/admin_edit_discount_mo
 import AdminEditMedPicPreviewModal1 from "../components/modals/admin_edit_med_pic_preview_modal1";
 import AdminMedShortageModal1 from "../components/modals/admin_med_shortage_modal1";
 import AdminPayCashModal1 from "../components/modals/admin_pay_cash_modal1";
+import AdminViewPurchaseRequestModal from "../components/modals/admin_view_purchase_request_modal";
 import AdminViewReceiptModal1 from "../components/modals/admin_view_receipt_modal1";
 import GeneralConfirmationModal1 from "../components/modals/general_confirmation_modal1";
 import GeneralInformationModal1 from "../components/modals/general_information_modal1";
@@ -43,9 +45,22 @@ const ModalManager = () => {
                 return <AdminDelMedGroupConfirmationModal1 {...modalState.props} onClose={hideModal}/>;
             case 'AdminEditMedPicPreviewModal1':
                 return <AdminEditMedPicPreviewModal1 {...modalState.props} onClose={hideModal}/>;
+
+
+
+
+
+            /**
+             * Medicine Shortage
+             */
+            case 'AdminAddPurchaseRequestModal':
+                return <AdminAddPurchaseRequestModal {...modalState.props} onClose={hideModal}/>;
+            case 'AdminViewPurchaseRequestModal':
+                return <AdminViewPurchaseRequestModal {...modalState.props} onClose={hideModal}/>;
             
 
 
+                
             /**
              * POS
              */

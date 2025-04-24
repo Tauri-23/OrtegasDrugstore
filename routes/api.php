@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\MedicineController;
 use App\Http\Controllers\Api\MedicineGroupController;
 use App\Http\Controllers\Api\MedicineItemsController;
 use App\Http\Controllers\Api\PurchaseTransactionController;
+use App\Http\Controllers\PurchaseRequestsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -82,10 +83,23 @@ Route::post('/update-medicine-pic', [MedicineController::class, 'UpdateMedicineP
 
 /*
 |----------------------------------------
-| Medicines 
+| Medicine Items
 |----------------------------------------
 */
 Route::post('/add-medicine-item', [MedicineItemsController::class,'AddMedicineItem']);
+
+
+
+
+
+/*
+|----------------------------------------
+| Purchas Requests
+|----------------------------------------
+*/
+Route::get('/get-all-purchase-request', [PurchaseRequestsController::class, "GetAllPurchaseRequests"]);
+
+Route::post('/add-purchase-request', [PurchaseRequestsController::class, "CreatePurchaseRequest"]);
 
 
 

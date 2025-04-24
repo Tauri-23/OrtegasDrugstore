@@ -36,7 +36,7 @@ const AdminViewReceiptModal1 = ({ data, handleDoneTransaction = null, handleVoid
                     <div className="circle-btn1 text-l1 position-absolute" onClick={onClose}>
                         <Icon.X/>
                     </div>
-                    <div className="text-l3 fw-bold text-center w-100">Reciept Preview</div>
+                    <div className="text-l3 fw-bold text-center w-100">Receipt Preview</div>
                 </div>
 
                 {/* Receipt */}
@@ -49,14 +49,6 @@ const AdminViewReceiptModal1 = ({ data, handleDoneTransaction = null, handleVoid
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
 
                         <div className="text-m3">Receipt ID: {data.id}</div>
-
-                        {data.customer && (
-                            <>
-                                <div className="text-m3">Customer Information</div>
-                                <div className="text-m3">ID Number: {data.customer.id_number}</div>
-                                <div className="text-m3">Name: {data.customer.name}</div>
-                            </>
-                        )}
 
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
 
@@ -104,6 +96,17 @@ const AdminViewReceiptModal1 = ({ data, handleDoneTransaction = null, handleVoid
                         </div>
 
                         <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
+
+                        {data.customer && (
+                            <div>
+                                <div className="text-m3">Customer Information</div>
+                                <div className="hr-line1-black1 w-50 mar-top-1" style={{height: 2}}></div>
+                                <div className="text-m3">ID Number: {data.customer.id_number}</div>
+                                <div className="text-m3">Name: {data.customer.name}</div>
+
+                                <div className="hr-line1-dashed-black3 mar-top-3 mar-bottom-3"></div>
+                            </div>
+                        )}
 
                         <div className="d-flex justify-content-center mar-bottom-3">
                             {/* <BarcodeGenerator value={String(data.id)}/> */}

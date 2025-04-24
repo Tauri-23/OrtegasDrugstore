@@ -15,6 +15,7 @@ export default function AdminShortagesExpiringDefault() {
             <div className="d-flex align-items-center gap3 mar-bottom-1">
                 <Link to={`/OrtegaAdmin/MedicineShortageExpiring`} className={`${page === "Shortage" ? "primary" : "secondary"}-btn-dark-blue1`}>Shortages</Link>
                 <Link to={`/OrtegaAdmin/MedicineShortageExpiring/Expiring`} className={`${page === "Expiring" ? "primary" : "secondary"}-btn-dark-blue1`}>Expiring</Link>
+                <Link to={`/OrtegaAdmin/MedicineShortageExpiring/PurchaseRequests`} className={`${page === "Purchase Requests" ? "primary" : "secondary"}-btn-dark-blue1`}>Purchase Requests</Link>
             </div>
 
             <Outlet
