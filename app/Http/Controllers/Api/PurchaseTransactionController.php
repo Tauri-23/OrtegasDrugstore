@@ -54,6 +54,8 @@ class PurchaseTransactionController extends Controller
             $transaction->discount_name = $request->hasDiscount == "true" ? $request->discount_name : null;
             $transaction->discount_type = $request->hasDiscount == "true" ? $request->discount_type : null;
             $transaction->discount_value = $request->hasDiscount == "true" ? $request->discount_value : 0;
+            $transaction->vatable = $request->vatable;
+            $transaction->vat_additional = $request->vat_additional;
             $transaction->total = $request->total;
             $transaction->cash = $request->cash;
             $transaction->change = $request->change;

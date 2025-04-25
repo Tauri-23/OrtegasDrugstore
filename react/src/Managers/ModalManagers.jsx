@@ -12,6 +12,7 @@ import AdminMedShortageModal1 from "../components/modals/admin_med_shortage_moda
 import AdminPayCashModal1 from "../components/modals/admin_pay_cash_modal1";
 import AdminViewPurchaseRequestModal from "../components/modals/admin_view_purchase_request_modal";
 import AdminViewReceiptModal1 from "../components/modals/admin_view_receipt_modal1";
+import CashierCheckountItemsPreviewodal from "../components/modals/cashier_checkout_items_preview_modal";
 import GeneralConfirmationModal1 from "../components/modals/general_confirmation_modal1";
 import GeneralInformationModal1 from "../components/modals/general_information_modal1";
 import ReturnItemsModal from "../components/modals/return_items_modal";
@@ -72,6 +73,8 @@ const ModalManager = () => {
                 return <AdminViewReceiptModal1 {...modalState.props} onClose={hideModal}/>;
             case 'AdminPayCashModal1':
                 return <AdminPayCashModal1 {...modalState.props} onClose={hideModal}/>;
+            case 'CashierCheckountItemsPreviewodal':
+                return <CashierCheckountItemsPreviewodal {...modalState.props} onClose={hideModal}/>;
 
 
             /**

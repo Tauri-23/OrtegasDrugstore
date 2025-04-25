@@ -183,8 +183,8 @@ export default function AdminPOSIndex() {
      * Receipt Handler
      */
     const handleCheckout = () => {
-        showModal('AdminPayCashModal1', {cash, setCash, amountDue: calculateGrandTotal(), handlePayPost});
-        
+        showModal("CashierCheckountItemsPreviewodal", {items: selectedMeds});
+        // showModal('AdminPayCashModal1', {cash, setCash, amountDue: calculateGrandTotal(), handlePayPost});        
     }
 
     const handlePayPost = (cash) => {

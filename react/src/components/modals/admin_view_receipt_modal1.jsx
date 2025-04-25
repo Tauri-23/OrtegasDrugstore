@@ -80,6 +80,25 @@ const AdminViewReceiptModal1 = ({ data, handleDoneTransaction = null, handleVoid
                             </div>
                         )}
 
+                        <div>
+                                <div className='text-m2'>VAT (12%)</div>
+                                <div className="mar-start-3">
+                                    <div className="d-flex justify-content-between text-m3 w-100">
+                                        <div>Vatable</div>
+                                        <div>
+                                            {formatToPhilPeso(data.vatable)}
+                                        </div>
+                                    </div>
+
+                                    <div className="d-flex justify-content-between text-m3 w-100">
+                                        <div>Vat Cost</div>
+                                        <div>
+                                            + {formatToPhilPeso(data.vat_additional)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         <div className="d-flex justify-content-between">
                             <div className='text-m1 fw-bold'>Total</div>
                             <div className='text-m1 fw-bold'>{formatToPhilPeso(data.total)}</div>

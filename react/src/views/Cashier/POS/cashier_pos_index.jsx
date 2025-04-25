@@ -144,10 +144,14 @@ export default function CashierPOSIndex() {
         return selectedMeds.filter(x => x.discountable === true).reduce((acc, med) => acc + med.price * med.qty, 0);
     }, [selectedMeds]);
 
+    const calculateVatable = useCallback(() => {
+        return selectedDiscounts === null ? selectedMeds.reduce((acc, med) => acc + med.price * med.qty, 0) : 0;
+    }, [selectedMeds, selectedDiscounts]);
+
     const calculateGrandTotal = useCallback(() => {
         let subtotal = calculateSubTotal();
         let totalDiscountVal = calculateDiscountDeduction();
-        return subtotal - totalDiscountVal;
+        return subtotal - totalDiscountVal + (calculateVatable() * .12);
     }, [selectedMeds, selectedDiscounts]);
 
     const calculateDiscountDeduction = useCallback(() => {
@@ -181,7 +185,17 @@ export default function CashierPOSIndex() {
      * Receipt Handler
      */
     const handleCheckout = () => {
-        showModal('AdminPayCashModal1', {cash, setCash, amountDue: calculateGrandTotal(), handlePayPost});
+        showModal("CashierCheckountItemsPreviewodal", {
+            items: selectedMeds,
+            subTotal: calculateSubTotal(), 
+            discount: selectedDiscounts,
+            discountDeduction: calculateDiscountDeduction(), 
+            vatable: calculateVatable(),
+            total: calculateGrandTotal(),
+            handleProceedPayment: () => {
+                showModal('AdminPayCashModal1', {cash, setCash, amountDue: calculateGrandTotal(), handlePayPost});
+            }
+        });
         
     }
 
@@ -200,6 +214,8 @@ export default function CashierPOSIndex() {
         formData.append('discount_name', selectedDiscounts?.discount_name);
         formData.append('discount_type', selectedDiscounts?.discount_type);
         formData.append('discount_value', selectedDiscounts?.discount_value);
+        formData.append('vatable', calculateVatable());
+        formData.append('vat_additional', calculateVatable() * .12);
         formData.append('total', calculateGrandTotal());
         formData.append('cash', cash);
         formData.append('change', cash - calculateGrandTotal());
@@ -221,14 +237,17 @@ export default function CashierPOSIndex() {
                 showModal('AdminViewReceiptModal1', {data: data.transaction, handleDoneTransaction, handleVoid});
             }
             console.log(data.transaction[0]);
-        }).catch(error => console.error(error));
+        }).catch(error => {
+            notify("error", "Server Error", "top-center", 3000);
+            console.error(error);
+        });
     }
 
     const handleDoneTransaction = () => {
         // TODO::Make a function that will print the receipt in the receipt printer.
 
         setSelectedMeds([]);
-        setSelectedDiscounts([]);
+        setSelectedDiscounts(null);
         setCustomer(null);
         setCash(0);
     }
@@ -468,6 +487,23 @@ export default function CashierPOSIndex() {
                                 </div>
                             </div>
                         )}
+
+                        <div className="mar-bottom-3">
+                            <div className="text-m1">VAT (+12%)</div>
+                            <div className="d-flex justify-content-between text-m3">
+                                <div className="color-black2">Vatable</div>
+                                <div className="color-blue2">
+                                    {formatToPhilPeso(calculateVatable())}
+                                </div>
+                            </div>
+
+                            <div className="d-flex justify-content-between text-m3">
+                                <div className="color-black2">Vat additional</div>
+                                <div className="color-blue2">
+                                    {formatToPhilPeso(calculateVatable() * .12)}
+                                </div>
+                            </div>
+                        </div>
 
                         <div className="d-flex justify-content-between text-m1 mar-bottom-3">
                             <div className="color-black2">Total</div>
