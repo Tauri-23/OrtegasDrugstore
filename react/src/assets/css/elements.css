@@ -157,3 +157,18 @@
     padding: 20px;
     overflow-y: auto;
 }
+
+
+
+
+
+
+.print-only {
+    display: none;
+  }
+  
+@media print {
+    .print-only {
+      display: block !important;
+    }
+}
