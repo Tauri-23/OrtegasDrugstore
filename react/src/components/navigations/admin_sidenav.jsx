@@ -114,6 +114,12 @@ const AdminSidenav = ({onLogout}) => {
                 >
                     Sales Report
                 </Link>
+                <Link 
+                to={"ExpiredReports"} 
+                className={`admin-sidenav1-link2 ${reportsOpen ? "" : "disabled"} ${location.pathname === '/OrtegaAdmin/ExpiredReports'? 'active' : ''}`}
+                >
+                    Expired Reports
+                </Link>
 
                 {/* <Link 
                 to={"POS"}  

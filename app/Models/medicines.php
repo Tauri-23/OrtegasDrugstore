@@ -18,7 +18,7 @@ class medicines extends Model
     public function medicine_items()
     {
         return $this->hasMany(medicine_items::class, "medicine", "id")->orderBy("expiration_date", "asc")
-        ->whereDate('expiration_date', '>', Carbon::now()->addMonth())
-        ->orderBy('expiration_date', 'asc');;
+        ->whereDate('expiration_date', '<', Carbon::now()->addMonth())
+        ->orderBy('expiration_date', 'asc');
     }
 }

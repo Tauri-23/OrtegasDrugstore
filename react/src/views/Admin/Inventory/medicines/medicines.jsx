@@ -69,7 +69,13 @@ export default function AdminMedicines() {
             onFilter: (value, record) => record.type === value,
         },
         {
-            title: 'Price',
+            title: 'Cost Price',
+            dataIndex: 'cost_price',
+            render: (cost_price) => formatToPhilPeso(cost_price),
+            sorter: (a, b) => parseFloat(a.cost_price) - parseFloat(b.cost_price)
+        },
+        {
+            title: 'Selling Price',
             dataIndex: 'price',
             render: (price) => formatToPhilPeso(price),
             sorter: (a, b) => parseFloat(a.price) - parseFloat(b.price)

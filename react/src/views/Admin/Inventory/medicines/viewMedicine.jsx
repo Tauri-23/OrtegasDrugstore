@@ -5,7 +5,7 @@ import { fetchMedicineFullInfoById } from "../../../../Services/GeneralMedicineS
 import '../../../../assets/css/medicines.css';
 import { useModal } from "../../../../Context/ModalContext";
 import axiosClient from "../../../../axios-client";
-import { formatDate, formatDateTime, getInterpretationSummary, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
+import { formatDate, formatDateTime, formatToPhilPeso, getInterpretationSummary, isEmptyOrSpaces, notify } from "../../../../assets/js/utils";
 import { EditMedInfo1 } from "../../../../components/admin/edit_med_info1";
 import { fetchAllForecastWhereMedicine } from "../../../../Services/ForecastServices";
 import LineChart1 from "../../../../components/charts/LineChart1";
@@ -226,7 +226,9 @@ export default function AdminViewMedicine() {
                 group: medicine.group.id,
                 type: medicine.type,
                 prescription: medicine.prescription ? true : false,
-                discountable: medicine.discountable ? true : false
+                discountable: medicine.discountable ? true : false,
+                price: medicine.price,
+                cost_price: medicine.cost_price
             });
         }
         setIsEditMedicine(prev => !prev);
@@ -455,7 +457,7 @@ export default function AdminViewMedicine() {
                                 </div>
                             </div>
 
-                            <div className="d-flex gapl1 mar-bottom-2">
+                            <div className="d-flex gapl1 mar-bottom-3">
                                 {/* Discountable */}
                                 <div className="d-flex flex-direction-y w-50">
                                     {isEditMedicine
@@ -477,6 +479,40 @@ export default function AdminViewMedicine() {
                                     <div className="text-m3">Discountable</div>
                                 </div>
                             </div>
+
+                            <div className="d-flex gapl1 mar-bottom-2">
+                                {/* Cost Price */}
+                                <div className="d-flex flex-direction-y w-50">
+                                    {isEditMedicine
+                                    ? (
+                                        <Input
+                                        name="cost_price"
+                                        size="large"
+                                        value={editMedicine.cost_price}
+                                        onChange={(e) => !isNaN(e.target.value) ? handleEditMedInput(e) : null}/>
+                                    )
+                                    : (
+                                        <div className="text-m1 fw-bold">{formatToPhilPeso(medicine.cost_price)}</div>
+                                    )}
+                                    <div className="text-m3">Cost Price</div>
+                                </div>
+
+                                {/* Prescription */}
+                                <div className="d-flex flex-direction-y w-50">
+                                    {isEditMedicine
+                                    ? (
+                                        <Input
+                                        name="price"
+                                        size="large"
+                                        value={editMedicine.price}
+                                        onChange={(e) => !isNaN(e.target.value) ? handleEditMedInput(e) : null}/>
+                                    )
+                                    : (
+                                        <div className="text-m1 fw-bold">{formatToPhilPeso(medicine.price)}</div>
+                                    )}
+                                    <div className="text-m3">Selling Price</div>
+                                </div>
+                            </div>
                             
                             {/* Buttons */}
                             {isEditMedicine && (
@@ -489,7 +525,8 @@ export default function AdminViewMedicine() {
 
                                     <Button
                                     type="primary"
-                                    disabled={isEmptyOrSpaces(editMedicine.name) || editMedicine.group === "" || editMedicine.type === "" || editMedicine.prescription === "" || editMedicine.discountable === ""}
+                                    disabled={isEmptyOrSpaces(editMedicine.name) || editMedicine.group === "" || editMedicine.type === "" || 
+                                        editMedicine.prescription === "" || editMedicine.discountable === "" || !editMedicine.price > 0 || !editMedicine.cost_price > 0}
                                     onClick={handleEditMedSave}
                                     >
                                         Save

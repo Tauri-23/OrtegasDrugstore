@@ -152,6 +152,7 @@ Route::get('/get-all-revenues', [DashboardController::class, 'GetAllRevenues']);
 Route::get('/get-all-medicine-count', [DashboardController::class, 'GetAllMedicineCount']);
 Route::get('/get-all-medicine-shortage', [DashboardController::class, 'GetAllMedicineShortage']);
 Route::get('/get-all-expiring-medicine', [DashboardController::class, 'GetAllExpiringMedicine']);
+Route::get('/get-all-expired-medicine', [DashboardController::class, 'GetAllExpiredMedicine']);
 
 
 

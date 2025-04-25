@@ -38,4 +38,11 @@ class DashboardController extends Controller
 
         return response()->json($expiringMedicines);
     }
+    
+    public function GetAllExpiredMedicine()
+    {
+        $expiringMedicines = medicine_items::whereDate('expiration_date', '<=', Carbon::now())->with("medicine")->get();
+
+        return response()->json($expiringMedicines);
+    }
 }

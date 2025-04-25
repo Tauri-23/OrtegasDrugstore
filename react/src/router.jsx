@@ -30,6 +30,7 @@ import AdminShortagesExpiringDefault from "./views/Admin/ExpiringAndShortages/ad
 import AdminViewShortage from "./views/Admin/ExpiringAndShortages/admin_view_shortages";
 import AdminViewExpiring from "./views/Admin/ExpiringAndShortages/admin_view_expiring";
 import AdminViewPurchaseRequest from "./views/Admin/ExpiringAndShortages/admin_view_purchase_request";
+import AdminExpiredReport from "./views/Admin/Reports/expiredReport";
 
 const router = createBrowserRouter([
     /*
@@ -137,6 +138,10 @@ const router = createBrowserRouter([
             {
                 path: 'PaymentReports',
                 element: <AdminPaymentReports/>
+            },
+            {
+                path: 'ExpiredReports',
+                element: <AdminExpiredReport/>
             },
 
             // LOGS

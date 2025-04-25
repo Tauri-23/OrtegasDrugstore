@@ -4,7 +4,7 @@ import { isEmptyOrSpaces, notify } from "../../../assets/js/utils";
 import axiosClient from "../../../axios-client";
 import { useNavigate } from "react-router-dom";
 import { useStateContext } from "../../../Context/ContextProvider";
-import {Button, Input, InputNumber, Select} from "antd";
+import {Button, Input, InputNumber, Radio, Select} from "antd";
 
 export default function AdminAddMedicines() {
     const {user} = useStateContext();
@@ -16,7 +16,10 @@ export default function AdminAddMedicines() {
         medName: "",
         medGroup: "",
         medType: "",
-        medPrice: 0
+        medPrice: 0,
+        medCostPrice: 0,
+        presNeeded: 0,
+        discountable: 1
     })
 
 
@@ -39,7 +42,8 @@ export default function AdminAddMedicines() {
      * Checkers
      */
     const isBtnDisabled = () => {
-        return isEmptyOrSpaces(medicine.medName) || medicine.medPrice == "" || medicine.medGroup == "" || medicine.medType == "";
+        return isEmptyOrSpaces(medicine.medName) || medicine.medPrice == "" || 
+        medicine.medGroup == "" || medicine.medType == "" || medicine.medCostPrice == "";
     }
 
     /**
@@ -92,21 +96,30 @@ export default function AdminAddMedicines() {
                                 value={medicine.medName} 
                                 />
                             </div>
+                        </div>
+
+                        <div className="d-flex gap1 mar-bottom-2">
+                            <div className="d-flex flex-direction-y w-100 gap4">
+                                <label htmlFor="medCostPrice" className="text-m1">Cost Price</label>
+                                <Input
+                                size="large"
+                                id="medCostPrice"
+                                name="medCostPrice"
+                                style={{ width: "100%" }}
+                                value={medicine.medCostPrice}
+                                onChange={(e) => !isNaN(e.target.value) ? handleInput(e): null}
+                                />
+                            </div>
 
                             <div className="d-flex flex-direction-y w-100 gap4">
-                                <label htmlFor="medPrice" className="text-m1">Medicine Price</label>
-                                <InputNumber
+                                <label htmlFor="medPrice" className="text-m1">Selling Price</label>
+                                <Input
                                 size="large"
                                 id="medPrice"
                                 name="medPrice"
                                 style={{ width: "100%" }}
-                                min={0}
                                 value={medicine.medPrice}
-                                onChange={(value) => {
-                                    if (!isNaN(value)) {
-                                        handleInput({ target: { name: "medPrice", value } });
-                                    }
-                                }}
+                                onChange={(e) => !isNaN(e.target.value) ? handleInput(e): null}
                                 />
                             </div>
                         </div>
@@ -143,6 +156,34 @@ export default function AdminAddMedicines() {
                                         {label: medGp.group_name, value: medGp.id}
                                     ))
                                 ]}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="d-flex gap1 mar-bottom-2">
+                            <div>
+                                <label htmlFor="presNeeded" className="text-m1 w-100">Prescription Needed</label>
+                                <Radio.Group
+                                name="presNeeded"
+                                value={medicine.presNeeded}
+                                options={[
+                                    { value: 1, label: "Yes" },
+                                    { value: 0, label: "No"},
+                                ]}
+                                onChange={handleInput}
+                                />
+                            </div>
+
+                            <div>
+                                <label htmlFor="discountable" className="text-m1 w-100">Discountable</label>
+                                <Radio.Group
+                                name="discountable"
+                                value={medicine.discountable}
+                                options={[
+                                    { value: 1, label: "Yes" },
+                                    { value: 0, label: "No"},
+                                ]}
+                                onChange={handleInput}
                                 />
                             </div>
                         </div>

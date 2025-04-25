@@ -60,6 +60,9 @@ class MedicineController extends Controller
             $medicine->id = $medicineId;
             $medicine->name = $medicineParsed->medName;
             $medicine->price = $medicineParsed->medPrice;
+            $medicine->cost_price = $medicineParsed->medCostPrice;
+            $medicine->prescription = $medicineParsed->presNeeded;
+            $medicine->discountable = $medicineParsed->discountable;
             $medicine->group = $medicineParsed->medGroup;
             $medicine->type = $medicineParsed->medType;
             $medicine->save();
@@ -139,6 +142,8 @@ class MedicineController extends Controller
             $medicine->type = $editMed->type;
             $medicine->prescription = $editMed->prescription;
             $medicine->discountable = $editMed->discountable;
+            $medicine->price = $editMed->price;
+            $medicine->cost_price = $editMed->cost_price;
             $medicine->save();
 
             DB::commit();
